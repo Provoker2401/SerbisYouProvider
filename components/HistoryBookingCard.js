@@ -1,222 +1,281 @@
 import * as React from "react";
-import { Pressable, Text, StyleSheet, View } from "react-native";
+import {
+  Pressable,
+  Text,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import { Image } from "expo-image";
 import { FontSize, FontFamily, Color, Border, Padding } from "../GlobalStyles";
 import { useNavigation } from "@react-navigation/native";
+import {
+  getFirestore,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  where,
+  query,
+  onSnapshot,
+} from "firebase/firestore"; // Updated imports
+import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
 
 // Define a function to map the status to the corresponding style
 const getStatusStyle = (status) => {
-    switch (status) {
-      case 'Canceled':
-        return styles.rectangleFrameShadowBox1;
-      case 'Completed':
-        return styles.rectangleFrameShadowBox;
-      default:
-        return styles.defaultStatus;
-    }
-  };
+  switch (status) {
+    case "Canceled":
+      return styles.rectangleFrameShadowBox1;
+    case "Completed":
+      return styles.rectangleFrameShadowBox;
+    default:
+      return styles.defaultStatus;
+  }
+};
 
 // Define a function to map the status to the corresponding card background color
 const getCardBackgroundColor = (status) => {
-    switch (status) {
-      case 'Canceled':
-        return styles.cancelled;
-      case 'Completed':
-        return styles.completed;
-      default:
-        return {};
-    }
+  switch (status) {
+    case "Canceled":
+      return styles.cancelled;
+    case "Completed":
+      return styles.completed;
+    default:
+      return {};
+  }
 };
 
 const getButtonText = (status) => {
-    switch (status) {
-      case 'Cancelled':
-        return 'Cancelled';
-      case 'Completed':
-        return 'Completed';
-      default:
-        return 'Action'; 
-    }
-  };
+  switch (status) {
+    case "Cancelled":
+      return "Cancelled";
+    case "Completed":
+      return "Completed";
+    default:
+      return "Action";
+  }
+};
 
 const getPaymentMethodText = (paymentMethod) => {
-    switch (paymentMethod) {
-      case 'Gcash':
-        return 'Gcash';
-      case 'Cash':
-        return 'Cash';
-      case 'Paymaya':
-        return 'Paymaya';
-      case 'Paypal':
-        return 'Paypal';
-      case 'BPI':
-        return 'BPI';
-      case 'BDO':
-        return 'BDO';
-      default:
-        return 'Action'; 
-    }
-  };
-  
+  switch (paymentMethod) {
+    case "Gcash":
+      return "Gcash";
+    case "Cash":
+      return "Cash";
+    case "Paymaya":
+      return "Paymaya";
+    case "Paypal":
+      return "Paypal";
+    case "BPI":
+      return "BPI";
+    case "BDO":
+      return "BDO";
+    default:
+      return "Action";
+  }
+};
 
-const HistoryBookingCard = ({status, date, time, location, serviceName, customerName, totalPrice, paymentMethod, id}) => {
-const navigation = useNavigation();
+const HistoryBookingCard = ({
+  status,
+  date,
+  time,
+  location,
+  serviceName,
+  customerName,
+  totalPrice,
+  paymentMethod,
+  id,
+}) => {
+  const navigation = useNavigation();
   const statusStyle = getStatusStyle(status);
   const cardBackgroundColor = getCardBackgroundColor(status);
 
-  const viewBookingDetails = () => {
-    navigation.navigate("ViewBookingDetails", { itemID: id });
+  const gotoEReceipt = async (id) => {
+    try {
+      const db = getFirestore();
+      const auth = getAuth();
+      const providerUID = auth.currentUser.uid;
+
+      const userBookingDocRef = doc(
+        db,
+        "providerProfiles",
+        providerUID,
+        "historyBookings",
+        id
+      );
+
+      const docSnapshot = await getDoc(userBookingDocRef);
+
+      if (docSnapshot.exists()) {
+        const booking = docSnapshot.data();
+        console.log("Booking Data:", booking);
+
+        navigation.navigate("EReceipt", { id });
+
+
+      } else {
+        console.log("No such document");
+      }
+    } catch (error) {}
   };
-  
+
+  console.log("ID", id);
 
   return (
     <View style={styles.cancelledFrameSpaceBlock}>
-        <View style={statusStyle}>
-            <View style={styles.providerFrame}>
-                <View style={[styles.frameParent, styles.frameParentSpaceBlock]}>
-                <View style={styles.frameGroup}>
-                    <View style={styles.frameContainer}>
-                    <View style={styles.gardenMaintenanceWrapper}>
-                        <Text
-                        style={[
-                            styles.gardenMaintenance,
-                            styles.gardenMaintenanceTypo,
-                        ]}
-                        >
-                        {serviceName}
-                        </Text>
-                    </View>
-                    <View style={styles.frameWrapper}>
-                        <View>
-                        <View style={[cardBackgroundColor, styles.cancelledFlexBox]}>
-                            <Text style={[styles.cancelled1, styles.cancelled1Clr]}>
-                            {status}
-                            </Text>
-                        </View>
-                        </View>
-                    </View>
-                    </View>
-                    <View style={styles.frameView}>
-                    <View style={styles.amParent}>
-                        {/* <Text style={[styles.am, styles.amTypo]}>5:00 AM</Text> */}
-                        <Text
-                        style={[styles.uscTalambanCebu, styles.amTypo]}
-                        >{location}</Text>
-                    </View>
-                    <Pressable style={styles.vectorWrapper} onPress={() => navigation.navigate("CalendarStrips")}>
-                        <Image
-                        style={styles.vectorIcon}
-                        contentFit="cover"
-                        source={require("../assets/vector3.png")}
-                        />
-                    </Pressable>
-                    </View>
-                </View>
-                <View
+      <TouchableOpacity style={statusStyle} onPress={() => gotoEReceipt(id)}>
+        <View style={styles.providerFrame}>
+          <View style={[styles.frameParent, styles.frameParentSpaceBlock]}>
+            <View style={styles.frameGroup}>
+              <View style={styles.frameContainer}>
+                <View style={styles.gardenMaintenanceWrapper}>
+                  <Text
                     style={[
-                    styles.vectorContainer,
-                    styles.historyBookingsSpaceBlock,
+                      styles.gardenMaintenance,
+                      styles.gardenMaintenanceTypo,
                     ]}
+                  >
+                    {serviceName}
+                  </Text>
+                </View>
+                <View style={styles.frameWrapper}>
+                  <View>
+                    <View
+                      style={[cardBackgroundColor, styles.cancelledFlexBox]}
+                    >
+                      <Text style={[styles.cancelled1, styles.cancelled1Clr]}>
+                        {status}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.frameView}>
+                <View style={styles.amParent}>
+                  {/* <Text style={[styles.am, styles.amTypo]}>5:00 AM</Text> */}
+                  <Text style={[styles.uscTalambanCebu, styles.amTypo]}>
+                    {location}
+                  </Text>
+                </View>
+                <Pressable
+                  style={styles.vectorWrapper}
+                  onPress={() => navigation.navigate("CalendarStrips")}
                 >
-                    <Image
-                    style={[styles.frameChild, styles.frameChildLayout]}
+                  <Image
+                    style={styles.vectorIcon}
                     contentFit="cover"
-                    source={require("../assets/line-83.png")}
-                    />
-                </View>
-                <View style={styles.frameContainer}>
-                    <Text style={[styles.johnDoe, styles.amountClr]}>{customerName}</Text>
-                    <Text style={[styles.johnDoe, styles.amountClr2]}>{time}</Text>
-                </View>
-                <View style={styles.frameParent1}>
-                    <View style={styles.paidViaGcashWrapper}>
-                    <Text style={[styles.paidViaGcashContainer, styles.amTypo]}>
-                        <Text style={styles.paidVia}>{`Paid via `}</Text>
-                        <Text style={styles.gcash}>{paymentMethod}</Text>
-                    </Text>
-                    </View>
-                    <View style={styles.wrapper}>
-                    <Text style={[styles.text, styles.textTypo]}>{`₱ ${totalPrice}.00`}</Text>
-                    </View>
-                </View>
-                </View>
-                <View style={[styles.callBtnParent, styles.parentSpaceBlock]}>
-                <Pressable style={styles.callBtn}>
-                    <Image
-                    style={styles.callBtnChild}
-                    contentFit="cover"
-                    source={require("../assets/ellipse-232.png")}
-                    />
-                    <Image
-                    style={[styles.callIcon, styles.iconPosition]}
-                    contentFit="cover"
-                    source={require("../assets/call.png")}
-                    />
+                    source={require("../assets/vector3.png")}
+                  />
                 </Pressable>
-                <Pressable style={styles.messageBtn}>
-                    <Image
-                    style={styles.callBtnChild}
-                    contentFit="cover"
-                    source={require("../assets/ellipse-232.png")}
-                    />
-                    <Image
-                    style={[styles.messageIcon, styles.iconPosition]}
-                    contentFit="cover"
-                    source={require("../assets/message.png")}
-                    />
-                </Pressable>
-                </View>
+              </View>
             </View>
+            <View
+              style={[styles.vectorContainer, styles.historyBookingsSpaceBlock]}
+            >
+              <Image
+                style={[styles.frameChild, styles.frameChildLayout]}
+                contentFit="cover"
+                source={require("../assets/line-83.png")}
+              />
+            </View>
+            <View style={styles.frameContainer}>
+              <Text style={[styles.johnDoe, styles.amountClr]}>
+                {customerName}
+              </Text>
+              <Text style={[styles.johnDoe, styles.amountClr2]}>{time}</Text>
+            </View>
+            <View style={styles.frameParent1}>
+              <View style={styles.paidViaGcashWrapper}>
+                <Text style={[styles.paidViaGcashContainer, styles.amTypo]}>
+                  <Text style={styles.paidVia}>{`Paid via `}</Text>
+                  <Text style={styles.gcash}>{paymentMethod}</Text>
+                </Text>
+              </View>
+              <View style={styles.wrapper}>
+                <Text
+                  style={[styles.text, styles.textTypo]}
+                >{`₱ ${totalPrice}.00`}</Text>
+              </View>
+            </View>
+          </View>
+          <View style={[styles.callBtnParent, styles.parentSpaceBlock]}>
+            <Pressable style={styles.callBtn}>
+              <Image
+                style={styles.callBtnChild}
+                contentFit="cover"
+                source={require("../assets/ellipse-232.png")}
+              />
+              <Image
+                style={[styles.callIcon, styles.iconPosition]}
+                contentFit="cover"
+                source={require("../assets/call.png")}
+              />
+            </Pressable>
+            <Pressable style={styles.messageBtn}>
+              <Image
+                style={styles.callBtnChild}
+                contentFit="cover"
+                source={require("../assets/ellipse-232.png")}
+              />
+              <Image
+                style={[styles.messageIcon, styles.iconPosition]}
+                contentFit="cover"
+                source={require("../assets/message.png")}
+              />
+            </Pressable>
+          </View>
+        </View>
         <View style={[styles.scheduleFrame, styles.scheduleFrameFlexBox]}>
-            <View style={styles.parentFlexBox}>
+          <View style={styles.parentFlexBox}>
             <Text style={[styles.time, styles.timeTypo]}>Time</Text>
             <View style={styles.amWrapper}>
-                <Text style={[styles.am1, styles.textTypo1]}> 8:00 AM</Text>
+              <Text style={[styles.am1, styles.textTypo1]}> 8:00 AM</Text>
             </View>
-            </View>
-            <View style={[styles.frameParent2, styles.parentFlexBox]}>
+          </View>
+          <View style={[styles.frameParent2, styles.parentFlexBox]}>
             <View style={styles.locationWrapper}>
-                <Text style={[styles.time, styles.timeTypo]}>Location</Text>
+              <Text style={[styles.time, styles.timeTypo]}>Location</Text>
             </View>
             <View style={styles.uscTalambanCebuCityCebuWrapper}>
-                <Text
+              <Text
                 style={[styles.uscTalambanCebu1, styles.textTypo1]}
-                >{`USC Talamban, Cebu City, Cebu, Region 7, Philippines `}</Text>
+              >{`USC Talamban, Cebu City, Cebu, Region 7, Philippines `}</Text>
             </View>
-            </View>
+          </View>
         </View>
         <View style={[styles.buttonsFrame, styles.buttonsFrameFlexBox]}>
-            <Pressable style={styles.btnBorder}>
+          <Pressable style={styles.btnBorder}>
             <Text style={[styles.viewDetails, styles.amTypo]}>
-                View Details
+              View Details
             </Text>
-            </Pressable>
+          </Pressable>
         </View>
-        </View>
+      </TouchableOpacity>
     </View>
   );
 };
 const styles = StyleSheet.create({
-    historyBookingsSpaceBlock: {
-        paddingHorizontal: 0,
-        alignSelf: "stretch",
-    },
-    leftArrow: {
+  historyBookingsSpaceBlock: {
+    paddingHorizontal: 0,
+    alignSelf: "stretch",
+  },
+  leftArrow: {
     left: 0,
     top: -48,
     width: 25,
     height: 25,
-    },
-    rightArrow: {
+  },
+  rightArrow: {
     bottom: 48,
     width: 25,
     height: 25,
-    },
-    frameParentSpaceBlock: {
+  },
+  frameParentSpaceBlock: {
     paddingLeft: Padding.p_8xs,
     flex: 1,
-    },
-    gardenMaintenanceTypo: {
+  },
+  gardenMaintenanceTypo: {
     color: Color.lightLabelPrimary,
     fontSize: FontSize.paragraphMedium15_size,
     textAlign: "left",
@@ -224,98 +283,98 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     lineHeight: 24,
     letterSpacing: -0.1,
-    },
-    cancelledFlexBox: {
+  },
+  cancelledFlexBox: {
     paddingVertical: Padding.p_7xs,
     paddingHorizontal: Padding.p_3xs,
     borderRadius: Border.br_6xs,
     flexDirection: "row",
     justifyContent: "center",
     alignSelf: "stretch",
-    },
-    cancelled1Clr: {
+  },
+  cancelled1Clr: {
     color: Color.m3White,
     fontSize: FontSize.level2Medium12_size,
-    },
-    amTypo: {
+  },
+  amTypo: {
     fontFamily: FontFamily.level2Medium12,
     fontWeight: "500",
-    },
-    frameChildLayout: {
+  },
+  frameChildLayout: {
     maxWidth: "100%",
     overflow: "hidden",
-    },
-    amountClr: {
+  },
+  amountClr: {
     color: Color.colorTypographyContentIconsBlack02,
     textAlign: "left",
     letterSpacing: -0.1,
-    },
-    amountClr2: {
+  },
+  amountClr2: {
     color: Color.colorTypographyContentIconsBlack02,
     textAlign: "right",
     letterSpacing: -0.1,
-    },
-    textTypo: {
+  },
+  textTypo: {
     width: 95,
     fontFamily: FontFamily.level2Medium12,
     fontWeight: "500",
     color: Color.lightLabelPrimary,
-    },
-    parentSpaceBlock: {
+  },
+  parentSpaceBlock: {
     marginLeft: 5,
     justifyContent: "center",
-    },
-    iconPosition: {
+  },
+  iconPosition: {
     zIndex: 1,
     height: 23,
     width: 23,
     position: "absolute",
     overflow: "hidden",
-    },
-    scheduleFrameFlexBox: {
+  },
+  scheduleFrameFlexBox: {
     paddingTop: Padding.p_xl,
     alignItems: "center",
     alignSelf: "stretch",
-    },
-    timeTypo: {
+  },
+  timeTypo: {
     fontFamily: FontFamily.interRegular,
     color: Color.colorTypographyContentIconsBlack02,
     textAlign: "left",
     lineHeight: 24,
     letterSpacing: -0.1,
-    },
-    textTypo1: {
+  },
+  textTypo1: {
     textAlign: "right",
     fontSize: FontSize.typographyTaglineSmallRegular_size,
-    },
-    parentFlexBox: {
+  },
+  parentFlexBox: {
     paddingHorizontal: Padding.p_8xs,
     paddingVertical: 0,
     flexDirection: "row",
     alignItems: "center",
     alignSelf: "stretch",
-    },
-    buttonsFrameFlexBox: {
+  },
+  buttonsFrameFlexBox: {
     paddingBottom: Padding.p_3xs,
     paddingTop: Padding.p_xl,
     alignItems: "flex-end",
     flexDirection: "row",
     justifyContent: "center",
     alignSelf: "stretch",
-    },
-    cancelledFrameSpaceBlock: {
+  },
+  cancelledFrameSpaceBlock: {
     marginTop: 14,
     paddingBottom: Padding.p_7xs,
     alignItems: "center",
     backgroundColor: Color.m3White,
     alignSelf: "stretch",
-    },
-    uscTypo: {
+  },
+  uscTypo: {
     fontFamily: FontFamily.levelSemibold14,
     color: Color.colorDarkslategray_300,
     fontWeight: "600",
-    },
-    btnBorder: {
+  },
+  btnBorder: {
     borderWidth: 1.6,
     borderColor: Color.colorSteelblue,
     borderStyle: "solid",
@@ -326,289 +385,289 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flex: 1,
     alignItems: "center",
-    },
-    image2531Icon: {
+  },
+  image2531Icon: {
     width: 472,
     height: 167,
-    },
-    image2531Wrapper: {
+  },
+  image2531Wrapper: {
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "stretch",
-    },
-    gardenMaintenance: {
+  },
+  gardenMaintenance: {
     textAlign: "left",
     flex: 1,
-    },
-    gardenMaintenanceWrapper: {
+  },
+  gardenMaintenanceWrapper: {
     flexDirection: "row",
     justifyContent: "center",
     flex: 1,
-    },
-    cancelled1: {
+  },
+  cancelled1: {
     textTransform: "capitalize",
     fontFamily: FontFamily.workSansSemiBold,
     textAlign: "left",
     fontWeight: "600",
     color: Color.m3White,
     fontSize: FontSize.level2Medium12_size,
-    },
-    cancelled: {
+  },
+  cancelled: {
     backgroundColor: Color.colorFirebrick_300,
-    },
-    frameWrapper: {
+  },
+  frameWrapper: {
     marginLeft: 10,
     alignItems: "flex-end",
-    },
-    frameContainer: {
+  },
+  frameContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignSelf: "stretch",
-    },
-    am: {
+  },
+  am: {
     color: Color.colorDarkslategray_300,
     lineHeight: 18,
     fontSize: FontSize.typographyTaglineSmallRegular_size,
     textAlign: "left",
     letterSpacing: -0.1,
     alignSelf: "stretch",
-    },
-    uscTalambanCebu: {
+  },
+  uscTalambanCebu: {
     color: Color.colorDarkslategray_300,
     lineHeight: 18,
     fontSize: FontSize.typographyTaglineSmallRegular_size,
     textAlign: "left",
     alignSelf: "stretch",
-    },
-    amParent: {
+  },
+  amParent: {
     justifyContent: "center",
     flex: 1,
-    },
-    vectorIcon: {
+  },
+  vectorIcon: {
     width: 8,
     height: 13,
-    },
-    vectorWrapper: {
+  },
+  vectorWrapper: {
     paddingVertical: 0,
     paddingHorizontal: Padding.p_3xs,
     alignItems: "flex-end",
     justifyContent: "center",
-    },
-    frameView: {
+  },
+  frameView: {
     marginTop: 9,
     flexDirection: "row",
     alignItems: "center",
     alignSelf: "stretch",
-    },
-    frameGroup: {
+  },
+  frameGroup: {
     justifyContent: "center",
     alignSelf: "stretch",
-    },
-    frameChild: {
+  },
+  frameChild: {
     height: 1,
     overflow: "hidden",
     flex: 1,
-    },
-    vectorContainer: {
+  },
+  vectorContainer: {
     paddingVertical: Padding.p_8xs,
     flexDirection: "row",
     justifyContent: "center",
-    },
-    johnDoe: {
+  },
+  johnDoe: {
     fontWeight: "300",
     fontFamily: FontFamily.title2Bold32,
     fontSize: FontSize.level2Medium12_size,
     lineHeight: 18,
     flex: 1,
-    },
-    paidVia: {
+  },
+  paidVia: {
     color: Color.colorDarkslategray_300,
-    },
-    gcash: {
+  },
+  gcash: {
     color: Color.colorDeepskyblue_100,
-    },
-    paidViaGcashContainer: {
+  },
+  paidViaGcashContainer: {
     lineHeight: 18,
     fontSize: FontSize.typographyTaglineSmallRegular_size,
     textAlign: "left",
     letterSpacing: -0.1,
     alignSelf: "stretch",
-    },
-    paidViaGcashWrapper: {
+  },
+  paidViaGcashWrapper: {
     flex: 1,
-    },
-    text: {
+  },
+  text: {
     letterSpacing: 0.4,
     textAlign: "right",
     fontSize: FontSize.typographyTaglineSmallRegular_size,
     lineHeight: 18,
-    },
-    wrapper: {
+  },
+  wrapper: {
     alignItems: "flex-end",
-    },
-    frameParent1: {
+  },
+  frameParent1: {
     flexDirection: "row",
     alignSelf: "stretch",
-    },
-    frameParent: {
+  },
+  frameParent: {
     justifyContent: "center",
-    },
-    callBtnChild: {
+  },
+  callBtnChild: {
     width: 42,
     height: 42,
     zIndex: 0,
-    },
-    callIcon: {
+  },
+  callIcon: {
     top: 9,
     left: 9,
-    },
-    callBtn: {
+  },
+  callBtn: {
     overflow: "hidden",
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "stretch",
-    },
-    messageIcon: {
+  },
+  messageIcon: {
     top: 10,
     left: 10,
-    },
-    messageBtn: {
+  },
+  messageBtn: {
     overflow: "hidden",
     marginTop: 9,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "stretch",
-    },
-    callBtnParent: {
+  },
+  callBtnParent: {
     display: "none",
     alignItems: "center",
-    },
-    providerFrame: {
+  },
+  providerFrame: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "stretch",
-    },
-    time: {
+  },
+  time: {
     fontSize: FontSize.typographyTaglineSmallRegular_size,
-    },
-    am1: {
+  },
+  am1: {
     color: Color.colorDarkslategray_300,
     fontFamily: FontFamily.levelSemibold14,
     fontWeight: "600",
     lineHeight: 24,
     letterSpacing: -0.1,
-    },
-    amWrapper: {
+  },
+  amWrapper: {
     justifyContent: "flex-end",
     marginLeft: 30,
     flexDirection: "row",
     flex: 1,
     alignItems: "center",
-    },
-    locationWrapper: {
+  },
+  locationWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    },
-    uscTalambanCebu1: {
+  },
+  uscTalambanCebu1: {
     lineHeight: 20,
     color: Color.colorDarkslategray_300,
     fontFamily: FontFamily.levelSemibold14,
     fontWeight: "600",
     flex: 1,
-    },
-    uscTalambanCebuCityCebuWrapper: {
+  },
+  uscTalambanCebuCityCebuWrapper: {
     marginLeft: 20,
     flexDirection: "row",
     flex: 1,
-    },
-    frameParent2: {
+  },
+  frameParent2: {
     marginTop: 8,
     justifyContent: "center",
-    },
-    scheduleFrame: {
+  },
+  scheduleFrame: {
     display: "none",
-    },
-    viewDetails: {
+  },
+  viewDetails: {
     textAlign: "center",
     color: Color.m3White,
     fontSize: FontSize.level2Medium12_size,
     lineHeight: 24,
     letterSpacing: -0.1,
-    },
-    buttonsFrame: {
+  },
+  buttonsFrame: {
     display: "none",
-    },
-    rectangleFrameShadowBox1: {
+  },
+  rectangleFrameShadowBox1: {
     padding: Padding.p_3xs,
     shadowOpacity: 1,
     elevation: 4,
     shadowRadius: 4,
     shadowOffset: {
-        width: 0,
-        height: 4,
+      width: 0,
+      height: 4,
     },
     shadowColor: "rgba(0, 0, 0, 0.25)",
     backgroundColor: Color.colorMistyrose,
     borderRadius: Border.br_3xs,
     alignItems: "center",
     alignSelf: "stretch",
-    },
-    completed: {
+  },
+  completed: {
     backgroundColor: Color.colorMediumseagreen_200,
-    },
-    rectangleFrameShadowBox: {
+  },
+  rectangleFrameShadowBox: {
     backgroundColor: Color.colorMintcream,
     padding: Padding.p_3xs,
     shadowOpacity: 1,
     elevation: 4,
     shadowRadius: 4,
     shadowOffset: {
-        width: 0,
-        height: 4,
+      width: 0,
+      height: 4,
     },
     shadowColor: "rgba(0, 0, 0, 0.25)",
     borderRadius: Border.br_3xs,
     alignItems: "center",
     alignSelf: "stretch",
-    },
-    image2378Icon: {
+  },
+  image2378Icon: {
     width: 91,
     height: 91,
-    },
-    image2378Wrapper: {
+  },
+  image2378Wrapper: {
     display: "none",
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    },
-    cancelledWrapper1: {
+  },
+  cancelledWrapper1: {
     width: 92,
-    },
-    am4: {
+  },
+  am4: {
     color: Color.colorDarkslategray_300,
     lineHeight: 18,
     fontSize: FontSize.typographyTaglineSmallRegular_size,
     textAlign: "left",
     letterSpacing: -0.1,
     alignSelf: "stretch",
-    },
-    uscTalambanCebu4: {
+  },
+  uscTalambanCebu4: {
     color: Color.colorDarkslategray_300,
     lineHeight: 18,
     fontSize: FontSize.typographyTaglineSmallRegular_size,
     textAlign: "left",
     alignSelf: "stretch",
-    },
-    amount: {
+  },
+  amount: {
     fontSize: FontSize.levelSemibold14_size,
     fontFamily: FontFamily.bodyLgBodyLgRegular,
     marginTop: 9,
     lineHeight: 24,
-    },
-    text2: {
+  },
+  text2: {
     top: 7,
     left: 6,
     fontSize: FontSize.bodyLgBodyLgRegular_size,
@@ -616,8 +675,8 @@ const styles = StyleSheet.create({
     lineHeight: 31,
     position: "absolute",
     textAlign: "left",
-    },
-    cancelled6: {
+  },
+  cancelled6: {
     top: 11,
     left: 282,
     backgroundColor: Color.colorRoyalblue,
@@ -628,69 +687,69 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     paddingHorizontal: 0,
-    },
-    parent: {
+  },
+  parent: {
     width: 350,
     height: 45,
     overflow: "hidden",
-    },
-    frameParent9: {
+  },
+  frameParent9: {
     paddingLeft: Padding.p_8xs,
     flex: 1,
-    },
-    providerFrame2: {
+  },
+  providerFrame2: {
     paddingTop: Padding.p_3xs,
     paddingBottom: Padding.p_xl,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "stretch",
-    },
-    rectangleFrameChild: {
+  },
+  rectangleFrameChild: {
     height: 0,
     width: "100%",
     overflow: "hidden",
     alignSelf: "stretch",
-    },
-    cancelledFrame1: {
+  },
+  cancelledFrame1: {
     display: "none",
-    },
-    image2378Container: {
+  },
+  image2378Container: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    },
-    furnitureAssembly1: {
+  },
+  furnitureAssembly1: {
     textAlign: "left",
     alignSelf: "stretch",
-    },
-    customer1: {
+  },
+  customer1: {
     fontSize: FontSize.size_3xs,
     marginTop: 9,
     alignSelf: "stretch",
-    },
-    completedWrapper: {
+  },
+  completedWrapper: {
     width: 89,
     justifyContent: "center",
-    },
-    text3: {
+  },
+  text3: {
     marginLeft: 2,
     color: Color.colorDarkslategray_300,
     fontFamily: FontFamily.levelSemibold14,
     fontWeight: "600",
     lineHeight: 24,
     letterSpacing: -0.1,
-    },
-    eReceiptBtn1: {
+  },
+  eReceiptBtn1: {
     marginLeft: 26,
-    },
-    historyBookings: {
+  },
+  historyBookings: {
     paddingVertical: Padding.p_xl,
     flex: 1,
     alignItems: "center",
     backgroundColor: Color.m3White,
     paddingHorizontal: 0,
-    },
+  },
 });
 
 export default HistoryBookingCard;
