@@ -13,6 +13,8 @@ import {
   TouchableOpacity,
   Linking,
   ActivityIndicator,
+  Modal,
+  BackHandler,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MapView, {
@@ -40,6 +42,9 @@ import {
 } from "firebase/firestore"; // Updated imports
 import { toggleAnimation } from "../animations/toggleAnimation";
 import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
+import CancelBookingPrompt from "../components/CancelBookingPrompt";
+import CountDownBooking from "../components/CountDownBooking";
+
 
 const NewBooking = ( {route} ) => {
   const navigation = useNavigation();
@@ -85,6 +90,41 @@ const NewBooking = ( {route} ) => {
     longitude: coordinates.longitude,
   };
   const [isLoading, setIsLoading] = useState(true);
+
+  const [cancelModalVisible, setCancelModalVisible] = useState(false);
+
+  const [CountDownBookingVisible, setCountDownBookingVisible] = useState(false);
+  const [countdown, setCountdown] = useState(60); // Initial countdown value in seconds
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    const countdownInterval = setInterval(() => {
+      setCountdown((prevCount) => prevCount - 1);
+    }, 1000);
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(countdownInterval);
+  }, []);
+
+  useEffect(() => {
+    if (countdown === 15) {
+      setCountDownBookingVisible(true);
+    } else if (countdown === 0) {
+      declineBooking();
+    }
+  }, [countdown]);
+
+  const closeCountDownModal = () => {
+    setCountDownBookingVisible(false);
+    console.log("closeCountDownModal");
+  };
+  const openCancelModal = () => {
+    setCancelModalVisible(true);
+  };
+
+  const closeCancelModal = () => {
+    setCancelModalVisible(false);
+  };
   
   // Function to handle directions
   const handleGetDirections = () => {
@@ -189,6 +229,7 @@ const NewBooking = ( {route} ) => {
         navigation.navigate("ViewBookingDetails", {
           newDocumentID: newDocumentID,
           matchedBookingID: matchedBookingID,
+          providerLocation: providerLocation, // Include providerLocation in the route parameters
         })
       } else {
         console.error('Provider Profile does not exists');
@@ -280,8 +321,8 @@ const NewBooking = ( {route} ) => {
   const [initialMapRegion, setInitialMapRegion] = useState({
     latitude: providerCoordinates.latitude,
     longitude: providerCoordinates.longitude,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
+    latitudeDelta: 0.008,
+    longitudeDelta: 0.008,
   });
 
   const [initialMarkerPosition, setInitialMarkerPosition] = useState({
@@ -670,6 +711,21 @@ const NewBooking = ( {route} ) => {
     outputRange: ["0deg", "180deg"],
   });
 
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        // Show the cancel modal when the back button is pressed
+        openCancelModal();
+        return true; // Prevent the default behavior (exit the app)
+      }
+    );
+
+    return () => {
+      backHandler.remove();
+    };
+  }, []); // Remove the dependency array so that this effect doesn't depend on cancelModalVisible
+
   return isLoading ? (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size={60} color="#0000FF" />
@@ -771,7 +827,7 @@ const NewBooking = ( {route} ) => {
                 </View>
                 <View style={styles.ljkhParent}>
                   <Text style={[styles.ljkh, styles.ljkhFlexBox]}>
-                    #123456789LJKH
+                    {bookingID}
                   </Text>
                   <Pressable style={[styles.copyButton, styles.frameFlexBox3]}>
                     <Image
@@ -1207,11 +1263,60 @@ const NewBooking = ( {route} ) => {
           </Pressable>
         </View>
       </View>
+
+      <Modal animationType="fade" transparent visible={cancelModalVisible}>
+        <View style={styles.logoutButtonOverlay}>
+          <View style={styles.containerCancel}>
+            <Pressable
+              style={styles.logoutButtonBg}
+              onPress={closeCancelModal}
+            />
+            <CancelBookingPrompt
+              onClose={closeCancelModal}
+              onYesPress={declineBooking}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      <Modal animationType="fade" transparent visible={CountDownBookingVisible}>
+        <View style={styles.logoutButtonOverlay}>
+          <View style={styles.containerCancel}>
+            <Pressable
+              style={styles.logoutButtonBg}
+              //onPress={closeCancelModal}
+              // onClose={closeCountDownModal}
+            />
+            <CountDownBooking
+              onClose={closeCountDownModal}
+              //onYesPress={declineBooking}
+            />
+          </View>
+        </View>
+      </Modal>
+
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  containerCancel: {
+    backgroundColor: "white",
+    borderRadius: 10,
+  },
+  logoutButtonOverlay: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(169, 169, 169, 0.7)", // Set the background color to grayish with transparency
+  },
+  logoutButtonBg: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    left: 0,
+    top: 0,
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",

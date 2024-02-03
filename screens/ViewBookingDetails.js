@@ -6,6 +6,7 @@ import {
   Text,
   View,
   Pressable,
+  Linking,
 } from "react-native";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -27,7 +28,7 @@ import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
 const ViewBookingDetails = ( {route} ) => {
   const navigation = useNavigation();
 
-  const {newDocumentID} = route.params;
+  const {newDocumentID, matchedBookingID, providerLocation } = route.params;
   const [bookingAccepted, setBookingAccepted] = useState("");
   const [bookingAssigned, setBookingAssigned] = useState("");
   const [bookingName, setBookingName] = useState("");
@@ -44,7 +45,10 @@ const ViewBookingDetails = ( {route} ) => {
   const [bookingSubtotal, setBookingSubtotal] = useState("");
   const [bookingDistanceFee, setBookingDistanceFee] = useState("");
   const [bookingTotal, setBookingTotal] = useState("");
-  const [bookingCoordinates, setBookingCoordinates] = useState({ latitude: null, longitude: null });
+  // const [bookingCoordinates, setBookingCoordinates] = useState({ latitude: null, longitude: null });
+  const [bookingCoordinates, setBookingCoordinates] = useState("");
+
+  const [phoneUser, setphoneUser] = useState("");
 
   useEffect(() => {
     async function fetchData() {
@@ -95,6 +99,7 @@ const ViewBookingDetails = ( {route} ) => {
             latitude: booking.coordinates.latitude,
             longitude: booking.coordinates.longitude,
           });
+          setphoneUser(booking.phone);
 
           console.log("Date: " ,bookingDate);
           console.log("Time: " ,bookingTime);
@@ -179,6 +184,28 @@ const ViewBookingDetails = ( {route} ) => {
     fetchData(); // Call the fetchData function immediately
   }, []); // Add userID as a dependency
 
+  const handleGetDirections = () => {
+    const customerLocation = bookingCoordinates;
+
+    const data = {
+      source: providerLocation,
+      destination: customerLocation,
+      params: [
+        {
+          key: "travelmode",
+          value: "driving", // could be "walking", "bicycling" or "transit" as well
+        },
+        {
+          key: "dir_action",
+          value: "navigate", // this launches navigation directly
+        },
+      ],
+    };
+
+    const url = `https://www.google.com/maps/dir/?api=1&origin=${data.source.latitude},${data.source.longitude}&destination=${data.destination.latitude},${data.destination.longitude}&travelmode=${data.params[0].value}`;
+    Linking.openURL(url);
+  };
+
   return (
     <View style={[styles.viewBookingDetails, styles.frameItemLayout]}>
       <StatusBar barStyle="default" />
@@ -209,7 +236,7 @@ const ViewBookingDetails = ( {route} ) => {
           >
             <Pressable
               style={[styles.backBtn, styles.btnLayout]}
-              onPress={() => navigation.goBack()}
+              onPress={() => navigation.navigate("BottomTabsRoot", { screen: "Homepage" })}
             >
               <Image
                 style={styles.uiIconarrowBackwardfilled}
@@ -221,7 +248,10 @@ const ViewBookingDetails = ( {route} ) => {
           <View style={[styles.messageBtnWrapper, styles.btnWrapperPosition]}>
             <Pressable
               style={[styles.messageBtn, styles.btnLayout]}
-              onPress={() => navigation.goBack()}
+              onPress={() => {
+                // Use Linking to open the messaging app with the specified number
+                Linking.openURL(`sms:${phoneUser}`);
+              }}
             >
               <Image
                 style={styles.icons8ChatBubble1001}
@@ -430,6 +460,7 @@ const ViewBookingDetails = ( {route} ) => {
                     styles.componentsbutton,
                     styles.componentsbuttonFlexBox,
                   ]}
+                  onPress={handleGetDirections}
                 >
                   <Text style={styles.viewAllServices}>VIEW LOCATION</Text>
                 </Pressable>
@@ -438,6 +469,12 @@ const ViewBookingDetails = ( {route} ) => {
                     styles.componentsbutton1,
                     styles.componentsbuttonFlexBox,
                   ]}
+                  onPress={() => {
+                    // Specify the phone number you want to call
+
+                    // Use Linking to open the phone dialer with the specified number
+                    Linking.openURL(`tel:${phoneUser}`);
+                  }}
                 >
                   <Text style={styles.viewAllServices}>CALL NOW</Text>
                 </Pressable>
