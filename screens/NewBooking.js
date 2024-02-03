@@ -43,7 +43,6 @@ import {
 import { toggleAnimation } from "../animations/toggleAnimation";
 import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
 import CancelBookingPrompt from "../components/CancelBookingPrompt";
-
 import CountDownBooking from "../components/CountDownBooking";
 
 const NewBooking = ({ route }) => {
@@ -113,7 +112,7 @@ const NewBooking = ({ route }) => {
     if (countdown === 15) {
       setCountDownBookingVisible(true);
     } else if (countdown === 0) {
-      //declineBooking();
+      declineBooking();
     }
   }, [countdown]);
 
@@ -229,9 +228,9 @@ const NewBooking = ({ route }) => {
         console.log("Document added to 'activeBookings' successfully.");
         navigation.navigate("ViewBookingDetails", {
           newDocumentID: newDocumentID,
+          matchedBookingID: matchedBookingID,
           providerLocation: providerLocation, // Include providerLocation in the route parameters
-        });
-
+        })
         setCountDownBookingVisible(false);
       } else {
         console.error("Provider Profile does not exists");
@@ -828,7 +827,7 @@ const NewBooking = ({ route }) => {
                 </View>
                 <View style={styles.ljkhParent}>
                   <Text style={[styles.ljkh, styles.ljkhFlexBox]}>
-                    #123456789LJKH
+                    {bookingID}
                   </Text>
                   <Pressable style={[styles.copyButton, styles.frameFlexBox3]}>
                     <Image

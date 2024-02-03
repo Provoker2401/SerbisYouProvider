@@ -202,7 +202,7 @@ const navigation = useNavigation();
                 {getButtonText(status)}
             </Text>
           </Pressable>
-          <Pressable style={styles.viewBorder} onPress={() => viewBookingDetails(item.id)}>
+          <Pressable style={styles.viewBorder} onPress={() => viewBookingDetails()}>
             <Text style={[styles.viewDetails, styles.viewDetailsTypo]}>
               View Details
             </Text>

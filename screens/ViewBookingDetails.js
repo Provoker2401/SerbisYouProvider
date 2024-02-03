@@ -27,7 +27,8 @@ import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
 const ViewBookingDetails = ({ route }) => {
   const navigation = useNavigation();
 
-  const { newDocumentID, providerLocation } = route.params;
+
+  const {newDocumentID, matchedBookingID, providerLocation, itemID } = route.params;
   const [bookingAccepted, setBookingAccepted] = useState("");
   const [bookingAssigned, setBookingAssigned] = useState("");
   const [bookingName, setBookingName] = useState("");
@@ -45,11 +46,9 @@ const ViewBookingDetails = ({ route }) => {
   const [bookingDistanceFee, setBookingDistanceFee] = useState("");
   const [bookingTotal, setBookingTotal] = useState("");
 
-  const [bookingCoordinates, setbookingCoordinates] = useState("");
-
+  // const [bookingCoordinates, setBookingCoordinates] = useState({ latitude: null, longitude: null });
+  const [bookingCoordinates, setBookingCoordinates] = useState("");
   const [phoneUser, setphoneUser] = useState("");
-
-
 
   useEffect(() => {
     async function fetchData() {
@@ -59,8 +58,53 @@ const ViewBookingDetails = ({ route }) => {
         // Get the user's UID
         const auth = getAuth();
         const providerUID = auth.currentUser.uid;
-        console.log("Provider UID: ", providerUID);
-   
+        console.log("Provider UID: " ,providerUID);
+        console.log("Item Id: ", itemID);
+
+        const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
+        const docSnapshot = await getDoc(userBookingDocRef);
+
+        if (docSnapshot.exists()) {
+          const booking = docSnapshot.data();
+          console.log("Booking Data: ", booking);
+  
+          setBookingName(booking.name);
+          setBookingDate(booking.date);
+          setBookingTime(booking.time);
+          setBookingAddress(booking.address);
+          setBookingCoordinates({
+            latitude: booking.coordinates.latitude,
+            longitude: booking.coordinates.longitude,
+          });
+          // setBookingAddressInstruction(booking.totalPrice);
+
+          console.log("Name: " ,bookingName);
+          console.log("Date: " ,bookingDate);
+          console.log("Time: " ,bookingTime);
+          console.log("Address: " ,bookingAddress);
+          console.log("Coordinates: " , bookingCoordinates);
+          // console.log("Address: " , bookingAddress);
+
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error("Error retrieving data:", error);
+      }
+    }
+  
+    fetchData(); // Call the fetchData function immediately
+  }, []); 
+
+  useEffect(() => {
+    async function fetchNewBooking() {
+      try {
+        const db = getFirestore(); // Use getFirestore() to initialize Firestore
+  
+        // Get the provider's UID 
+        const auth = getAuth();
+        const providerUID = auth.currentUser.uid;
+        console.log("Provider UID: " ,providerUID);
 
         const userBookingDocRef = doc(
           db,
@@ -97,8 +141,20 @@ const ViewBookingDetails = ({ route }) => {
           setBookingDistanceFee(booking.feeDistance);
           setBookingPaymentMethod(booking.paymentMethod);
           setBookingTotal(booking.totalPrice);
-          setbookingCoordinates(booking.coordinates);
+
+          setBookingCoordinates({
+            latitude: booking.coordinates.latitude,
+            longitude: booking.coordinates.longitude,
+          });
           setphoneUser(booking.phone);
+
+          console.log("Date: " ,bookingDate);
+          console.log("Time: " ,bookingTime);
+          console.log("Address: " ,bookingAddress);
+          console.log("Materials: " ,bookingMaterials);
+          console.log("Category: " ,bookingCategory);
+          console.log("Services: " ,bookingServices);
+          console.log("Total Price: " ,bookingTotal);
 
           console.log("Date: ", bookingDate);
           console.log("Time: ", bookingTime);
@@ -111,14 +167,100 @@ const ViewBookingDetails = ({ route }) => {
         } else {
           console.log("No such document!");
         }
-       
       } catch (error) {
         console.error("Error retrieving data:", error);
       }
     }
 
-    fetchData(); // Call the fetchData function immediately
-  }, []); // Add userID as a dependency
+    async function fetchActiveBookings() {
+      try {
+        const db = getFirestore(); // Use getFirestore() to initialize Firestore
+  
+        // Get the user's UID 
+        const auth = getAuth();
+        const providerUID = auth.currentUser.uid;
+        console.log("Provider UID: " ,providerUID);
+        console.log("Item Id: ", itemID);
+
+        const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
+        const docSnapshot = await getDoc(userBookingDocRef);
+
+        if (docSnapshot.exists()) {
+          const booking = docSnapshot.data();
+          const materials = booking.materials;
+          console.log("Fetching data for booking:", booking);
+          console.log("Services: " , booking.service);
+          const servicesData = booking.service.map((doc) => doc);
+          console.log("Data Services: " ,servicesData);
+          if(materials == "useProviderMaterials"){
+            setBookingMaterials("Supplied by Provider");
+          }else{
+            setBookingMaterials("Customer-Provided");
+          }
+          setBookingName(booking.name);
+          setBookingEmail(booking.email);
+          setBookingRadius(booking.distanceRadius);
+          setBookingDate(booking.date);
+          setBookingTime(booking.time);
+          setBookingAddress(booking.address);
+          setBookingProperty(booking.propertyType);
+          setBookingCategory(booking.category);
+          setBookingServices(booking.service);
+          setBookingSubtotal(booking.subTotal);
+          setBookingDistanceFee(booking.feeDistance);
+          setBookingPaymentMethod(booking.paymentMethod);
+          setBookingTotal(booking.totalPrice);
+          setBookingCoordinates({
+            latitude: booking.coordinates.latitude,
+            longitude: booking.coordinates.longitude,
+          });
+          setphoneUser(booking.phone);
+
+          console.log("Date: " ,bookingDate);
+          console.log("Time: " ,bookingTime);
+          console.log("Address: " ,bookingAddress);
+          console.log("Materials: " ,bookingMaterials);
+          console.log("Category: " ,bookingCategory);
+          console.log("Services: " ,bookingServices);
+          console.log("Total Price: " ,bookingTotal);
+          // console.log("Address: " , bookingAddress);
+
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error("Error retrieving data:", error);
+      }
+    }
+  
+    if(matchedBookingID && providerLocation){
+      fetchNewBooking();
+    }else if(itemID){
+      fetchActiveBookings();
+    }
+  }, [matchedBookingID, providerLocation, itemID]); // Add userID as a dependency
+
+  const handleGetDirections = () => {
+    const customerLocation = bookingCoordinates;
+
+    const data = {
+      source: providerLocation,
+      destination: customerLocation,
+      params: [
+        {
+          key: "travelmode",
+          value: "driving", // could be "walking", "bicycling" or "transit" as well
+        },
+        {
+          key: "dir_action",
+          value: "navigate", // this launches navigation directly
+        },
+      ],
+    };
+
+    const url = `https://www.google.com/maps/dir/?api=1&origin=${data.source.latitude},${data.source.longitude}&destination=${data.destination.latitude},${data.destination.longitude}&travelmode=${data.params[0].value}`;
+    Linking.openURL(url);
+  };
 
   const handleGetDirections = () => {
     const customerLocation = bookingCoordinates;
@@ -172,9 +314,7 @@ const ViewBookingDetails = ({ route }) => {
           >
             <Pressable
               style={[styles.backBtn, styles.btnLayout]}
-              onPress={() =>
-                navigation.navigate("BottomTabsRoot", { screen: "Homepage" })
-              }
+              onPress={() => navigation.navigate("BottomTabsRoot", { screen: "Homepage" })}
             >
               <Image
                 style={styles.uiIconarrowBackwardfilled}
@@ -557,7 +697,7 @@ const ViewBookingDetails = ({ route }) => {
                       <View style={styles.frameInner3}>
                         <View style={styles.paidViapaymentMethodWrapper}>
                           <Text style={[styles.date, styles.dateClr]}>
-                            Paid via/Payment Method
+                            Payment Method
                           </Text>
                         </View>
                       </View>
@@ -572,7 +712,7 @@ const ViewBookingDetails = ({ route }) => {
                   </View>
                 </View>
               </View>
-              <View style={styles.customerAdditionalInstructioParent}>
+              <View style={styles.dateAndTimeFrameWrapper}>
                 <Text
                   style={[
                     styles.customerAdditionalInstructio,
