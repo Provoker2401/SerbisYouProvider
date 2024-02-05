@@ -140,14 +140,25 @@ const Homepage = ({ route }) => {
         const unsubscribeTotalService = onSnapshot(
           totalServiceCollectionRef,
           (querySnapshot) => {
-            const numberOfHistory = querySnapshot.size;
-            setTotalHistory(numberOfHistory);
+
+               const filteredCompleted = querySnapshot.docs.filter(
+              (doc) => {
+                const status = doc.data().status;
+                return status === "Completed";
+              }
+            );
+
+            const numberofCompleted = filteredCompleted.length;
+
+           
+            setTotalHistory(numberofCompleted);
           }
         );
 
         return () => {
           unsubscribeWallet(); // Cleanup function to unsubscribe from wallet updates
           unsubscribeUpcomingServices(); // Cleanup function to unsubscribe from upcomingServices updates
+          unsubscribeTotalService();
         };
       } catch (error) {
         console.error("Error fetching wallet data:", error);
