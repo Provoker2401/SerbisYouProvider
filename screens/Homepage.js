@@ -22,6 +22,7 @@ import {
   setDoc,
   where,
   query,
+  onSnapshot,
 } from "firebase/firestore"; // Updated imports
 import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
 // import { navigate } from "@react-navigation/routers/lib/typescript/src/CommonActions";
@@ -33,66 +34,138 @@ const Homepage = ({ route }) => {
 
   const [loading, setLoading] = useState(true);
 
-  const [bookingAccepted, setBookingAccepted] = useState(route.params?.bookingAccepted);
-  const [bookingAssigned, setBookingAssigned] = useState(route.params?.bookingAssigned);
+  const [bookingAccepted, setBookingAccepted] = useState(
+    route.params?.bookingAccepted
+  );
+  const [bookingAssigned, setBookingAssigned] = useState(
+    route.params?.bookingAssigned
+  );
   const [providerName, setProviderName] = useState("");
-  
+
   const [isAcceptOrdersEnabled, setIsAcceptOrdersEnabled] = useState(false);
 
   const toggleAcceptOrdersSwitch = () => {
     setIsAcceptOrdersEnabled((previousState) => !previousState);
   };
 
-  // useEffect(async () => {
-  //   const db = getFirestore();
-  //   const auth = getAuth();
-  //   // const user = auth.currentUser.uid;
+  const [wallet, setWallet] = useState("");
 
-  //   try {
-  //     const serviceBookingsCollection = collection(db, "serviceBookings");
-  //     // const serviceBookingsDocRef = doc(
-  //     //   serviceBookingsCollection,
-  //     //   currentUser.uid
-  //     // );
-  //     const bookingDocSnapshot = await getDoc(serviceBookingsDocRef);
+  const [numberOfUpcomingServices, setNumberOfUpcomingServices] = useState();
 
-  //     // if (serviceBookingsCollection.exists()) {
-  //     //   // const userData = userDocSnapshot.data();
-  //     //   // const { name } = userData;
-  //     //   // console.log("User UID:", currentUser.uid);
-  //     //   console.log("A booking exists")
-  //     // } else {
-  //     //   console.log("No user data found for the given UID.");
-  //     //   // setLoading(false);
-  //     // }
-  //     getDocs(serviceBookingsCollection)
-  //       .then((querySnapshot) => {
-  //         if (!querySnapshot.empty) {
-  //           console.log(
-  //             "At least one document exists in the 'userProfiles' collection."
-  //           );
-  //         } else {
-  //           console.log("The 'userProfiles' collection is empty.");
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error checking collection:", error);
-  //       });
-  //   } catch (error) {
-  //     console.error("Error retrieving user data:", error);
-  //     // setLoading(false);
-  //   }
-  // }, []); // Use
+  const [totalHistory, setTotalHistory] = useState();
+
+  const [todayBookings, setTodayBookings] = useState();
+
+  useEffect(() => {
+    const fetchWalletAndCount = async () => {
+      try {
+        const db = getFirestore();
+        const auth = getAuth();
+        const providerUID = auth.currentUser.uid;
+
+        const userWalletCollectionRef = collection(
+          db,
+          "providerProfiles",
+          providerUID,
+          "userWallet"
+        );
+
+        const upcomingServicesCollectionRef = collection(
+          db,
+          "providerProfiles",
+          providerUID,
+          "activeBookings"
+        );
+
+        const totalServiceCollectionRef = collection(
+          db,
+          "providerProfiles",
+          providerUID,
+          "historyBookings"
+        );
+
+        const unsubscribeWallet = onSnapshot(
+          userWalletCollectionRef,
+          (querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              const walletData = doc.data();
+
+              const wallet = walletData.wallet;
+
+              setWallet(wallet);
+            });
+          }
+        );
+
+        const unsubscribeUpcomingServices = onSnapshot(
+          upcomingServicesCollectionRef,
+          (querySnapshot) => {
+            // Get the total number of documents
+            const totalDocuments = querySnapshot.size;
+            console.log(
+              "Total number of documents inside upcomingServicesCollectionRef:",
+              totalDocuments
+            );
+
+            // Filter documents with status Upcoming
+            const filteredDocumentsUpcoming = querySnapshot.docs.filter(
+              (doc) => {
+                const status = doc.data().status;
+                return status === "Upcoming";
+              }
+            );
+
+            const numberOfUpcoming = filteredDocumentsUpcoming.length;
+
+            setNumberOfUpcomingServices(numberOfUpcoming);
+
+            // Filter documents with status "In Transit" or "In Progress"
+            const filteredDocuments = querySnapshot.docs.filter((doc) => {
+              const status = doc.data().status;
+              return status === "In Transit" || status === "In Progress";
+            });
+
+            // Get the count of filtered documents
+            const numberOfFilteredDocuments = filteredDocuments.length;
+            console.log(
+              "Number of documents with status 'In Transit' or 'In Progress':",
+              numberOfFilteredDocuments
+            );
+
+            // Set the count to a state variable
+            setTodayBookings(numberOfFilteredDocuments);
+          }
+        );
+
+        const unsubscribeTotalService = onSnapshot(
+          totalServiceCollectionRef,
+          (querySnapshot) => {
+            const numberOfHistory = querySnapshot.size;
+            setTotalHistory(numberOfHistory);
+          }
+        );
+
+        return () => {
+          unsubscribeWallet(); // Cleanup function to unsubscribe from wallet updates
+          unsubscribeUpcomingServices(); // Cleanup function to unsubscribe from upcomingServices updates
+        };
+      } catch (error) {
+        console.error("Error fetching wallet data:", error);
+      }
+    };
+
+    fetchWalletAndCount(); // Call the fetchWalletAndCount function
+  }, []);
 
   useEffect(() => {
     async function fetchName() {
       try {
-          const db = getFirestore();
-          const auth = getAuth();
-          const userUID = auth.currentUser.uid;
-          const providerProfilesCollection = doc(db, "providerProfiles", userUID);
-          
-          getDoc(providerProfilesCollection)
+        const db = getFirestore();
+        const auth = getAuth();
+        const userUID = auth.currentUser.uid;
+        const providerProfilesCollection = doc(db, "providerProfiles", userUID);
+
+        getDoc(providerProfilesCollection)
           .then(async (docSnapshot) => {
             if (docSnapshot.exists()) {
               const providerData = docSnapshot.data();
@@ -115,38 +188,49 @@ const Homepage = ({ route }) => {
         console.error("Error retrieving data:", error);
       }
     }
-  
-    fetchName(); 
-  }, []); 
+
+    fetchName();
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        if (isAcceptOrdersEnabled && !bookingAccepted ) { // Check if the switch is turned on
+        if (isAcceptOrdersEnabled && !bookingAccepted) {
+          // Check if the switch is turned on
           const db = getFirestore();
           const auth = getAuth();
           const user = auth.currentUser;
           const userUID = auth.currentUser.uid;
 
           const serviceBookingsCollection = collection(db, "serviceBookings");
-          const providerProfilesCollection = doc(db, "providerProfiles", userUID);
-          
+          const providerProfilesCollection = doc(
+            db,
+            "providerProfiles",
+            userUID
+          );
+
           getDoc(providerProfilesCollection)
-          .then(async (docSnapshot) => {
-            if (docSnapshot.exists()) {
-              const providerData = docSnapshot.data();
-              const coordinates = providerData.coordinates;
-    
-              console.log("Provider data: ", providerData);
-              console.log("Provider Coordinates: ", coordinates);
-              console.log("Provider Coordinates Latitude: ", coordinates.latitude);
-              console.log("Provider Coordinates Latitude: ", coordinates.longitude);
-              if(providerData.bookingMatched == true) {
-                  if(providerData.bookingID != null) {
+            .then(async (docSnapshot) => {
+              if (docSnapshot.exists()) {
+                const providerData = docSnapshot.data();
+                const coordinates = providerData.coordinates;
+
+                console.log("Provider data: ", providerData);
+                console.log("Provider Coordinates: ", coordinates);
+                console.log(
+                  "Provider Coordinates Latitude: ",
+                  coordinates.latitude
+                );
+                console.log(
+                  "Provider Coordinates Latitude: ",
+                  coordinates.longitude
+                );
+                if (providerData.bookingMatched == true) {
+                  if (providerData.bookingID != null) {
                     const q = query(serviceBookingsCollection);
 
                     const querySnapshot = await getDocs(q);
-                    
+
                     if (!querySnapshot.empty) {
                       // doc.data() is never undefined for query doc snapshots
                       // console.log(doc.id, " => ", doc.data());
@@ -154,19 +238,22 @@ const Homepage = ({ route }) => {
                         // Access data of the document using .data()
                         const bookingData = doc.data();
                         const id = doc.id;
-            
+
                         // Access specific fields like "name"
                         const name = bookingData.name;
                         const accepted = bookingData.bookingAccepted;
                         const assigned = bookingData.bookingAssigned;
                         console.log("Booking Data: ", bookingData);
-                        console.log("user Booking ID: ", providerData.bookingID);
+                        console.log(
+                          "user Booking ID: ",
+                          providerData.bookingID
+                        );
                         console.log("ID: ", id);
 
                         const latitude = parseFloat(coordinates.latitude);
                         const longitude = parseFloat(coordinates.longitude);
 
-                        if(id == providerData.bookingID){
+                        if (id == providerData.bookingID) {
                           console.log("ID: ", id);
                           console.log("Name: ", name);
                           navigation.navigate("NewBooking", {
@@ -179,7 +266,7 @@ const Homepage = ({ route }) => {
                               longitude: longitude,
                             },
                           });
-                        }          
+                        }
                         // if(!assigned){
                         //   console.log("ID: ", id);
                         //   console.log("Name: ", name);
@@ -187,44 +274,40 @@ const Homepage = ({ route }) => {
                         //     name: name,
                         //     userID: id,
                         //   });
-                          
-                        // }          
-                      });
 
+                        // }
+                      });
                     } else {
                       console.log("The 'serviceBookings' collection is empty.");
                     }
                   } else {
                     console.log("No booking ID found!");
                   }
+                } else {
+                  console.log("No booking matched!");
+                }
               } else {
-                console.log("No booking matched!");
+                console.log("No such document!");
               }
-
-            } else {
-              console.log("No such document!");
-            }
-          })
-          .catch((error) => {
-            console.error("Error getting document:", error);
-          })
-          .finally(() => {
-            // Set loading to false when data fetching is complete
-            setLoading(false);
-          });
-
-          
-        }else{
+            })
+            .catch((error) => {
+              console.error("Error getting document:", error);
+            })
+            .finally(() => {
+              // Set loading to false when data fetching is complete
+              setLoading(false);
+            });
+        } else {
           console.log("The 'bookingAssigned' collection is empty.");
         }
       } catch (error) {
         console.error("Error retrieving data:", error);
       }
     }
-  
+
     fetchData(); // Call the fetchData function immediately
   }, [isAcceptOrdersEnabled]); // Add isAcceptOrdersEnabled as a dependency
-  
+
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
@@ -292,7 +375,7 @@ const Homepage = ({ route }) => {
           <View style={styles.serbisyouWrapper}>
             <View style={[styles.totalEarning, styles.totalBorder]}>
               <View>
-                <Text style={styles.text}>₱9259</Text>
+                <Text style={styles.text}>₱{wallet}</Text>
                 <Text style={styles.totalEarning2Typo}>Total Earning</Text>
               </View>
               <Image
@@ -303,8 +386,8 @@ const Homepage = ({ route }) => {
             </View>
             <View style={[styles.totalService, styles.totalBorder]}>
               <View>
-                <Text style={styles.text}>158</Text>
-                <Text style={styles.totalEarning2Typo}>Total Service</Text>
+                <Text style={styles.text}>{totalHistory}</Text>
+                <Text style={styles.totalEarning2Typo}>Total Services</Text>
               </View>
               <Image
                 style={[styles.icon1, styles.iconLayout1]}
@@ -316,7 +399,7 @@ const Homepage = ({ route }) => {
           <View style={[styles.view2, styles.view2SpaceBlock]}>
             <View style={styles.totalBorder}>
               <View>
-                <Text style={styles.text}>15</Text>
+                <Text style={styles.text}>{numberOfUpcomingServices}</Text>
                 <Text
                   style={[styles.upcomingServices, styles.totalEarning2Typo]}
                 >
@@ -331,7 +414,7 @@ const Homepage = ({ route }) => {
             </View>
             <View style={[styles.totalService, styles.totalBorder]}>
               <View>
-                <Text style={styles.text}>05</Text>
+                <Text style={styles.text}>{todayBookings}</Text>
                 <Text style={styles.totalEarning2Typo}>{`Today’s
 Service`}</Text>
               </View>
