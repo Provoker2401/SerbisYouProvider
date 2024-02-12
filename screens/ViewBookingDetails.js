@@ -262,8 +262,6 @@ const ViewBookingDetails = ({ route }) => {
     Linking.openURL(url);
   };
 
-
-
   return (
     <View style={[styles.viewBookingDetails, styles.frameItemLayout]}>
       <StatusBar barStyle="default" />
