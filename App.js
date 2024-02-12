@@ -15,7 +15,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { enableLatestRenderer } from "react-native-maps";
-
+import Toast from "react-native-toast-message";
 import { initializeApp } from "firebase/app";
 import { initializeAuth, getReactNativePersistence } from "firebase/auth";
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
@@ -1033,6 +1033,7 @@ const App = () => {
             <Splash />
           )}
         </NavigationContainer>
+        <Toast ref={(ref) => Toast.setRef(ref)} />
       </ApplicationProvider>
     </>
   );
