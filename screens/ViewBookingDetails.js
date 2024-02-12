@@ -262,27 +262,7 @@ const ViewBookingDetails = ({ route }) => {
     Linking.openURL(url);
   };
 
-  const handleGetDirections = () => {
-    const customerLocation = bookingCoordinates;
 
-    const data = {
-      source: providerLocation,
-      destination: customerLocation,
-      params: [
-        {
-          key: "travelmode",
-          value: "driving", // could be "walking", "bicycling" or "transit" as well
-        },
-        {
-          key: "dir_action",
-          value: "navigate", // this launches navigation directly
-        },
-      ],
-    };
-
-    const url = `https://www.google.com/maps/dir/?api=1&origin=${data.source.latitude},${data.source.longitude}&destination=${data.destination.latitude},${data.destination.longitude}&travelmode=${data.params[0].value}`;
-    Linking.openURL(url);
-  };
 
   return (
     <View style={[styles.viewBookingDetails, styles.frameItemLayout]}>
