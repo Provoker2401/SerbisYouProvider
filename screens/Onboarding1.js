@@ -99,7 +99,7 @@ const Onboarding1 = () => {
                 style={styles.nextBtn}
                 onPress={() =>
                   // navigation.navigate("BottomTabsRoot", { screen: "Homepage" })
-                  navigation.navigate("SignUp")
+                  navigation.navigate("Authentication")
                 }
               >
                 <Image
