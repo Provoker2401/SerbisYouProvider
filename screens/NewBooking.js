@@ -50,7 +50,7 @@ const NewBooking = ({ route }) => {
   const mapRef = useRef(null);
 
   const [isInputFocused, setIsInputFocused] = useState(false);
-  const { name, userBookingID, bookingIndex, providerCoordinates } =
+  const { name, userBookingID, matchedBookingID, bookingIndex, providerCoordinates } =
     route.params;
   const [bookingAccepted, setBookingAccepted] = useState(false);
   const [bookingAssigned, setBookingAssigned] = useState(false);
@@ -62,6 +62,8 @@ const NewBooking = ({ route }) => {
   const [bookingPhone, setBookingPhone] = useState("");
   const [bookingPropertyType, setBookingPropertyTime] = useState("");
   const [bookingAddress, setBookingAddress] = useState("");
+  const [bookingAddressDetails, setBookingAddressDetails] = useState({});
+  const [bookingCustomerUID, setBookingCustomerUID] = useState("");
   const [bookingMaterials, setBookingMaterials] = useState("");
   const [bookingCategory, setBookingCategory] = useState("");
   const [bookingCity, setBookingCity] = useState("");
@@ -112,7 +114,9 @@ const NewBooking = ({ route }) => {
     if (countdown === 15) {
       setCountDownBookingVisible(true);
     } else if (countdown === 0) {
-      declineBooking();
+      // declineBooking();
+      setCountDownBookingVisible(false);
+
     }
   }, [countdown]);
 
@@ -198,6 +202,8 @@ const NewBooking = ({ route }) => {
         console.log("Provider Status is now occupied");
         const docRef = await addDoc(activeBookings, {
           address: bookingAddress,
+          addressDetails: bookingAddressDetails,
+          customerUID: bookingCustomerUID,
           bookingAccepted: bookingAccepted,
           bookingAssigned: bookingAssigned,
           bookingID: bookingID,
@@ -232,6 +238,7 @@ const NewBooking = ({ route }) => {
           providerLocation: providerLocation, // Include providerLocation in the route parameters
         })
         setCountDownBookingVisible(false);
+        
       } else {
         console.error("Provider Profile does not exists");
       }
@@ -301,6 +308,9 @@ const NewBooking = ({ route }) => {
           bookingMatched: false,
           blackListed: arrayUnion(bookingID),
         });
+
+        setCountDownBookingVisible(false);
+
 
         navigation.navigate("BottomTabsRoot", {
           screen: "Homepage",
@@ -601,6 +611,8 @@ const NewBooking = ({ route }) => {
               setBookingTime(matchingBooking.time);
               setBookingTitle(matchingBooking.title);
               setBookingAddress(matchingBooking.address);
+              setBookingAddressDetails(matchingBooking.addressDetails);
+              setBookingCustomerUID(matchingBooking.customerUID);
               setBookingMaterials(matchingBooking.materials);
               setBookingCategory(matchingBooking.category);
               setBookingServices(matchingBooking.service);

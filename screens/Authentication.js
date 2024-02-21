@@ -49,17 +49,14 @@ try {
 }
 
 const Authentication = ({ route }) => {
-  // const { name, email, phone, password } = route.params;
+  const { name, email, phone, password } = route.params;
   const navigation = useNavigation();
 
   const [confirmInProgress, setConfirmInProgress] = useState(false);
 
   const [timer, setTimer] = useState(60);
 
-  // console.log("Name:", name);
-  // console.log("Email:", email);
-  // console.log("Phone:", phone);
-  // console.log("Password:", password);
+
 
   const [timerIntervalId, setTimerIntervalId] = useState(null);
 

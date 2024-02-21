@@ -216,8 +216,8 @@ const ConfirmService = ({route}) => {
         transaction.update(providerDocRef, {
           bookingID: '',
           bookingIndex: '',
-          bookingMatched: '',
-          availability: false,
+          bookingMatched: false,
+          availability: "available",
         });
         console.log("Provider booking completed and moved to historyBookings");
       });
