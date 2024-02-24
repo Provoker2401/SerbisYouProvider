@@ -22,6 +22,7 @@ import {
   setDoc,
   where,
   query,
+  updateDoc,
   onSnapshot,
 } from "firebase/firestore"; // Updated imports
 import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
@@ -192,121 +193,167 @@ const Homepage = ({ route }) => {
     fetchName();
   }, []);
 
+  // make a listener for the switch to update in firebase
   useEffect(() => {
-    async function fetchData() {
+    const toggleAvailability = async () => {
+      const db = getFirestore();
+      const auth = getAuth();
+      const providerUID = auth.currentUser.uid;
+
+      const providerDocRef = doc(db, "providerProfiles", providerUID);
+
+      const providerSnapshot = await getDoc(providerDocRef);
+
       try {
-        if (isAcceptOrdersEnabled && !bookingAccepted) {
-          // Check if the switch is turned on
-          const db = getFirestore();
-          const auth = getAuth();
-          const user = auth.currentUser;
-          const userUID = auth.currentUser.uid;
+        if (providerSnapshot.exists()) {
+          const providerAvailable = providerSnapshot.data().availability;
 
-          const serviceBookingsCollection = collection(db, "serviceBookings");
-          const providerProfilesCollection = doc(
-            db,
-            "providerProfiles",
-            userUID
-          );
 
-          getDoc(providerProfilesCollection)
-            .then(async (docSnapshot) => {
-              if (docSnapshot.exists()) {
-                const providerData = docSnapshot.data();
-                const coordinates = providerData.coordinates;
-
-                console.log("Provider data: ", providerData);
-                console.log("Provider Coordinates: ", coordinates);
-                console.log(
-                  "Provider Coordinates Latitude: ",
-                  coordinates.latitude
-                );
-                console.log(
-                  "Provider Coordinates Latitude: ",
-                  coordinates.longitude
-                );
-                if (providerData.bookingMatched == true) {
-                  if (providerData.bookingID != null) {
-                    const q = query(serviceBookingsCollection);
-
-                    const querySnapshot = await getDocs(q);
-
-                    if (!querySnapshot.empty) {
-                      // doc.data() is never undefined for query doc snapshots
-                      // console.log(doc.id, " => ", doc.data());
-                      querySnapshot.forEach((doc) => {
-                        // Access data of the document using .data()
-                        const bookingData = doc.data();
-                        const id = doc.id;
-
-                        // Access specific fields like "name"
-                        const name = bookingData.name;
-                        const accepted = bookingData.bookingAccepted;
-                        const assigned = bookingData.bookingAssigned;
-                        console.log("Booking Data: ", bookingData);
-                        console.log(
-                          "user Booking ID: ",
-                          providerData.bookingID
-                        );
-                        console.log("ID: ", id);
-
-                        const latitude = parseFloat(coordinates.latitude);
-                        const longitude = parseFloat(coordinates.longitude);
-
-                        if (id == providerData.bookingID) {
-                          console.log("ID: ", id);
-                          console.log("Name: ", name);
-                          navigation.navigate("NewBooking", {
-                            name: name,
-                            userBookingID: id,
-                            matchedBookingID: providerData.bookingID,
-                            bookingIndex: providerData.bookingIndex,
-                            providerCoordinates: {
-                              latitude: latitude,
-                              longitude: longitude,
-                            },
-                          });
-                        }
-                        // if(!assigned){
-                        //   console.log("ID: ", id);
-                        //   console.log("Name: ", name);
-                        //   navigation.navigate("NewBooking", {
-                        //     name: name,
-                        //     userID: id,
-                        //   });
-
-                        // }
-                      });
-                    } else {
-                      console.log("The 'serviceBookings' collection is empty.");
-                    }
-                  } else {
-                    console.log("No booking ID found!");
-                  }
-                } else {
-                  console.log("No booking matched!");
-                }
-              } else {
-                console.log("No such document!");
-              }
-            })
-            .catch((error) => {
-              console.error("Error getting document:", error);
-            })
-            .finally(() => {
-              // Set loading to false when data fetching is complete
-              setLoading(false);
+          if (isAcceptOrdersEnabled) {
+            // Update the availability field in Firestore
+            await updateDoc(providerDocRef, {
+              availability: "available",
             });
+          } else {
+            await updateDoc(providerDocRef, {
+              availability: "unavailable",
+            });
+          }
         } else {
-          console.log("The 'bookingAssigned' collection is empty.");
+          console.log("Provider Snapshot doesnt exist");
         }
       } catch (error) {
-        console.error("Error retrieving data:", error);
+        console.log("Toggle availability error", error);
       }
+    };
+
+    toggleAvailability(); // call toogle availability
+  }, [isAcceptOrdersEnabled]);
+
+  useEffect(() => {
+
+    let unsubscribe;
+
+    async function fetchData() {
+      const db = getFirestore();
+      const auth = getAuth();
+      const user = auth.currentUser;
+      const userUID = auth.currentUser.uid;
+
+      const providerDocRef = doc(db, "providerProfiles", userUID);
+
+       unsubscribe = onSnapshot(providerDocRef, (docSnapshot) => {
+        if (docSnapshot.exists) {
+          const data = docSnapshot.data();
+          const providerStatus = data.availability;
+          const providerbookingAccepted = data.bookingMatched;
+
+          if (providerStatus === "available" && providerbookingAccepted) {
+            // Check if the switch is turned on
+
+            const serviceBookingsCollection = collection(db, "serviceBookings");
+            const providerProfilesCollection = doc(
+              db,
+              "providerProfiles",
+              userUID
+            );
+
+            getDoc(providerProfilesCollection)
+              .then(async (docSnapshot) => {
+                if (docSnapshot.exists()) {
+                  const providerData = docSnapshot.data();
+                  const coordinates = providerData.coordinates;
+
+                  console.log("Provider data: ", providerData);
+                  console.log("Provider Coordinates: ", coordinates);
+                  console.log(
+                    "Provider Coordinates Latitude: ",
+                    coordinates.latitude
+                  );
+                  console.log(
+                    "Provider Coordinates Latitude: ",
+                    coordinates.longitude
+                  );
+                  if (providerData.bookingMatched == true) {
+                    if (providerData.bookingID != null) {
+                      const q = query(serviceBookingsCollection);
+
+                      const querySnapshot = await getDocs(q);
+
+                      if (!querySnapshot.empty) {
+                        // doc.data() is never undefined for query doc snapshots
+                        // console.log(doc.id, " => ", doc.data());
+                        querySnapshot.forEach((doc) => {
+                          // Access data of the document using .data()
+                          const bookingData = doc.data();
+                          const id = doc.id;
+
+                          // Access specific fields like "name"
+                          const name = bookingData.name;
+                          const accepted = bookingData.bookingAccepted;
+                          const assigned = bookingData.bookingAssigned;
+                          console.log("Booking Data: ", bookingData);
+                          console.log(
+                            "user Booking ID: ",
+                            providerData.bookingID
+                          );
+                          console.log("ID: ", id);
+
+                          const latitude = parseFloat(coordinates.latitude);
+                          const longitude = parseFloat(coordinates.longitude);
+
+                          if (id == providerData.bookingID) {
+                            console.log("ID: ", id);
+                            console.log("Name: ", name);
+                            navigation.navigate("NewBooking", {
+                              name: name,
+                              userBookingID: id,
+                              matchedBookingID: providerData.bookingID,
+                              bookingIndex: providerData.bookingIndex,
+                              providerCoordinates: {
+                                latitude: latitude,
+                                longitude: longitude,
+                              },
+                            });
+                          }
+                        });
+                      } else {
+                        console.log(
+                          "The 'serviceBookings' collection is empty."
+                        );
+                      }
+                    } else {
+                      console.log("No booking ID found!");
+                    }
+                  } else {
+                    console.log("No booking matched!");
+                  }
+                } else {
+                  console.log("No such document!");
+                }
+              })
+              .catch((error) => {
+                console.error("Error getting document:", error);
+              })
+              .finally(() => {
+                // Set loading to false when data fetching is complete
+                setLoading(false);
+              });
+          }
+
+          // check if available is
+        }
+      });
+
     }
 
     fetchData(); // Call the fetchData function immediately
-  }, [isAcceptOrdersEnabled]); // Add isAcceptOrdersEnabled as a dependency
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, []); 
 
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
