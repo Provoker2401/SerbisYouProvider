@@ -44,14 +44,21 @@ import { toggleAnimation } from "../animations/toggleAnimation";
 import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
 import CancelBookingPrompt from "../components/CancelBookingPrompt";
 import CountDownBooking from "../components/CountDownBooking";
+import BookingNotFound from "../components/BookingNotFound";
+
 
 const NewBooking = ({ route }) => {
   const navigation = useNavigation();
   const mapRef = useRef(null);
 
   const [isInputFocused, setIsInputFocused] = useState(false);
-  const { name, userBookingID, matchedBookingID, bookingIndex, providerCoordinates } =
-    route.params;
+  const {
+    name,
+    userBookingID,
+    matchedBookingID,
+    bookingIndex,
+    providerCoordinates,
+  } = route.params;
   const [bookingAccepted, setBookingAccepted] = useState(false);
   const [bookingAssigned, setBookingAssigned] = useState(false);
   const [bookingID, setBookingID] = useState("");
@@ -98,6 +105,8 @@ const NewBooking = ({ route }) => {
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
 
   const [CountDownBookingVisible, setCountDownBookingVisible] = useState(false);
+  const [BookingNotFoundVisible, setBookingNotFoundVisible] = useState(false);
+
   const [countdown, setCountdown] = useState(60); // Initial countdown value in seconds
   const intervalRef = useRef(null);
 
@@ -114,9 +123,8 @@ const NewBooking = ({ route }) => {
     if (countdown === 15) {
       setCountDownBookingVisible(true);
     } else if (countdown === 0) {
-      // declineBooking();
+      declineBooking();
       setCountDownBookingVisible(false);
-
     }
   }, [countdown]);
 
@@ -154,97 +162,115 @@ const NewBooking = ({ route }) => {
   };
 
   const acceptBooking = async () => {
-    try {
-      // Create a reference to the Firestore database using your app instance
-      const db = getFirestore();
-      // Get the user's UID
-      const auth = getAuth();
-      const providerUID = auth.currentUser.uid;
+    // Create a reference to the Firestore database using your app instance
+    const db = getFirestore();
+    // Get the user's UID
+    const auth = getAuth();
+    const providerUID = auth.currentUser.uid;
 
-      // Create references to the user's document and the appForm2 subcollection
-      const providerDocRef = doc(db, "providerProfiles", providerUID);
+    // Create references to the user's document and the appForm2 subcollection
+    const providerDocRef = doc(db, "providerProfiles", providerUID);
 
-      // Get the document snapshot
-      const providerSnapshot = await getDoc(providerDocRef);
-      const activeBookings = collection(providerDocRef, "activeBookings");
+    // Get the document snapshot
+    const providerSnapshot = await getDoc(providerDocRef);
 
-      const serviceBookingsCollection = collection(db, "serviceBookings");
+    const providerBookingID = providerSnapshot.data().bookingID;
 
-      // Get the service booking document using userBookingID
-      const serviceBookingDocRef = doc(
-        serviceBookingsCollection,
-        userBookingID
-      );
 
-      // Get the document snapshot
-      const serviceBookingSnapshot = await getDoc(serviceBookingDocRef);
+    // console.log("ProviderBookingID is:", providerBookingID);
 
-      if (serviceBookingSnapshot.exists()) {
-        // Update the acceptedBy field within the service booking document
-        const updatedBookings = [...serviceBookingSnapshot.data().bookings];
-        updatedBookings[bookingIndex].acceptedBy = providerUID;
-        updatedBookings[bookingIndex].bookingAccepted = true;
+    if (providerBookingID) {
+      console.log("BookingID is not blank");
+      try {
+        const activeBookings = collection(providerDocRef, "activeBookings");
 
-        // Update the service booking document
-        await updateDoc(serviceBookingDocRef, {
-          bookings: updatedBookings,
-        });
-        console.log("acceptedBy field updated in serviceBookings document.");
-      } else {
-        console.error("Service Booking document does not exist");
+        const serviceBookingsCollection = collection(db, "serviceBookings");
+
+        // Get the service booking document using userBookingID
+        const serviceBookingDocRef = doc(
+          serviceBookingsCollection,
+          userBookingID
+        );
+
+        // Get the document snapshot
+        const serviceBookingSnapshot = await getDoc(serviceBookingDocRef);
+
+        // check again the bookingID if empty or not // if empty console.log its empty
+        if (providerSnapshot.exists()) {
+        }
+
+        if (serviceBookingSnapshot.exists()) {
+          // Update the acceptedBy field within the service booking document
+          const updatedBookings = [...serviceBookingSnapshot.data().bookings];
+          updatedBookings[bookingIndex].acceptedBy = providerUID;
+          updatedBookings[bookingIndex].bookingAccepted = true;
+
+          // Update the service booking document
+          await updateDoc(serviceBookingDocRef, {
+            bookings: updatedBookings,
+          });
+          console.log("acceptedBy field updated in serviceBookings document.");
+        } else {
+          console.error("Service Booking document does not exist");
+        }
+
+        if (providerSnapshot.exists()) {
+          // Update the availability field within the provider document
+          await updateDoc(providerDocRef, {
+            availability: "busy",
+          });
+          console.log("Provider Status is now occupied");
+          const docRef = await addDoc(activeBookings, {
+            address: bookingAddress,
+            addressDetails: bookingAddressDetails,
+            customerUID: bookingCustomerUID,
+            bookingAccepted: bookingAccepted,
+            bookingAssigned: bookingAssigned,
+            bookingID: bookingID,
+            category: bookingCategory,
+            city: bookingCity,
+            coordinates: {
+              latitude: coordinates.latitude,
+              longitude: coordinates.longitude,
+            },
+            date: bookingDate,
+            distanceRadius: bookingDistanceRadius,
+            email: bookingEmail,
+            feeDistance: bookingFeeDistance,
+            materials: bookingMaterials,
+            name: bookingName,
+            paymentMethod: bookingPaymentMethod,
+            phone: bookingPhone,
+            propertyType: bookingPropertyType,
+            service: bookingServices,
+            subTotal: bookingSubTotal,
+            time: bookingTime,
+            title: bookingTitle,
+            totalPrice: bookingTotal,
+            status: "Upcoming",
+          });
+          // Get the unique ID of the newly added document
+          const newDocumentID = docRef.id;
+          console.log("Document added to 'activeBookings' successfully.");
+          navigation.navigate("ViewBookingDetails", {
+            newDocumentID: newDocumentID,
+            matchedBookingID: matchedBookingID,
+            providerLocation: providerLocation, // Include providerLocation in the route parameters
+          });
+          setCountDownBookingVisible(false);
+        } else {
+          console.error("Provider Profile does not exists");
+        }
+      } catch (error) {
+        console.error("Error updating user data:", error);
+        // Handle the error, e.g., display an error message to the user
       }
+    } else {
+      console.log("BookingID is blank");
+      // set visible for error booking has been canceled/already booked
 
-      if (providerSnapshot.exists()) {
-        // Update the availability field within the provider document
-        await updateDoc(providerDocRef, {
-          availability: "busy",
-        });
-        console.log("Provider Status is now occupied");
-        const docRef = await addDoc(activeBookings, {
-          address: bookingAddress,
-          addressDetails: bookingAddressDetails,
-          customerUID: bookingCustomerUID,
-          bookingAccepted: bookingAccepted,
-          bookingAssigned: bookingAssigned,
-          bookingID: bookingID,
-          category: bookingCategory,
-          city: bookingCity,
-          coordinates: {
-            latitude: coordinates.latitude,
-            longitude: coordinates.longitude,
-          },
-          date: bookingDate,
-          distanceRadius: bookingDistanceRadius,
-          email: bookingEmail,
-          feeDistance: bookingFeeDistance,
-          materials: bookingMaterials,
-          name: bookingName,
-          paymentMethod: bookingPaymentMethod,
-          phone: bookingPhone,
-          propertyType: bookingPropertyType,
-          service: bookingServices,
-          subTotal: bookingSubTotal,
-          time: bookingTime,
-          title: bookingTitle,
-          totalPrice: bookingTotal,
-          status: "Upcoming",
-        });
-        // Get the unique ID of the newly added document
-        const newDocumentID = docRef.id;
-        console.log("Document added to 'activeBookings' successfully.");
-        navigation.navigate("ViewBookingDetails", {
-          newDocumentID: newDocumentID,
-          matchedBookingID: matchedBookingID,
-          providerLocation: providerLocation, // Include providerLocation in the route parameters
-        })
-        setCountDownBookingVisible(false);
-        
-      } else {
-        console.error("Provider Profile does not exists");
-      }
-    } catch (error) {
-      console.error("Error updating user data:", error);
-      // Handle the error, e.g., display an error message to the user
+      setBookingNotFoundVisible(true);
+
     }
   };
 
@@ -310,7 +336,6 @@ const NewBooking = ({ route }) => {
         });
 
         setCountDownBookingVisible(false);
-
 
         navigation.navigate("BottomTabsRoot", {
           screen: "Homepage",
@@ -1076,36 +1101,6 @@ const NewBooking = ({ route }) => {
                 </View>
               )}
             </View>
-            {/* <View style={[styles.frameParent6, styles.parentFlexBox]}>
-              <View style={styles.frameParent7}>
-                <View style={styles.frameParent7}>
-                  <View style={styles.youWillEarnWrapper}>
-                    <Text style={styles.youWillEarn}>You will earn</Text>
-                  </View>
-                </View>
-                <View style={styles.frameFlexBox1}>
-                  <View style={styles.youWillEarnWrapper}>
-                    <Text style={styles.text15}>₱6000.00</Text>
-                  </View>
-                </View>
-              </View>
-              <View style={styles.trackBookingBtnParent}>
-                <Pressable style={[styles.trackBookingBtn, styles.btnFlexBox]}>
-                  <Text
-                    style={[styles.viewAllServices, styles.newBooking1Typo]}
-                  >
-                    Decline
-                  </Text>
-                </Pressable>
-                <Pressable style={[styles.viewTimelineBtn, styles.btnFlexBox]}>
-                  <Text
-                    style={[styles.viewAllServices, styles.newBooking1Typo]}
-                  >
-                    Accept
-                  </Text>
-                </Pressable>
-              </View>
-            </View> */}
           </View>
         </View>
       </ScrollView>
@@ -1168,6 +1163,22 @@ const NewBooking = ({ route }) => {
               // onClose={closeCountDownModal}
             />
             <CountDownBooking
+              onClose={closeCountDownModal}
+              //onYesPress={declineBooking}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      <Modal animationType="fade" transparent visible={BookingNotFoundVisible}>
+        <View style={styles.logoutButtonOverlay}>
+          <View style={styles.containerCancel}>
+            <Pressable
+              style={styles.logoutButtonBg}
+              //onPress={closeCancelModal}
+              // onClose={closeCountDownModal}
+            />
+            <BookingNotFound
               onClose={closeCountDownModal}
               //onYesPress={declineBooking}
             />

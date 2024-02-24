@@ -83,6 +83,7 @@ import ActiveBookings from "./components/ActiveBookings";
 
 import CancelBookingPrompt from "./components/CancelBookingPrompt";
 import CountDownBooking from "./components/CountDownBooking";
+import BookingNotFound from "./components/BookingNotFound";
 import SwipeButton2 from "./components/SwipeButton2";
 import PerformServicePrompt from "./components/PerformServicePrompt";
 
@@ -744,6 +745,11 @@ const App = () => {
               <Stack.Screen
                 name="CountDownBooking"
                 component={CountDownBooking}
+                options={{ headerShown: false }}
+              />
+                 <Stack.Screen
+                name="BookingNotFound"
+                component={BookingNotFound}
                 options={{ headerShown: false }}
               />
               <Stack.Screen
