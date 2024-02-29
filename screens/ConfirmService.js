@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
   StatusBar,
   StyleSheet,
@@ -39,9 +39,9 @@ import MaskedView from "@react-native-masked-view/masked-view";
 import { Svg, Circle, Rect } from "react-native-svg";
 import { useNavigation } from "@react-navigation/native";
 
-const ConfirmService = ({route}) => {
+const ConfirmService = ({ route }) => {
   const navigation = useNavigation();
-  const {itemID, matchedBookingID, customerUID} = route.params;
+  const { itemID, matchedBookingID, customerUID } = route.params;
   const [user, setUser] = useState(null);
   const [bookingID, setBookingID] = useState("");
   const [bookingPaymentMethod, setBookingPaymentMethod] = useState("");
@@ -51,6 +51,8 @@ const ConfirmService = ({route}) => {
   const [imageFlag, setImageFlag] = useState(false);
   const [ID, setID] = useState("");
   const [isServiceCompleted, setIsServiceCompleted] = useState(false);
+  const [category, setCategory] = useState("");
+  const [title, setTitle] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -64,15 +66,21 @@ const ConfirmService = ({route}) => {
     async function fetchData() {
       try {
         const db = getFirestore(); // Use getFirestore() to initialize Firestore
-  
-        // Get the user's UID 
+
+        // Get the user's UID
         const auth = getAuth();
         const providerUID = auth.currentUser.uid;
         setUser(providerUID);
-        console.log("Provider UID: " ,providerUID);
+        console.log("Provider UID: ", providerUID);
         console.log("Item Id: ", itemID);
 
-        const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
+        const userBookingDocRef = doc(
+          db,
+          "providerProfiles",
+          providerUID,
+          "activeBookings",
+          itemID
+        );
         const docSnapshot = await getDoc(userBookingDocRef);
 
         if (docSnapshot.exists()) {
@@ -82,11 +90,12 @@ const ConfirmService = ({route}) => {
           setBookingID(booking.bookingID);
           setBookingPaymentMethod(booking.paymentMethod);
           setBookingTotal(booking.totalPrice);
+          setTitle(booking.title);
+          setCategory(booking.category);
 
-          console.log("Booking ID: " , bookingID);
-          console.log("Payment Method: " , bookingPaymentMethod);
-          console.log("Total: " , bookingTotal);
-
+          console.log("Booking ID: ", bookingID);
+          console.log("Payment Method: ", bookingPaymentMethod);
+          console.log("Total: ", bookingTotal);
         } else {
           console.log("No such document!");
         }
@@ -94,9 +103,9 @@ const ConfirmService = ({route}) => {
         console.error("Error retrieving data:", error);
       }
     }
-  
+
     fetchData(); // Call the fetchData function immediately
-  }, []); 
+  }, []);
 
   const fetchProfileImage = async (uid) => {
     const storage = getStorage();
@@ -168,28 +177,110 @@ const ConfirmService = ({route}) => {
     setImageURI(null);
     setImageFlag(true);
     setID(itemID);
-  
+
     // If you also want to delete the image from Firebase Storage, you would do that here.
     const storage = getStorage(app);
     const storageRef = ref(storage, `ProviderProof/${user.uid}`);
-    deleteObject(storageRef).then(() => {
-      console.log("File deleted successfully");
-    }).catch((error) => {
-      console.error("Error deleting file:", error);
-    });
+    deleteObject(storageRef)
+      .then(() => {
+        console.log("File deleted successfully");
+      })
+      .catch((error) => {
+        console.error("Error deleting file:", error);
+      });
   };
 
   const getPaymentMethodText = (bookingPaymentMethod) => {
-    return bookingPaymentMethod === "Cash" ? "Collect Cash from Customer" : `Paid via ${bookingPaymentMethod}`;
+    return bookingPaymentMethod === "Cash"
+      ? "Collect Cash from Customer"
+      : `Paid via ${bookingPaymentMethod}`;
   };
 
   const handleCompletedService = async () => {
+    // timestamp
+    //service
+    const currentDate = new Date();
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    const formattedDate = `${
+      monthNames[currentDate.getMonth()]
+    } ${currentDate.getDate()}`;
+
+    console.log("Booking ID: ", bookingID);
+    console.log("Payment Method: ", bookingPaymentMethod);
+    console.log("Total: ", bookingTotal);
+    console.log(`${title} ${category}`);
+
+    // try {
+    //   const db = getFirestore();
+    //   const auth = getAuth();
+    //   const providerUID = auth.currentUser.uid;
+
+    //   // Construct a reference to the "userWallet" collection under the provider's profile
+    //   const userWalletCollectionRef = collection(
+    //     db,
+    //     "providerProfiles",
+    //     providerUID,
+    //     "userWallet"
+    //   );
+
+    //   // Get all documents in the "userWallet" collection
+    //   const querySnapshot = await getDocs(userWalletCollectionRef);
+
+    //   if (!querySnapshot.empty && bookingPaymentMethod !== "Cash") {
+    //     // Access the reference to the first document
+    //     const firstDocumentRef = querySnapshot.docs[0].ref;
+
+    //     // Get the current data of the first document
+    //     const firstDocumentData = querySnapshot.docs[0].data();
+
+    //     // Initialize an empty array if "transactions" doesn't exist in the first document's data
+    //     const transactions = firstDocumentData.transactions || [];
+
+    //     const wallet = firstDocumentData.wallet || 0;
+
+    //     const newWalletValue = wallet + bookingTotal;
+
+    //     await updateDoc(firstDocumentRef, { wallet: newWalletValue });
+
+    //     // Add your new transaction object to the transactions array
+    //     const newTransaction = {
+    //       bookingID: bookingID,
+    //       amount: bookingTotal,
+    //       service: `${title} ${category}`,
+    //       timestamp: formattedDate,
+    //     };
+    //     transactions.push(newTransaction);
+
+    //     // Update the "transactions" array in the first document
+    //     await updateDoc(firstDocumentRef, { transactions });
+
+    //     console.log("New transaction added successfully.");
+    //   } else {
+    //     console.log("No documents found under userWallet.");
+    //   }
+    // } catch (error) {
+    //   console.error("Error:", error);
+    // }
+
     try {
       const db = getFirestore();
       const auth = getAuth();
       const providerUID = auth.currentUser.uid;
       const providerBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", ID);
-  
+
       // Start a Firestore transaction
       await runTransaction(db, async (transaction) => {
         // Get the current document
@@ -200,7 +291,7 @@ const ConfirmService = ({route}) => {
         }
 
         const userBookingData = providerBookingSnapshot.data();
-        
+
         // Update the status to "Completed"
         transaction.update(providerBookingDocRef, { status: "Completed" });
 
@@ -280,16 +371,8 @@ const ConfirmService = ({route}) => {
           <View style={[styles.frameGroup, styles.frameSpaceBlock]}>
             <View style={styles.bookingFlexBox}>
               <View style={styles.bookingDetailsLabel2}>
-                <Text
-                  style={styles.serviceRequests1}
-                >
-                  {`Booking Order:`} 
-                </Text>
-                <Text
-                  style={styles.serviceRequests}
-                >
-                  {`${bookingID}`} 
-                </Text>
+                <Text style={styles.serviceRequests1}>{`Booking Order:`}</Text>
+                <Text style={styles.serviceRequests}>{`${bookingID}`}</Text>
               </View>
               <View
                 style={[
@@ -303,7 +386,9 @@ const ConfirmService = ({route}) => {
               </View>
               <View style={[styles.bookingDetailsLabel1, styles.frameFlexBox1]}>
                 <View style={styles.wrapper}>
-                  <Text style={[styles.text, styles.textTypo]}>{`₱${bookingTotal}.00`}</Text>
+                  <Text
+                    style={[styles.text, styles.textTypo]}
+                  >{`₱${bookingTotal}.00`}</Text>
                 </View>
               </View>
               <View style={[styles.addressFrame, styles.frameFlexBox1]}>
@@ -327,7 +412,10 @@ const ConfirmService = ({route}) => {
                   <View
                     style={[styles.dateAndTimeFrame, styles.frameInnerFlexBox]}
                   >
-                    <Pressable style={[styles.frame, styles.frameInnerFlexBox]} onPress={deleteImage}>
+                    <Pressable
+                      style={[styles.frame, styles.frameInnerFlexBox]}
+                      onPress={deleteImage}
+                    >
                       <Text style={styles.delete}>Delete</Text>
                     </Pressable>
                   </View>
@@ -341,7 +429,7 @@ const ConfirmService = ({route}) => {
                       <Text style={styles.delete}>Delete</Text>
                     </Pressable>
                   </View>
-              </View>
+                </View>
               )}
               <View style={styles.subcategoriesFrame}>
                 {/* <View
@@ -488,7 +576,15 @@ completed service`}</Text>
                       style={styles.circularImageContainer}
                       maskElement={
                         <Svg height={100} width={100}>
-                          <Rect x="10" y="10" rx="10" ry="10" width="80" height="80" fill="white"/>
+                          <Rect
+                            x="10"
+                            y="10"
+                            rx="10"
+                            ry="10"
+                            width="80"
+                            height="80"
+                            fill="white"
+                          />
                         </Svg>
                       }
                     >
@@ -499,7 +595,9 @@ completed service`}</Text>
                       />
                     </MaskedView>
                   ) : (
-                    <View style={[styles.dateAndTimeFrame2, styles.frameFlexBox]}>
+                    <View
+                      style={[styles.dateAndTimeFrame2, styles.frameFlexBox]}
+                    >
                       <Pressable style={styles.frame7} onPress={pickImage}>
                         <Text style={styles.addPhoto}>Add Photo</Text>
                       </Pressable>

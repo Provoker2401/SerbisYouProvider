@@ -7,6 +7,7 @@ import {
   Pressable,
   Text,
   TextInput,
+  TouchableWithoutFeedback
 } from "react-native";
 import { useState } from "react";
 import { FontSize, FontFamily, Color, Padding, Border } from "../GlobalStyles";
@@ -31,6 +32,16 @@ const SignUp = () => {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const eyeIconSource = showPassword
+    ? require("../assets/hide-pass.png")
+    : require("../assets/-icon-eye-empty.png");
 
   const isValidPhilippinePhoneNumber = (phoneNumber) => {
     // Clean the input by removing non-digit characters
@@ -115,7 +126,6 @@ const SignUp = () => {
         return;
       }
     } catch (error) {
-
       console.log("Eror Sign Up:", error);
     }
 
@@ -373,39 +383,26 @@ const SignUp = () => {
                   </Text>
                   <View style={styles.fullNameInputWrapper}>
                     <View style={styles.leftNumberGroup}>
-                      <View style={styles.leftNumber1}>
-                        <Image
-                          style={[
-                            styles.image2354Icon,
-                            styles.image2354IconLayout,
-                          ]}
-                          contentFit="cover"
-                          source={require("../assets/image-23541.png")}
-                        />
-                        <Text style={styles.text}>+1</Text>
-                        <Image
-                          style={styles.leftChildLayout}
-                          contentFit="cover"
-                          source={require("../assets/vector-3.png")}
-                        />
-                      </View>
-                      <View style={[styles.leftName1, styles.leftName1FlexBox]}>
-                        <Text style={[styles.mr, styles.mrTypo]}>Mr.</Text>
-                        <Image
-                          style={styles.leftChildLayout}
-                          contentFit="cover"
-                          source={require("../assets/vector-31.png")}
-                        />
-                      </View>
                       <TextInput
                         style={[styles.passwordInput, styles.leftName1FlexBox]}
                         placeholder="Password"
                         keyboardType="default"
-                        secureTextEntry={true}
+                        secureTextEntry={!showPassword}
                         placeholderTextColor="#d1d3d4"
                         value={password}
                         onChangeText={(text) => setPassword(text)}
                       />
+                        <TouchableWithoutFeedback
+                        onPress={togglePasswordVisibility}
+                      >
+                        <View style={styles.leftNumber}>
+                          <Image
+                            style={styles.iconEyeEmpty}
+                            contentFit="cover"
+                            source={eyeIconSource}
+                          />
+                        </View>
+                      </TouchableWithoutFeedback>
                     </View>
                   </View>
                 </View>
@@ -822,6 +819,10 @@ const styles = StyleSheet.create({
     width: "100%",
     flex: 1,
     backgroundColor: Color.m3White,
+  },
+  iconEyeEmpty: {
+    width: 20,
+    height: 17,
   },
 });
 

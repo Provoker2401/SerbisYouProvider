@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { useState, useEffect } from "react";
 import {
@@ -9,6 +8,7 @@ import {
   View,
   TextInput,
   Pressable,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
@@ -29,6 +29,16 @@ const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const eyeIconSource = showPassword
+    ? require("../assets/hide-pass.png")
+    : require("../assets/-icon-eye-empty.png");
 
   const handleSignIn = () => {
     console.log("Sign In clicked");
@@ -193,18 +203,22 @@ const SignIn = () => {
                                   styles.signIn2Typo,
                                 ]}
                                 placeholder="Password"
-                                secureTextEntry={true}
+                                secureTextEntry={!showPassword}
                                 placeholderTextColor="#d1d3d4"
                                 value={password}
                                 onChangeText={(text) => setPassword(text)}
                               />
-                              <View style={styles.leftNumber}>
-                                <Image
-                                  style={styles.iconEyeEmpty}
-                                  contentFit="cover"
-                                  source={require("../assets/-icon-eye-empty.png")}
-                                />
-                              </View>
+                              <TouchableWithoutFeedback
+                                onPress={togglePasswordVisibility}
+                              >
+                                <View style={styles.leftNumber}>
+                                  <Image
+                                    style={styles.iconEyeEmpty}
+                                    contentFit="cover"
+                                    source={eyeIconSource}
+                                  />
+                                </View>
+                              </TouchableWithoutFeedback>
                             </View>
                           </View>
                         </View>

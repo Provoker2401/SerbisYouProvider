@@ -1,10 +1,21 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Button, Text, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useState } from "react";
+import {
+  View,
+  StyleSheet,
+  Button,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  Dimensions,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import Swiper from 'react-native-swiper';
-import LinearGradient from 'expo-linear-gradient';
-import {GestureHandlerRootView , PanGestureHandler} from 'react-native-gesture-handler';
+import Swiper from "react-native-swiper";
+import LinearGradient from "expo-linear-gradient";
+import {
+  GestureHandlerRootView,
+  PanGestureHandler,
+} from "react-native-gesture-handler";
 import Animated, {
   useAnimatedGestureHandler,
   useSharedValue,
@@ -15,208 +26,256 @@ import Animated, {
   Extrapolation,
   interpolateColor,
   runOnJS,
-} from 'react-native-reanimated';
-import SwipeButton from 'rn-swipe-button';
+} from "react-native-reanimated";
+import SwipeButton from "rn-swipe-button";
 import { Padding, Border, FontSize, FontFamily, Color } from "../GlobalStyles";
 import { useNavigation } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
-import { getFirestore, updateDoc, doc, query, collection, where, getDocs } from 'firebase/firestore';
+import {
+  getFirestore,
+  updateDoc,
+  doc,
+  query,
+  collection,
+  where,
+  getDocs,
+} from "firebase/firestore";
 
+import rightArrow from "../assets/arrow-right.png";
 
-import rightArrow from '../assets/arrow-right.png';
+const ConfirmNavigation = ({ route }) => {
+  const navigation = useNavigation();
+  const { itemID, matchedBookingID, customerUID } = route.params;
+  const [toggleState, setToggleState] = useState(false);
 
-const ConfirmNavigation = ({route}) => {
-    const navigation = useNavigation();
-    const { itemID, matchedBookingID, customerUID } = route.params;
-    const [toggleState, setToggleState] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-    const [isLoading, setIsLoading] = useState(false);
+  const makeSomeRequest = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+  };
 
-    const makeSomeRequest = () => {
-      setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 3000);
-    };
+  //     const handleToggle = (value) => setToggleState(value);
+  //     const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
+  //   const [isConfirmed, setConfirmed] = useState(false);
+  //   // Animated value for X translation
+  //   const X = useSharedValue(0);
+  //   // Toggled State
+  //   const [toggled, setToggled] = useState(false);
 
-//     const handleToggle = (value) => setToggleState(value);
-//     const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
-//   const [isConfirmed, setConfirmed] = useState(false);
-//   // Animated value for X translation
-//   const X = useSharedValue(0);
-//   // Toggled State
-//   const [toggled, setToggled] = useState(false);
+  //     // Fires when animation ends
+  //     const handleComplete = (isToggled) => {
+  //         if (isToggled !== toggled) {
+  //           setToggled(isToggled);
+  //           handleToggle(isToggled);
+  //         }
+  //       };
 
-//     // Fires when animation ends
-//     const handleComplete = (isToggled) => {
-//         if (isToggled !== toggled) {
-//           setToggled(isToggled);
-//           handleToggle(isToggled);
-//         }
-//       };
+  //     // Gesture Handler Events
+  //     const animatedGestureHandler = useAnimatedGestureHandler({
+  //     onStart: (_, ctx) => {
+  //         ctx.completed = toggled;
+  //     },
+  //     onActive: (e, ctx) => {
+  //         let newValue;
+  //         if (ctx.completed) {
+  //         newValue = H_SWIPE_RANGE + e.translationX;
+  //         } else {
+  //         newValue = e.translationX;
+  //         }
 
-//     // Gesture Handler Events
-//     const animatedGestureHandler = useAnimatedGestureHandler({
-//     onStart: (_, ctx) => {
-//         ctx.completed = toggled;
-//     },
-//     onActive: (e, ctx) => {
-//         let newValue;
-//         if (ctx.completed) {
-//         newValue = H_SWIPE_RANGE + e.translationX;
-//         } else {
-//         newValue = e.translationX;
-//         }
+  //         if (newValue >= 0 && newValue <= H_SWIPE_RANGE) {
+  //         X.value = newValue;
+  //         }
+  //     },
+  //     onEnd: () => {
+  //         if (X.value < BUTTON_WIDTH / 2 - SWIPEABLE_DIMENSIONS / 2) {
+  //         X.value = withSpring(0);
+  //         runOnJS(handleComplete)(false);
+  //         } else {
+  //         X.value = withSpring(H_SWIPE_RANGE);
+  //         runOnJS(handleComplete)(true);
+  //         }
+  //     },
+  //     });
 
-//         if (newValue >= 0 && newValue <= H_SWIPE_RANGE) {
-//         X.value = newValue;
-//         }
-//     },
-//     onEnd: () => {
-//         if (X.value < BUTTON_WIDTH / 2 - SWIPEABLE_DIMENSIONS / 2) {
-//         X.value = withSpring(0);
-//         runOnJS(handleComplete)(false);
-//         } else {
-//         X.value = withSpring(H_SWIPE_RANGE);
-//         runOnJS(handleComplete)(true);
-//         }
-//     },
-//     });
+  //     const InterpolateXInput = [0, H_SWIPE_RANGE];
+  //     const AnimatedStyles = {
+  //     swipeCont: useAnimatedStyle(() => {
+  //         return {};
+  //     }),
+  //     colorWave: useAnimatedStyle(() => {
+  //         return {
+  //         width: H_WAVE_RANGE + X.value,
 
-//     const InterpolateXInput = [0, H_SWIPE_RANGE];
-//     const AnimatedStyles = {
-//     swipeCont: useAnimatedStyle(() => {
-//         return {};
-//     }),
-//     colorWave: useAnimatedStyle(() => {
-//         return {
-//         width: H_WAVE_RANGE + X.value,
+  //         opacity: interpolate(X.value, InterpolateXInput, [0, 1]),
+  //         };
+  //     }),
+  //     swipeable: useAnimatedStyle(() => {
+  //         return {
+  //         backgroundColor: interpolateColor(
+  //             X.value,
+  //             [0, BUTTON_WIDTH - SWIPEABLE_DIMENSIONS - BUTTON_PADDING],
+  //             ['#06d6a0', '#fff'],
+  //         ),
+  //         transform: [{translateX: X.value}],
+  //         };
+  //     }),
+  //     swipeText: useAnimatedStyle(() => {
+  //         return {
+  //         opacity: interpolate(
+  //             X.value,
+  //             InterpolateXInput,
+  //             [0.7, 0],
+  //             Extrapolate.CLAMP,
+  //         ),
+  //         transform: [
+  //             {
+  //             translateX: interpolate(
+  //                 X.value,
+  //                 InterpolateXInput,
+  //                 [0, BUTTON_WIDTH / 2 - SWIPEABLE_DIMENSIONS],
+  //                 Extrapolate.CLAMP,
+  //             ),
+  //             },
+  //         ],
+  //         };
+  //     }),
+  //     };
 
-//         opacity: interpolate(X.value, InterpolateXInput, [0, 1]),
-//         };
-//     }),
-//     swipeable: useAnimatedStyle(() => {
-//         return {
-//         backgroundColor: interpolateColor(
-//             X.value,
-//             [0, BUTTON_WIDTH - SWIPEABLE_DIMENSIONS - BUTTON_PADDING],
-//             ['#06d6a0', '#fff'],
-//         ),
-//         transform: [{translateX: X.value}],
-//         };
-//     }),
-//     swipeText: useAnimatedStyle(() => {
-//         return {
-//         opacity: interpolate(
-//             X.value,
-//             InterpolateXInput,
-//             [0.7, 0],
-//             Extrapolate.CLAMP,
-//         ),
-//         transform: [
-//             {
-//             translateX: interpolate(
-//                 X.value,
-//                 InterpolateXInput,
-//                 [0, BUTTON_WIDTH / 2 - SWIPEABLE_DIMENSIONS],
-//                 Extrapolate.CLAMP,
-//             ),
-//             },
-//         ],
-//         };
-//     }),
-//     };
+  //   // Handle the confirmation slide
+  //   const handleSlideComplete = () => {
+  //     // You can add additional logic here if needed
+  //     setConfirmed(true);
+  //   };
 
-//   // Handle the confirmation slide
-//   const handleSlideComplete = () => {
-//     // You can add additional logic here if needed
-//     setConfirmed(true);
-//   };
+  const [disableCBButton, setDisableCBButton] = useState(false);
+  const defaultStatusMessage = "";
+  const [swipeStatusMessage, setSwipeStatusMessage] =
+    useState(defaultStatusMessage);
 
-    const [disableCBButton, setDisableCBButton] = useState(false)
-    const defaultStatusMessage = '';
-    const [swipeStatusMessage, setSwipeStatusMessage] = useState(
-    defaultStatusMessage,
-    );
-
-    setInterval(() => setSwipeStatusMessage(defaultStatusMessage), 5000);
-    const updateSwipeStatusMessage = (message) => setSwipeStatusMessage(message);
-    const renderSubHeading = (heading) => (
+  setInterval(() => setSwipeStatusMessage(defaultStatusMessage), 5000);
+  const updateSwipeStatusMessage = (message) => setSwipeStatusMessage(message);
+  const renderSubHeading = (heading) => (
     <Text style={styles.subHeading}>{heading}</Text>
+  );
+  let forceResetLastButton = null;
+
+  const CheckoutButton = () => {
+    return (
+      <View
+        style={{
+          width: 100,
+          height: 30,
+          backgroundColor: "#C70039",
+          borderRadius: 5,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text style={{ color: "#ffffff" }}>Checkout</Text>
+      </View>
     );
-    let forceResetLastButton = null;
+  };
 
-    const CheckoutButton = () => {
-    return(
-        <View style={{width: 100, height: 30, backgroundColor: '#C70039', borderRadius: 5, justifyContent: 'center', alignItems: 'center'}}>
-            <Text style={{color: '#ffffff'}}>Checkout</Text>
-        </View>
-    );
-    } 
+  // Firestore reference to the serviceBookings collection
+  const db = getFirestore();
+  const bookingRef = collection(
+    db,
+    "serviceBookings",
+    customerUID,
+    "activeBookings"
+  );
 
-    // Firestore reference to the serviceBookings collection
-    const db = getFirestore();
-    const bookingRef = collection(db, "serviceBookings", customerUID, "activeBookings");
+  // Firestore reference to the providerProfiles collection
+  const auth = getAuth();
+  const providerUID = auth.currentUser.uid;
+  const providerDocRef = doc(db, "providerProfiles", providerUID);
 
-    // Firestore reference to the providerProfiles collection
-    const auth = getAuth();
-    const providerUID = auth.currentUser.uid;
-    const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
 
-    const navigateToCustomer = async () => {
-        setIsLoading(true);
-        try {
-          // Update the status in Firestore for serviceBookings
-          console.log("Passed Item ID" , itemID);
-          console.log("Passed Matched Booking ID" , matchedBookingID);
-          console.log("Passed Customer UID" , customerUID);
+  const userBookingDocRef = doc(
+    db,
+    "providerProfiles",
+    providerUID,
+    "activeBookings",
+    itemID
+  );
 
-          const q = query(bookingRef, where("bookingID", "==", matchedBookingID));
-          const querySnapshot = await getDocs(q);
-          querySnapshot.forEach((document) => {
-            const bookingDocRef = doc(db, "serviceBookings", customerUID, "activeBookings", document.id);
-            updateDoc(bookingDocRef, {
-              status: "In Transit"
-            });
-          });
+  const navigateToCustomer = async () => {
+    setIsLoading(true);
+    try {
+      // Update the status in Firestore for serviceBookings
+      console.log("Passed Item ID", itemID);
+      console.log("Passed Matched Booking ID", matchedBookingID);
+      console.log("Passed Customer UID", customerUID);
+
+  
+
+      const q = query(bookingRef, where("bookingID", "==", matchedBookingID));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((document) => {
+        const bookingDocRef = doc(
+          db,
+          "serviceBookings",
+          customerUID,
+          "activeBookings",
+          document.id
+        );
+        updateDoc(bookingDocRef, {
+          status: "In Transit",
+        });
+      });
+
+      // Update the status in Firestore for providerProfiles
+      await updateDoc(userBookingDocRef, {
+        status: "In Transit",
+      });
+
+      setIsLoading(false);
+
+      //set isNavigatingTrue
+
+
+
+      // Navigate to the "GoToCustomer" screen
+      navigation.navigate("GoToCustomer", {
+        itemID: itemID,
+        matchedBookingID: matchedBookingID,
+        customerUID: customerUID,
     
-          // Update the status in Firestore for providerProfiles
-          await updateDoc(userBookingDocRef, {
-            status: "In Transit"
-          });
-    
-          setIsLoading(false);
-    
-          // Navigate to the "GoToCustomer" screen
-          navigation.navigate('GoToCustomer', { itemID: itemID, matchedBookingID: matchedBookingID, customerUID: customerUID});
-        } catch (error) {
-          console.error("Error updating Firestore documents:", error);
-          setIsLoading(false);
-        }
-    };
+      });
+    } catch (error) {
+      console.error("Error updating Firestore documents:", error);
+      setIsLoading(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.closeButton} onPress={() => navigation.goBack()}>
+      <TouchableOpacity
+        style={styles.closeButton}
+        onPress={() => navigation.goBack()}
+      >
         <Ionicons name="close-circle" size={40} color="black" />
       </TouchableOpacity>
       {/* <View style={styles.mapContainer}>
       </View> */}
       <View style={styles.imageContainer}>
         <Image
-            style={styles.cancel11Icon}
-            contentFit="cover"
-            source={require("../assets/navigationMap.png")}
+          style={styles.cancel11Icon}
+          contentFit="cover"
+          source={require("../assets/navigationMap.png")}
         />
       </View>
       <View style={styles.container2}>
-
         <View style={styles.content}>
-            <Text style={styles.headerText}>{`Start Navigation 
+          <Text style={styles.headerText}>{`Start Navigation 
 to Customer?`}</Text>
-            <Text style={styles.confirmationText}>
-                Please confirm if you are now heading to the customer's location.
-            </Text>
+          <Text style={styles.confirmationText}>
+            Please confirm if you are now heading to the customer's location.
+          </Text>
         </View>
         <View style={styles.container1}>
           {/* <Text style={styles.title}>React Native Swipe Button</Text> */}
@@ -255,31 +314,31 @@ to Customer?`}</Text>
           {/* {renderSubHeading('Set a component as thumb icon & use forceReset')} */}
           <View style={styles.content1}>
             <SwipeButton
-                // disableResetOnTap
-                // forceReset={ reset => {
-                //   forceResetLastButton = reset
-                // }}
-                shouldResetAfterSuccess={true}
-                resetAfterSuccessAnimDelay={2000}
-                onSwipeFail={() => updateSwipeStatusMessage('Incomplete swipe!')}
-                onSwipeStart={() => updateSwipeStatusMessage('Swipe started!')}
-                onSwipeSuccess={navigateToCustomer}
-                thumbIconImageSource={rightArrow}
-                thumbIconStyles={{borderRadius: 25}}
-                thumbIconWidth={50} 
-                thumbIconBackgroundColor="#00A8E8"
-                railBackgroundColor="#FFFFFF"
-                railStyles={{
-                    backgroundColor: '#47CCFE',
-                    borderColor: '#000',
-                }}
-                title="Slide to confirm"
-                titleColor= "#1A244D"
-                titleStyles={{
-                    fontSize: 20, // Set the font size as needed
-                    fontWeight: '500', // Set the font weight to bold
-                    color: '#003459' // You can also set the title color here if needed
-                }}
+              // disableResetOnTap
+              // forceReset={ reset => {
+              //   forceResetLastButton = reset
+              // }}
+              shouldResetAfterSuccess={true}
+              resetAfterSuccessAnimDelay={2000}
+              onSwipeFail={() => updateSwipeStatusMessage("Incomplete swipe!")}
+              onSwipeStart={() => updateSwipeStatusMessage("Swipe started!")}
+              onSwipeSuccess={navigateToCustomer}
+              thumbIconImageSource={rightArrow}
+              thumbIconStyles={{ borderRadius: 25 }}
+              thumbIconWidth={50}
+              thumbIconBackgroundColor="#00A8E8"
+              railBackgroundColor="#FFFFFF"
+              railStyles={{
+                backgroundColor: "#47CCFE",
+                borderColor: "#000",
+              }}
+              title="Slide to confirm"
+              titleColor="#1A244D"
+              titleStyles={{
+                fontSize: 20, // Set the font size as needed
+                fontWeight: "500", // Set the font weight to bold
+                color: "#003459", // You can also set the title color here if needed
+              }}
             />
           </View>
 
@@ -295,10 +354,8 @@ to Customer?`}</Text>
             <SwipeButton height={35} width={200} title="Swipe" disabled={disableCBButton} />
             <View style={{ marginLeft: 15, width: 150, height: 32 }}><Button onPress={() => setDisableCBButton(!disableCBButton)} title="Toggle disable" /></View>
           </View>   */}
-
         </View>
       </View>
-      
 
       {/*<View style={styles.swiperContainer}>
         <Swiper
@@ -313,7 +370,7 @@ to Customer?`}</Text>
           </View>
         </Swiper>
       </View> */}
-        {/* <Animated.View style={[styles.swipeCont, AnimatedStyles.swipeCont]}>
+      {/* <Animated.View style={[styles.swipeCont, AnimatedStyles.swipeCont]}>
             <AnimatedLinearGradient
                 style={[AnimatedStyles.colorWave, styles.colorWave]}
                 colors={['#06d6a0', '#1b9aaa']}
@@ -330,7 +387,7 @@ to Customer?`}</Text>
                 Swipe Me
             </Animated.Text>
         </Animated.View> */}
-        {/* <View style={styles.content1}>
+      {/* <View style={styles.content1}>
             <SwipeButton
                 // disableResetOnTap
                 // forceReset={ reset => {
@@ -360,29 +417,29 @@ to Customer?`}</Text>
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    alignSelf: 'center',
-    justifyContent: 'center',
-    padding: 15, 
-    paddingTop: 20
+    alignItems: "center",
+    alignSelf: "center",
+    justifyContent: "center",
+    padding: 15,
+    paddingTop: 20,
   },
   imageContainer: {
-    alignItems: 'center',
-    alignSelf: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    alignSelf: "center",
+    justifyContent: "center",
   },
   container1: {
-    alignContent: 'center',
-    alignSelf: 'stretch',
-    justifyContent: 'center',
-    padding: 15, 
-    paddingTop: 20
+    alignContent: "center",
+    alignSelf: "stretch",
+    justifyContent: "center",
+    padding: 15,
+    paddingTop: 20,
   },
   container2: {
-    alignContent: 'center',
-    alignSelf: 'stretch',
-    justifyContent: 'center',
-    // padding: 15, 
+    alignContent: "center",
+    alignSelf: "stretch",
+    justifyContent: "center",
+    // padding: 15,
   },
   cancel11Icon: {
     width: 250,
@@ -390,108 +447,108 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   swipeStatus: {
-    color: '#FF0000',
+    color: "#FF0000",
     fontSize: 15,
     paddingVertical: 3,
     marginVertical: 5,
-    textAlign: 'center',
+    textAlign: "center",
   },
-  subHeading: {color: '#140866', fontSize: 15},
+  subHeading: { color: "#140866", fontSize: 15 },
   title: {
-    color: '#700D99',
+    color: "#700D99",
     fontSize: 20,
   },
   closeButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 40,
     right: 20,
   },
   mapContainer: {
-    width: '100%',
-    height: '50%', //
+    width: "100%",
+    height: "50%", //
     // Adjust height as needed
-},
-content: {
+  },
+  content: {
     alignItems: "center",
   },
-content1: {
+  content1: {
     // flex: 1,
     // alignItems: 'center',
     paddingTop: 10,
-    alignSelf: 'stretch',
-    alignContent: 'center',
-    justifyContent: 'center',
+    alignSelf: "stretch",
+    alignContent: "center",
+    justifyContent: "center",
   },
-headerText: {
-  fontWeight: '600',
-  marginTop: 20,
-  fontSize: 40,
-  fontFamily: FontFamily.workSansSemiBold,
-  color: "#1A244D",
-  textAlign: "center",
-},
-headerText1: {
-  fontWeight: '600',
-  fontSize: 30,
-  fontFamily: FontFamily.workSansSemiBold,
-  color: "#1A244D",
-  textAlign: "center",
-},
-confirmationText: {
-  fontSize: 20,
-  textAlign: 'center',
-  marginHorizontal: 15,
-  marginTop: 30,
-},
-swiperContainer: {
+  headerText: {
+    fontWeight: "600",
+    marginTop: 20,
+    fontSize: 40,
+    fontFamily: FontFamily.workSansSemiBold,
+    color: "#1A244D",
+    textAlign: "center",
+  },
+  headerText1: {
+    fontWeight: "600",
+    fontSize: 30,
+    fontFamily: FontFamily.workSansSemiBold,
+    color: "#1A244D",
+    textAlign: "center",
+  },
+  confirmationText: {
+    fontSize: 20,
+    textAlign: "center",
+    marginHorizontal: 15,
+    marginTop: 30,
+  },
+  swiperContainer: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     marginBottom: 50,
   },
   swiper: {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
   slide: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   slideText: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1fb28a',
+    fontWeight: "bold",
+    color: "#1fb28a",
   },
-//   swipeCont: {
-//     height: BUTTON_HEIGHT,
-//     width: BUTTON_WIDTH,
-//     backgroundColor: '#fff',
-//     borderRadius: BUTTON_HEIGHT,
-//     padding: BUTTON_PADDING,
-//     display: 'flex',
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     flexDirection: 'row',
-//   },
-//   colorWave: {
-//     position: 'absolute',
-//     left: 0,
-//     height: BUTTON_HEIGHT,
-//     borderRadius: BUTTON_HEIGHT,
-//   },
-//   swipeable: {
-//     position: 'absolute',
-//     left: BUTTON_PADDING,
-//     height: SWIPEABLE_DIMENSIONS,
-//     width: SWIPEABLE_DIMENSIONS,
-//     borderRadius: SWIPEABLE_DIMENSIONS,
-//     zIndex: 3,
-//   },
+  //   swipeCont: {
+  //     height: BUTTON_HEIGHT,
+  //     width: BUTTON_WIDTH,
+  //     backgroundColor: '#fff',
+  //     borderRadius: BUTTON_HEIGHT,
+  //     padding: BUTTON_PADDING,
+  //     display: 'flex',
+  //     justifyContent: 'center',
+  //     alignItems: 'center',
+  //     flexDirection: 'row',
+  //   },
+  //   colorWave: {
+  //     position: 'absolute',
+  //     left: 0,
+  //     height: BUTTON_HEIGHT,
+  //     borderRadius: BUTTON_HEIGHT,
+  //   },
+  //   swipeable: {
+  //     position: 'absolute',
+  //     left: BUTTON_PADDING,
+  //     height: SWIPEABLE_DIMENSIONS,
+  //     width: SWIPEABLE_DIMENSIONS,
+  //     borderRadius: SWIPEABLE_DIMENSIONS,
+  //     zIndex: 3,
+  //   },
   swipeText: {
-    alignSelf: 'center',
+    alignSelf: "center",
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     zIndex: 2,
-    color: '#1b9aaa',
+    color: "#1b9aaa",
   },
 });
 

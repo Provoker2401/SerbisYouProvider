@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
   StatusBar,
   StyleSheet,
@@ -11,43 +11,81 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import { Color, FontSize, Border, FontFamily, Padding } from "../GlobalStyles";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  updateDoc,
-} from "firebase/firestore"; // Updated imports
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore"; // Updated imports
 import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
+import * as TaskManager from "expo-task-manager";
+import * as Location from "expo-location";
 
-const GoToCustomer = ( {route} ) => {
+const GoToCustomer = ({ route }) => {
   const navigation = useNavigation();
-
-  const {itemID, matchedBookingID, customerUID} = route.params;
+  const [address, setAddress] = useState(null);
+  const { itemID, matchedBookingID, customerUID } = route.params;
   const [bookingName, setBookingName] = useState("");
   const [bookingDate, setBookingDate] = useState("");
   const [bookingTime, setBookingTime] = useState("");
   const [bookingAddress, setBookingAddress] = useState("");
-  const [bookingCoordinates, setBookingCoordinates] = useState({ latitude: null, longitude: null });
-  const [bookingAddressInstruction, setBookingAddressInstruction] = useState("");
+  const [bookingCoordinates, setBookingCoordinates] = useState({
+    latitude: null,
+    longitude: null,
+  });
+  const [bookingAddressInstruction, setBookingAddressInstruction] =
+    useState("");
+
+  const [inTransit, setInTransit] = useState(true);
+
+  const LOCATION_TASK_NAME = "background-location-task";
+
+  const db = getFirestore();
+  const auth = getAuth();
+  const userUID = auth.currentUser.uid;
+  const providerProfilesCollection = doc(db, "providerProfiles", userUID);
+
+  const updateLocation = async () => {
+    try {
+      // Get the current location every 5 seconds
+      await Location.startLocationUpdatesAsync(
+        LOCATION_TASK_NAME,
+        {
+          accuracy: Location.Accuracy.High,
+          timeInterval: 5000,
+          distanceInterval: 100,
+        },
+        async ({ locations }) => {
+          if (locations && locations.length > 0) {
+            const { coords } = locations[0];
+            console.log("Received new location data:", coords);
+          }
+        }
+      );
+    } catch (error) {
+      console.error("Error updating location:", error);
+    }
+  };
 
   useEffect(() => {
     async function fetchData() {
       try {
         const db = getFirestore(); // Use getFirestore() to initialize Firestore
-  
-        // Get the user's UID 
+
+        // Get the user's UID
         const auth = getAuth();
         const providerUID = auth.currentUser.uid;
-        console.log("Provider UID: " ,providerUID);
+        console.log("Provider UID: ", providerUID);
         console.log("Item Id: ", itemID);
 
-        const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
+        const userBookingDocRef = doc(
+          db,
+          "providerProfiles",
+          providerUID,
+          "activeBookings",
+          itemID
+        );
         const docSnapshot = await getDoc(userBookingDocRef);
 
         if (docSnapshot.exists()) {
           const booking = docSnapshot.data();
           console.log("Booking Data: ", booking);
-  
+
           setBookingName(booking.name);
           setBookingDate(booking.date);
           setBookingTime(booking.time);
@@ -58,13 +96,12 @@ const GoToCustomer = ( {route} ) => {
           });
           // setBookingAddressInstruction(booking.totalPrice);
 
-          console.log("Name: " ,bookingName);
-          console.log("Date: " ,bookingDate);
-          console.log("Time: " ,bookingTime);
-          console.log("Address: " ,bookingAddress);
-          console.log("Coordinates: " , bookingCoordinates);
+          console.log("Name: ", bookingName);
+          console.log("Date: ", bookingDate);
+          console.log("Time: ", bookingTime);
+          console.log("Address: ", bookingAddress);
+          console.log("Coordinates: ", bookingCoordinates);
           // console.log("Address: " , bookingAddress);
-
         } else {
           console.log("No such document!");
         }
@@ -72,30 +109,100 @@ const GoToCustomer = ( {route} ) => {
         console.error("Error retrieving data:", error);
       }
     }
-  
+
     fetchData(); // Call the fetchData function immediately
-  }, []); 
+  }, []);
 
   const handleArrival = async (itemID) => {
     try {
+      stopUpdateLocation();
       // const db = getFirestore();
       // const auth = getAuth();
       // const providerUID = auth.currentUser.uid;
       // const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
-  
+
       // // Update the status in Firestore
       // await updateDoc(userBookingDocRef, {
       //   status: "In Progress"
       // });
-  
+
       // console.log("Status updated to 'In Progress'");
-  
+
       // Navigate to PerformTheService screen with itemId
-      navigation.navigate("PerformTheService", { itemID: itemID, matchedBookingID: matchedBookingID, customerUID: customerUID});
+      navigation.navigate("PerformTheService", {
+        itemID: itemID,
+        matchedBookingID: matchedBookingID,
+        customerUID: customerUID,
+      });
     } catch (error) {
       console.error("Error updating status:", error);
     }
   };
+
+  useEffect(() => {
+    updateLocation();
+  }, []);
+
+  const stopUpdateLocation = async () => {
+    try {
+      await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
+      console.log("Background location stopped");
+      await TaskManager.unregisterAllTasksAsync();
+      console.log("All tasks unregistered");
+
+      setInTransit(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
+    if (error) {
+      console.error("Background location task error:", error);
+      return;
+    }
+
+    if (data) {
+      try {
+        if (data.locations && data.locations.length > 0) {
+          const { coords } = data.locations[0];
+          const { latitude, longitude } = coords;
+          console.log(
+            "Received new location data from TaskManager - Latitude:",
+            latitude,
+            "Longitude:",
+            longitude
+          );
+
+          const docSnapshot = await getDoc(providerProfilesCollection);
+          if (docSnapshot.exists()) {
+            const coordinates = docSnapshot.data().realTimeCoordinates;
+            console.log("Coordinats ", coordinates);
+
+            // Update the real-time coordinates field in Firestore
+            await updateDoc(providerProfilesCollection, {
+              realTimeCoordinates: {
+                latitude: latitude,
+                longitude: longitude,
+              },
+              // Retain other data
+              // Add other fields you want to update here
+            });
+          }
+          // // Update Firestore document with the new location data
+          // await updateDoc(providerProfilesCollection, {
+          //   realTimeCoordinates: {
+          //     latitude: latitude,
+          //     longitude: longitude,
+          //   },
+          // });
+          // console.log("Location data updated in Firestore with UID of:" ,docSnapshot);
+        }
+      } catch (error) {
+        console.error("Error updating Firestore document:", error);
+      }
+    }
+  });
 
   return (
     <View style={styles.goToCustomer}>
