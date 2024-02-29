@@ -19,7 +19,7 @@ const Header20 = ({ style }) => {
     <SafeAreaView style={[styles.header, style]}>
       <View style={[styles.view, styles.viewFlexBox]}>
         <View style={styles.backBtnWrapper}>
-          <Pressable style={styles.backBtn} onPress={() => navigation.goBack()}>
+          <Pressable style={styles.backBtn} onPress={() => navigation.navigate("BottomTabsRoot", { screen: "Homepage" })}>
             <Image
               style={styles.icon}
               contentFit="cover"

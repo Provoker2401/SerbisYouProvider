@@ -53,7 +53,7 @@ const Header22 = ({ style }) => {
             </Text>
           </View> */}
         </View>
-        <TouchableOpacity style={[styles.vectorWrapper, styles.wrapperFlexBox]} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={[styles.vectorWrapper, styles.wrapperFlexBox]} onPress={() => navigation.navigate("BottomTabsRoot", { screen: "Homepage" })}>
           <Image
             style={styles.vectorIcon}
             contentFit="cover"

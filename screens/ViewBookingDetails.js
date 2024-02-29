@@ -27,16 +27,14 @@ import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
 const ViewBookingDetails = ({ route }) => {
   const navigation = useNavigation();
 
-
   const {newDocumentID, matchedBookingID, providerLocation, itemID } = route.params;
-  const [bookingAccepted, setBookingAccepted] = useState("");
-  const [bookingAssigned, setBookingAssigned] = useState("");
   const [bookingName, setBookingName] = useState("");
   const [bookingEmail, setBookingEmail] = useState("");
   const [bookingRadius, setBookingRadius] = useState("");
   const [bookingDate, setBookingDate] = useState("");
   const [bookingTime, setBookingTime] = useState("");
   const [bookingAddress, setBookingAddress] = useState("");
+  const [bookingAddressDetails, setBookingAddressDetails] = useState({});
   const [bookingProperty, setBookingProperty] = useState("");
   const [bookingMaterials, setBookingMaterials] = useState("");
   const [bookingCategory, setBookingCategory] = useState("");
@@ -45,9 +43,8 @@ const ViewBookingDetails = ({ route }) => {
   const [bookingSubtotal, setBookingSubtotal] = useState("");
   const [bookingDistanceFee, setBookingDistanceFee] = useState("");
   const [bookingTotal, setBookingTotal] = useState("");
-
-  // const [bookingCoordinates, setBookingCoordinates] = useState({ latitude: null, longitude: null });
   const [bookingCoordinates, setBookingCoordinates] = useState("");
+  const [providerCurrentCoordinates, setProviderCurrentCoordinates] = useState("");
   const [phoneUser, setphoneUser] = useState("");
 
   useEffect(() => {
@@ -55,7 +52,7 @@ const ViewBookingDetails = ({ route }) => {
       try {
         const db = getFirestore(); // Use getFirestore() to initialize Firestore
 
-        // Get the user's UID
+        // Get the provider's UID
         const auth = getAuth();
         const providerUID = auth.currentUser.uid;
         console.log("Provider UID: " ,providerUID);
@@ -84,7 +81,6 @@ const ViewBookingDetails = ({ route }) => {
           console.log("Address: " ,bookingAddress);
           console.log("Coordinates: " , bookingCoordinates);
           // console.log("Address: " , bookingAddress);
-
         } else {
           console.log("No such document!");
         }
@@ -141,7 +137,7 @@ const ViewBookingDetails = ({ route }) => {
           setBookingDistanceFee(booking.feeDistance);
           setBookingPaymentMethod(booking.paymentMethod);
           setBookingTotal(booking.totalPrice);
-
+          setBookingAddressDetails(booking.addressDetails);
           setBookingCoordinates({
             latitude: booking.coordinates.latitude,
             longitude: booking.coordinates.longitude,
@@ -185,6 +181,34 @@ const ViewBookingDetails = ({ route }) => {
         const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
         const docSnapshot = await getDoc(userBookingDocRef);
 
+        const providerProfilesCollection = doc(db, "providerProfiles", providerUID);
+
+        getDoc(providerProfilesCollection)
+        .then(async (docSnapshot) => {
+          if (docSnapshot.exists()) {
+            const providerData = docSnapshot.data();
+            const coordinates = providerData.coordinates;
+
+            console.log("Provider data: ", providerData);
+            console.log("Provider Coordinates: ", coordinates);
+            console.log("Provider Coordinates Latitude: ", coordinates.latitude);
+            console.log("Provider Coordinates Latitude: ", coordinates.longitude);
+
+            if (providerData) {
+              const latitude = parseFloat(coordinates.latitude);
+              const longitude = parseFloat(coordinates.longitude);
+              setProviderCurrentCoordinates({latitude: latitude, longitude: longitude});
+            } else {
+              console.log("Provider Data is empty!");
+            }
+          } else {
+            console.log("No such document!");
+          }
+        })
+        .catch((error) => {
+          console.error("Error getting document:", error);
+        })
+
         if (docSnapshot.exists()) {
           const booking = docSnapshot.data();
           const materials = booking.materials;
@@ -210,6 +234,7 @@ const ViewBookingDetails = ({ route }) => {
           setBookingDistanceFee(booking.feeDistance);
           setBookingPaymentMethod(booking.paymentMethod);
           setBookingTotal(booking.totalPrice);
+          setBookingAddressDetails(booking.addressDetails);
           setBookingCoordinates({
             latitude: booking.coordinates.latitude,
             longitude: booking.coordinates.longitude,
@@ -238,22 +263,25 @@ const ViewBookingDetails = ({ route }) => {
     }else if(itemID){
       fetchActiveBookings();
     }
-  }, [matchedBookingID, providerLocation, itemID]); // Add userID as a dependency
+  }, [matchedBookingID, providerLocation, itemID]); // Dependency Array
 
   const handleGetDirections = () => {
     const customerLocation = bookingCoordinates;
 
+    console.log("Customer Location: " , customerLocation);
+    console.log("Provider Location: " , providerLocation);
+
     const data = {
-      source: providerLocation,
+      source: providerLocation || providerCurrentCoordinates,
       destination: customerLocation,
       params: [
         {
           key: "travelmode",
-          value: "driving", // could be "walking", "bicycling" or "transit" as well
+          value: "driving",
         },
         {
           key: "dir_action",
-          value: "navigate", // this launches navigation directly
+          value: "navigate",
         },
       ],
     };
@@ -369,7 +397,7 @@ const ViewBookingDetails = ({ route }) => {
                   </View>
                   <View style={styles.frameWrapper}>
                     <View style={[styles.frame, styles.frameFlexBox1]}>
-                      <Text style={[styles.august112023, styles.amFlexBox]}>
+                      <Text style={[styles.timeStyle, styles.amFlexBox]}>
                         {bookingTime}
                       </Text>
                     </View>
@@ -439,7 +467,7 @@ const ViewBookingDetails = ({ route }) => {
                     <Image
                       style={styles.btnLayout}
                       contentFit="cover"
-                      source={require("../assets/gps-2.png")}
+                      source={require("../assets/town.png")}
                     />
                   </View>
                   <View style={styles.frameWrapper}>
@@ -597,7 +625,6 @@ const ViewBookingDetails = ({ route }) => {
                       </View>
                     );
                   })}
-                
                 </View>
                 <View
                   style={[styles.vectorWrapper, styles.dateFrameSpaceBlock]}
@@ -690,19 +717,135 @@ const ViewBookingDetails = ({ route }) => {
                   </View>
                 </View>
               </View>
-              <View style={styles.dateAndTimeFrameWrapper}>
-                <Text
-                  style={[
-                    styles.customerAdditionalInstructio,
-                    styles.pleaseMeetMeLayout,
-                  ]}
-                >
-                  Customer Additional Instructions
-                </Text>
-                <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
-                  Please meet me at Room 6969, Hotel Sogo
-                </Text>
-              </View>
+              { bookingAddressDetails.note ? (
+                <View style={styles.dateAndTimeFrameWrapper2}>
+                  { (bookingAddressDetails.floor || bookingAddressDetails.house || bookingAddressDetails.street) ? (
+                  <View style={styles.dateAndTimeFrameWrapper}>
+                    <Text
+                      style={[
+                        styles.customerAdditionalInstructio,
+                        styles.pleaseMeetMeLayout,
+                      ]}
+                    >
+                      Customer Additional Instructions
+                    </Text>
+                    {bookingAddressDetails.label? (
+                    <View>
+                      <View style={styles.noteStyle}>
+                        <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                          {bookingAddressDetails.label && 
+                            <Text style={[styles.pleaseMeetMe2, styles.pleaseMeetMeLayout]}>
+                              ({bookingAddressDetails.label}){' '}
+                            </Text>
+                          }
+                          {
+                            [
+                              bookingAddressDetails.street,
+                              bookingAddressDetails.house,
+                              bookingAddressDetails.floor
+                            ].filter(Boolean).join(', ')
+                          }
+                        </Text>
+                      </View>
+                      <View style={styles.noteStyle}>
+                        <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                          Note: {bookingAddressDetails.note}
+                        </Text>
+                      </View>
+                    </View>
+                    ) : (
+                    <View>
+                      <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                        {
+                          [
+                            bookingAddressDetails.street,
+                            bookingAddressDetails.house,
+                            bookingAddressDetails.floor
+                          ].filter(Boolean).join(', ')
+                        }
+                      </Text>
+                      <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                        Note: {bookingAddressDetails.note}
+                      </Text>
+                    </View>
+                    )}
+                  </View>
+                  ): (
+                  <View style={styles.dateAndTimeFrameWrapper}>
+                    <Text
+                      style={[
+                        styles.customerAdditionalInstructio,
+                        styles.pleaseMeetMeLayout,
+                      ]}
+                    >
+                      Customer Additional Instructions
+                    </Text>
+                    {bookingAddressDetails.label? (
+                      <View style={styles.noteStyle}>
+                        <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                          {bookingAddressDetails.label && 
+                            <Text style={[styles.pleaseMeetMe2, styles.pleaseMeetMeLayout]}>
+                              {bookingAddressDetails.label ? `(${bookingAddressDetails.label}) ` : ''}
+                            </Text>
+                          }
+                          {' '}{bookingAddressDetails.note}
+                        </Text>
+                      </View>
+                      ) : (
+                      <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                        {bookingAddressDetails.note}
+                      </Text>
+                    )}
+                  </View>
+                  )}
+                </View>
+              ) : (
+                <View style={styles.dateAndTimeFrameWrapper2}>
+                  { (bookingAddressDetails.floor || bookingAddressDetails.houseNumber || bookingAddressDetails.street) ? (
+                  <View style={styles.dateAndTimeFrameWrapper}>
+                  <Text
+                    style={[
+                      styles.customerAdditionalInstructio,
+                      styles.pleaseMeetMeLayout,
+                    ]}
+                  >
+                    Customer Additional Instructions
+                  </Text>
+                  {bookingAddressDetails.label? (
+                    <View style={styles.noteStyle}>
+                      <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                        {bookingAddressDetails.label && 
+                          <Text style={[styles.pleaseMeetMe2, styles.pleaseMeetMeLayout]}>
+                            ({bookingAddressDetails.label}){' '}
+                          </Text>
+                        }
+                        {
+                          [
+                            bookingAddressDetails.street,
+                            bookingAddressDetails.house,
+                            bookingAddressDetails.floor
+                          ].filter(Boolean).join(', ')
+                        }
+                      </Text>
+                    </View>
+                  ) : (
+                    <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                      {
+                        [
+                          bookingAddressDetails.street,
+                          bookingAddressDetails.house,
+                          bookingAddressDetails.floor
+                        ].filter(Boolean).join(', ')
+                      }
+                    </Text>
+                  )}
+                </View>
+                ): (
+                <View style={styles.dateAndTimeFrameWrapper1}>
+                </View>
+                )}
+                </View>
+              )}
             </View>
           </View>
         </LinearGradient>
@@ -728,6 +871,10 @@ const styles = StyleSheet.create({
   btnLayout: {
     height: 40,
     width: 40,
+  },
+  btnLayout1: {
+    height: 43,
+    width: 43,
   },
   btnWrapperPosition: {
     top: 0,
@@ -919,6 +1066,11 @@ const styles = StyleSheet.create({
   august112023: {
     fontFamily: FontFamily.workSansRegular,
     textTransform: "capitalize",
+    fontSize: FontSize.buttonBold15_size,
+    flex: 1,
+  },
+  timeStyle: {
+    fontFamily: FontFamily.workSansRegular,
     fontSize: FontSize.buttonBold15_size,
     flex: 1,
   },
@@ -1229,16 +1381,42 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     backgroundColor: Color.m3White,
   },
+  dateAndTimeFrameWrapper2: {
+    justifyContent: "center",
+    alignSelf: "stretch",
+    backgroundColor: Color.m3White,
+  },
+  noteStyle: {
+    alignSelf: "stretch",
+    alignItems: "center",
+    flexDirection: "row",
+    flex: 1,
+  },
+  dateAndTimeFrameWrapper1: {
+    marginTop: 15,
+    justifyContent: "center",
+    alignSelf: "stretch",
+    backgroundColor: Color.m3White,
+    display: "none",
+  },
   customerAdditionalInstructio: {
-    fontFamily: FontFamily.levelSemibold14,
+    fontFamily: FontFamily.workSansBold,
     color: Color.colorGray_300,
     lineHeight: 15,
-    fontSize: FontSize.levelSemibold14_size,
+    fontSize: FontSize.bodyLgBodyLgRegular_size,
     fontWeight: "600",
   },
   pleaseMeetMe: {
     fontFamily: FontFamily.montserratMedium,
-    color: "#6d6d6d",
+    color: Color.colorGray_300,
+    fontSize: FontSize.m3LabelMedium_size,
+    lineHeight: 15,
+    marginTop: 3,
+    fontWeight: "500",
+  },
+  pleaseMeetMe2: {
+    fontFamily: FontFamily.levelSemibold14,
+    color: Color.colorGray_300,
     fontSize: FontSize.m3LabelMedium_size,
     lineHeight: 15,
     marginTop: 3,

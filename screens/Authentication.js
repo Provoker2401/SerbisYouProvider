@@ -54,7 +54,7 @@ const Authentication = ({ route }) => {
 
   const [confirmInProgress, setConfirmInProgress] = useState(false);
 
-  const [timer, setTimer] = useState(30);
+  const [timer, setTimer] = useState(60);
 
   console.log("Name:", name);
   console.log("Email:", email);
@@ -62,6 +62,8 @@ const Authentication = ({ route }) => {
   console.log("Password:", password);
 
   const [timerIntervalId, setTimerIntervalId] = useState(null);
+
+  const [showWaitText, setShowWaitText] = useState(true);
 
   const startTimer = () => {
     const intervalId = setInterval(() => {
@@ -82,7 +84,7 @@ const Authentication = ({ route }) => {
     // Clear the previous interval before starting a new one
     clearInterval(timerIntervalId);
     // Reset the timer
-    setTimer(30);
+    setTimer(60);
     // Start the new timer
     startTimer();
 
@@ -243,12 +245,6 @@ const Authentication = ({ route }) => {
         // User signed up successfully
         console.log("Sign Up Successful!");
 
-        // Clear input fields and show success toast
-        setName("");
-        setEmail("");
-        setPassword("");
-        setPhone("");
-
         Toast.show({
           type: "success",
           position: "top",
@@ -329,7 +325,8 @@ Enter the code in that message to continue.`}</Text>
             </View>
             <View style={[styles.group34600reSendCodeIn0, styles.frameFlexBox]}>
               <Text style={[styles.didntReceiveCode, styles.codeTypo]}>
-                Didn’t receive code? Wait for {timer}s
+                Didn’t receive code?
+                {timer > 0 && <Text> Wait for {timer}s</Text>}
               </Text>
               {timer === 0 && (
                 <TouchableOpacity onPress={handleResendCode}>

@@ -81,9 +81,9 @@ const navigation = useNavigation();
       //   console.error("Error updating document: ", error);
       // }
     } else if (status === 'In Transit') {
-      navigation.navigate("PerformTheService", { itemID: id });
+      navigation.navigate("PerformTheService", { itemID: id, matchedBookingID: matchedBookingID, customerUID: customerUID});
     } else if (status === 'In Progress') {
-      navigation.navigate("ConfirmService", { itemID: id });
+      navigation.navigate("ConfirmService", { itemID: id, matchedBookingID: matchedBookingID, customerUID: customerUID });
     }
   };
   // const handleButton = () => {

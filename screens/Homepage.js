@@ -195,7 +195,7 @@ const Homepage = ({ route }) => {
   useEffect(() => {
     async function fetchData() {
       try {
-        if (isAcceptOrdersEnabled && !bookingAccepted) {
+        if (isAcceptOrdersEnabled && bookingAccepted) {
           // Check if the switch is turned on
           const db = getFirestore();
           const auth = getAuth();

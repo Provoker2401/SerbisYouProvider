@@ -7,6 +7,7 @@ import {
   Text,
   ScrollView,
   Modal,
+  Linking,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
@@ -32,6 +33,8 @@ const PerformTheService = ({route}) => {
   const [bookingServices, setBookingServices] = useState([]);
   const [bookingPaymentMethod, setBookingPaymentMethod] = useState("");
   const [bookingTotal, setBookingTotal] = useState("");
+
+  const [phoneUser, setphoneUser] = useState("");
 
   const [cancelModalVisible, setcancelModalVisible] = useState(false);
   const [serviceBtn, setServiceBtn] = useState(true);
@@ -75,6 +78,8 @@ const PerformTheService = ({route}) => {
           setBookingServices(booking.service);
           setBookingPaymentMethod(booking.paymentMethod);
           setBookingTotal(booking.totalPrice);
+          setphoneUser(booking.phone);
+
 
           console.log("Name: " ,bookingName);
           console.log("Property Type: " , bookingPropertyType);
@@ -183,7 +188,11 @@ const PerformTheService = ({route}) => {
                     {bookingName}
                   </Text>
                 </View>
-                <Pressable style={styles.message}>
+                <Pressable style={styles.message}               
+                  onPress={() => {
+                  // Use Linking to open the messaging app with the specified number
+                  Linking.openURL(`sms:${phoneUser}`);
+                }}>
                   <Image
                     style={styles.vectorIcon}
                     contentFit="cover"
@@ -195,7 +204,10 @@ const PerformTheService = ({route}) => {
                     source={require("../assets/vector8.png")}
                   />
                 </Pressable>
-                <Pressable style={styles.message}>
+                <Pressable 
+                  style={styles.message}
+                  onPress={() => {Linking.openURL(`tel:${phoneUser}`);}}
+                >
                   <Image
                     style={styles.vectorIcon}
                     contentFit="cover"
@@ -213,7 +225,7 @@ const PerformTheService = ({route}) => {
                   <Image
                     style={styles.gps2Icon}
                     contentFit="cover"
-                    source={require("../assets/gps-2.png")}
+                    source={require("../assets/town.png")}
                   />
                 </View>
                 <View style={styles.addressFrameInner}>

@@ -214,10 +214,10 @@ const ConfirmService = ({route}) => {
         // Update the provider profile
         const providerDocRef = doc(db, 'providerProfiles', providerUID);
         transaction.update(providerDocRef, {
-          bookingID: '',
-          bookingIndex: '',
-          bookingMatched: '',
-          availability: false,
+          availability: "available",
+          bookingID: "",
+          bookingIndex: null,
+          bookingMatched: false,
         });
         console.log("Provider booking completed and moved to historyBookings");
       });

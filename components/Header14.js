@@ -75,8 +75,106 @@ const Header14 = ({ style }) => {
   //     }
   //   })();
   // }, []);
+  // useEffect(() => {
+  //   const calculateDistance = async () => {
+  //     try {
+  //       const db = getFirestore();
+  //       const auth = getAuth();
+  //       const userUID = auth.currentUser.uid;
+  //       const providerProfilesCollection = doc(db, "providerProfiles", userUID);
+  
+  //       const { status } = await Location.requestForegroundPermissionsAsync();
+  //       if (status !== "granted") {
+  //         console.error("Permission to access location was denied");
+  //         return;
+  //       }
+  
+  //       const location = await Location.getCurrentPositionAsync({});
+  
+  //       const addressResponse = await Location.reverseGeocodeAsync({
+  //         latitude: location.coords.latitude,
+  //         longitude: location.coords.longitude,
+  //       });
+  
+  //       // Retrieve the existing data from Firestore
+  //       const existingDataSnapshot = await getDoc(providerProfilesCollection);
+  //       const existingData = existingDataSnapshot.data();
+  
+  //       // Calculate the distance between the current and existing locations
+
+  
+  //       // Check if the coordinates field is empty or if the distance is greater than or equal to 100 meters
+  //       if (!existingData?.coordinates) {
+  //         console.log("Coordinates field is empty");
+  //         // Add the fetched distance to Firestore
+  //         await updateDoc(providerProfilesCollection, {
+  //           coordinates: {
+  //             latitude: location.coords.latitude,
+  //             longitude: location.coords.longitude,
+  //           },
+  //           // Retain other data
+  //           // Add other fields you want to update here
+  //         });
+  //       }else{
+  //         console.log("Calculating Distance...");
+  //         console.log("Provider lat: " , location.coords.latitude);
+  //         console.log("Provider Long: " , location.coords.longitude);
+  //         console.log("User latitude: " , existingData?.coordinates?.latitude);
+  //         console.log("User longitude: " , existingData?.coordinates?.longitude);
+
+  //         const distance = geolib.getDistance(
+  //           {
+  //             latitude: existingData?.coordinates?.latitude || 0,
+  //             longitude: existingData?.coordinates?.longitude || 0,
+  //           },
+  //           {
+  //             latitude: location.coords.latitude,
+  //             longitude: location.coords.longitude,
+  //           }
+  //         );
+  //         console.log("Distance: " , distance);
+
+  //         // Check if the distance is greater than or equal to 100 meters
+  //         if (distance >= 100) {
+
+  //           // Update the coordinates field in Firestore
+  //           await updateDoc(providerProfilesCollection, {
+  //             coordinates: {
+  //               latitude: location.coords.latitude,
+  //               longitude: location.coords.longitude,
+  //             },
+  //             // Retain other data
+  //             // Add other fields you want to update here
+  //           });
+  //         }
+  //       }  
+  
+  //       if (addressResponse.length > 0) {
+  //         const addressInfo = addressResponse[0];
+  
+  //         if (addressInfo.streetNumber !== null) {
+  //           const cityOnly = `${addressResponse[0].streetNumber}, ${addressResponse[0].street}, ${addressResponse[0].city}`;
+  //           console.log(cityOnly);
+  //           setAddress(cityOnly);
+  //         } else {
+  //           const cityOnly = `${addressResponse[0].street}, ${addressResponse[0].city}`;
+  //           console.log(cityOnly);
+  //           setAddress(cityOnly);
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error("Error retrieving data:", error);
+  //     }
+  //   };
+
+  //   // Call the function initially and every time the location changes
+  //   calculateDistance();
+  //   const interval = setInterval(calculateDistance, 60000); // Recalculate every minute
+  
+  //   return () => clearInterval(interval); // Cleanup on unmount
+  // }, []);
   useEffect(() => {
-    (async () => {
+    const updateLocation = async () => {
       try {
         const db = getFirestore();
         const auth = getAuth();
@@ -89,75 +187,78 @@ const Header14 = ({ style }) => {
           return;
         }
   
-        const location = await Location.getCurrentPositionAsync({});
-  
-        const addressResponse = await Location.reverseGeocodeAsync({
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-        });
-  
-        // Retrieve the existing data from Firestore
-        const existingDataSnapshot = await getDoc(providerProfilesCollection);
-        const existingData = existingDataSnapshot.data();
-  
-        // Calculate the distance between the current and existing locations
-
-  
-        // Check if the coordinates field is empty or if the distance is greater than or equal to 100 meters
-        if (!existingData?.coordinates) {
-          // Add the fetched distance to Firestore
-          await updateDoc(providerProfilesCollection, {
-            coordinates: {
+        // Get the current location every 5 seconds
+        const locationWatchId = await Location.watchPositionAsync(
+          { accuracy: Location.Accuracy.High, timeInterval: 5000, distanceInterval: 0 },
+          async (location) => {
+            const addressResponse = await Location.reverseGeocodeAsync({
               latitude: location.coords.latitude,
               longitude: location.coords.longitude,
-            },
-            // Retain other data
-            // Add other fields you want to update here
-          });
-        }else{
-          const distance = geolib.getDistance(
-            {
-              latitude: existingData?.coordinates?.latitude || 0,
-              longitude: existingData?.coordinates?.longitude || 0,
-            },
-            {
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-            }
-          );
-
-          // Check if the distance is greater than or equal to 100 meters
-          if (distance >= 100) {
-
-            // Update the coordinates field in Firestore
+            });
+  
+            // Retrieve the existing data from Firestore
+            const existingDataSnapshot = await getDoc(providerProfilesCollection);
+            const existingData = existingDataSnapshot.data();
+  
+            // Calculate the distance between the current and existing locations
+            const distance = geolib.getDistance(
+              {
+                latitude: existingData?.coordinates?.latitude || 0,
+                longitude: existingData?.coordinates?.longitude || 0,
+              },
+              {
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+              }
+            );
+  
+            console.log("Distance:", distance);
+  
             await updateDoc(providerProfilesCollection, {
-              coordinates: {
+              realTimeCoordinates: {
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
               },
               // Retain other data
               // Add other fields you want to update here
             });
-          }
-        }  
+            // Check if the coordinates field is empty or if the distance is greater than or equal to 100 meters
+            if (!existingData?.coordinates || distance >= 100) {
+              console.log("Existing Coordinates:", existingData?.coordinates);
+              console.log("Distance is 100 meters far:", distance);
+              await updateDoc(providerProfilesCollection, {
+                coordinates: {
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                },
+                // Retain other data
+                // Add other fields you want to update here
+              });
+            }
   
-        if (addressResponse.length > 0) {
-          const addressInfo = addressResponse[0];
-  
-          if (addressInfo.streetNumber !== null) {
-            const cityOnly = `${addressResponse[0].streetNumber}, ${addressResponse[0].street}, ${addressResponse[0].city}`;
-            console.log(cityOnly);
-            setAddress(cityOnly);
-          } else {
-            const cityOnly = `${addressResponse[0].street}, ${addressResponse[0].city}`;
-            console.log(cityOnly);
-            setAddress(cityOnly);
+            if (addressResponse.length > 0) {
+              const addressInfo = addressResponse[0];
+              let cityOnly = "";
+              if (addressInfo.streetNumber !== null) {
+                cityOnly = `${addressResponse[0].streetNumber}, ${addressResponse[0].street}, ${addressResponse[0].city}`;
+              } else {
+                cityOnly = `${addressResponse[0].street}, ${addressResponse[0].city}`;
+              }
+              console.log(cityOnly);
+              setAddress(cityOnly);
+            }
           }
-        }
+        );
       } catch (error) {
-        console.error("Error retrieving data:", error);
+        console.error("Error updating location:", error);
       }
-    })();
+    };
+  
+    updateLocation();
+  
+    return () => {
+      // Cleanup on unmount
+    };
   }, []);
   
 

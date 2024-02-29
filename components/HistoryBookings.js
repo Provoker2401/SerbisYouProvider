@@ -118,7 +118,7 @@ const HistoryBookings = ({ style }) => {
 
   const datesBlacklistFunc = date => {
     // Convert moment date to start of day for accurate comparison
-    return date.isAfter(moment().startOf('day'));
+    return date.isAfter(moment(),'day');
   };
 
   const onDateSelected = date => {
@@ -335,7 +335,6 @@ const HistoryBookings = ({ style }) => {
           dayContainerStyle={{flex: 1, alignItems: 'center', justifyContent: 'center', width: 60, height: 60, paddingVertical: 10}}
           calendarColor={'white'}
           iconContainer={{ flex: 0.1 }}
-          customDatesStyles={customDatesStyles}
           highlightDateNameStyle={{ color: 'white' }}
           highlightDateNumberStyle={{ color: 'white' }}
           highlightDateContainerStyle={{ backgroundColor: '#007EA7' }}

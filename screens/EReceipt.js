@@ -20,14 +20,8 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { toggleAnimation } from "../animations/toggleAnimation";
 import {
   getFirestore,
-  collection,
   doc,
   getDoc,
-  getDocs,
-  setDoc,
-  where,
-  query,
-  onSnapshot,
 } from "firebase/firestore"; // Updated imports
 import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
 import * as Clipboard from "expo-clipboard";
@@ -39,26 +33,6 @@ const EReceipt = ({ route }) => {
 
   const animationController = useRef(new Animated.Value(0)).current;
   const [showContent, setShowContent] = useState(false);
-
-  //   const [bookingID, setBookingID] = useState("");
-  //   const [bookingDate, setBookingDate] = useState("");
-  //   const [bookingTime, setBookingTime] = useState("");
-  //   const [bookingAddress, setBookingAddress] = useState("");
-  //   const [bookingDistanceRadius, setBookingDistanceRadius] = useState("");
-  //   const [bookingTitle, setBookingTitle] = useState("");
-  //   const [bookingCategory, setBookingCategory] = useState("");
-  //   const [bookingServices, setBookingServices] = useState([]);
-  //   const [bookingSubtotal, setBookingSubtotal] = useState("");
-  //   const [bookingDistanceFee, setBookingDistanceFee] = useState("");
-  //   const [bookingTotalPrice, setBookingTotalPrice] = useState("");
-  //   const [bookingPaymentMethod, setBookingPaymentMethod] = useState("");
-  //   const [bookingProviderName, setBookingProviderName] = useState("");
-  //   const [bookingStatus, setBookingStatus] = useState("");
-  //   const [bookingCoordinates, setBookingCoordinates] = useState({
-  //     latitude: null,
-  //     longitude: null,
-  //   });
-
   const [loading, setLoading] = useState(false); // Set to true initially, assuming you want to show the loading indicator on component mount
 
   const toggleListItem = () => {
@@ -82,9 +56,7 @@ const EReceipt = ({ route }) => {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [address, setAddress] = useState("");
-
   const [category, setCategory] = useState("");
-
   const [subtotal, setSubTotal] = useState("");
   const [distanceFee, setDistanceFee] = useState("");
   const [totalPrice, setTotalPrice] = useState("");
@@ -117,7 +89,6 @@ const EReceipt = ({ route }) => {
           setDate(booking.date);
           setTime(booking.time);
           setAddress(booking.address);
-
           setCustomerName(booking.name);
           setServiceTitle(booking.title);
           setSubTotal(booking.subTotal);
@@ -344,7 +315,7 @@ const EReceipt = ({ route }) => {
                         >
                           <View style={styles.frame1}>
                             <Text style={[styles.text, styles.textTypo]}>
-                              ₱{item.totalPrice}
+                              ₱{item.totalPrice}.00
                             </Text>
                           </View>
                         </View>
@@ -370,7 +341,7 @@ const EReceipt = ({ route }) => {
                 </View>
                 <View style={[styles.frameServices1, styles.copyButtonFlexBox]}>
                   <Text style={[styles.text, styles.textTypo]}>
-                    ₱{subtotal}
+                    ₱{subtotal}.00
                   </Text>
                 </View>
               </View>
@@ -387,7 +358,7 @@ const EReceipt = ({ route }) => {
                 </View>
                 <View style={[styles.frameServices1, styles.copyButtonFlexBox]}>
                   <Text style={[styles.text, styles.textTypo]}>
-                    ₱{distanceFee}
+                    ₱{distanceFee}.00
                   </Text>
                 </View>
               </View>
@@ -411,7 +382,7 @@ const EReceipt = ({ route }) => {
                 </View>
                 <View style={[styles.frameServices1, styles.copyButtonFlexBox]}>
                   <Text style={[styles.text5, styles.textTypo]}>
-                    ₱{totalPrice}
+                    ₱{totalPrice}.00
                   </Text>
                 </View>
               </View>
