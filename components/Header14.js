@@ -8,8 +8,11 @@ import {
   Pressable,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
-import * as Location from "expo-location";
+import {
+  useNavigation,
+  useIsFocused,
+  useFocusEffect,
+} from "@react-navigation/native";
 import { Image } from "expo-image";
 import {
   getFirestore,
@@ -25,110 +28,216 @@ import {
 import * as geolib from "geolib";
 import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
 import { Color, Padding, FontSize, FontFamily, Border } from "../GlobalStyles";
+import * as Location from "expo-location";
+import * as TaskManager from "expo-task-manager";
 
 const Header14 = ({ style }) => {
+  const isFocused = useIsFocused();
   const navigation = useNavigation();
-  const [address, setAddress] = useState(null);
+  const [location, setLocation] = useState(null);
+  // const [address, setAddress] = useState(null);
+  const [reverse, setReverse] = useState(null);
+  const [addressString, setAddressString] = useState(null);
+  const [isRunning, setIsRunning] = useState(false);
 
+  const getCurrentLocationTask = "background-location-task";
 
-  
-  useEffect(() => {
-    let locationWatchId; // Declare locationWatchId variable outside the updateLocation function
-    
-    const updateLocation = async () => {
+  const db = getFirestore();
+  const auth = getAuth();
+  const userUID = auth.currentUser.uid;
+  const providerProfilesCollection = doc(db, "providerProfiles", userUID);
+
+  TaskManager.defineTask(getCurrentLocationTask, async ({ data, error }) => {
+    if (error) {
+      console.error("Background location task error:", error);
+      return;
+    }
+
+    if (data) {
       try {
-        const db = getFirestore();
-        const auth = getAuth();
-        const userUID = auth.currentUser.uid;
-        const providerProfilesCollection = doc(db, "providerProfiles", userUID);
-  
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          console.error("Permission to access location was denied");
-          return;
-        }
-  
-        // Get the current location every 5 seconds
-        locationWatchId = await Location.watchPositionAsync(
-          { accuracy: Location.Accuracy.High, timeInterval: 5000, distanceInterval: 0 },
-          async (location) => {
-            const addressResponse = await Location.reverseGeocodeAsync({
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-            });
-  
-            // Retrieve the existing data from Firestore
-            const existingDataSnapshot = await getDoc(providerProfilesCollection);
-            const existingData = existingDataSnapshot.data();
-  
-            // Calculate the distance between the current and existing locations
-            const distance = geolib.getDistance(
-              {
-                latitude: existingData?.coordinates?.latitude || 0,
-                longitude: existingData?.coordinates?.longitude || 0,
-              },
-              {
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-              }
-            );
-  
-            console.log("Distance:", distance);
-  
+        if (data.locations && data.locations.length > 0) {
+          const { coords } = data.locations[0];
+          const { latitude, longitude } = coords;
+          console.log(
+            "Received new location data from TaskManager - Latitude:",
+            latitude,
+            "Longitude:",
+            longitude
+          );
+
+          const docSnapshot = await getDoc(providerProfilesCollection);
+          if (docSnapshot.exists()) {
+            const coordinates = docSnapshot.data().realTimeCoordinates;
+            console.log("Coordinates ", coordinates);
+
+            // Update the real-time coordinates field in Firestore
             await updateDoc(providerProfilesCollection, {
-              realTimeCoordinates: {
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
+              coordinates: {
+                latitude: latitude,
+                longitude: longitude,
               },
-              // Retain other data
-              // Add other fields you want to update here
             });
-  
-            // Check if the coordinates field is empty or if the distance is greater than or equal to 100 meters
-            if (!existingData?.coordinates || distance >= 100) {
-              console.log("Existing Coordinates:", existingData?.coordinates);
-              console.log("Distance is 100 meters far:", distance);
-              await updateDoc(providerProfilesCollection, {
-                coordinates: {
-                  latitude: location.coords.latitude,
-                  longitude: location.coords.longitude,
-                },
-                // Retain other data
-                // Add other fields you want to update here
-              });
-            }
-  
-            if (addressResponse.length > 0) {
-              const addressInfo = addressResponse[0];
-              let cityOnly = "";
-              if (addressInfo.streetNumber !== null) {
-                cityOnly = `${addressResponse[0].streetNumber}, ${addressResponse[0].street}, ${addressResponse[0].city}`;
-              } else {
-                cityOnly = `${addressResponse[0].street}, ${addressResponse[0].city}`;
-              }
-              console.log(cityOnly);
-              setAddress(cityOnly);
-            }
+
+            
           }
-        );
+        }
       } catch (error) {
-        console.error("Error updating location:", error);
+        console.error("Error updating Firestore document:", error);
       }
-    };
-  
-    // updateLocation();
-  
-    const checkBackgroundLocation = async () => {
+    }
+  });
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Code to start your function here
+      updateLocation();
+      setIsRunning(true);
+      return () => {
+        // Cleanup function: Stop the function when the screen loses focus
+        if (isRunning) {
+          // Code to stop the function here
+          stopUpdateLocation();
+          console.log("Stop the finding");
+        }
+      };
+    }, [isRunning]) // Only run when isRunning changes
+  );
+
+  const stopUpdateLocation = async () => {
+    try {
+      await Location.stopLocationUpdatesAsync(getCurrentLocationTask);
+      console.log("Background location stopped");
+      await TaskManager.unregisterAllTasksAsync();
+      console.log("All tasks unregistered");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // const updateLocation = async () => {
+  //   try {
+  //     const db = getFirestore();
+  //     const auth = getAuth();
+  //     const userUID = auth.currentUser.uid;
+  //     const providerProfilesCollection = doc(db, "providerProfiles", userUID);
+
+  //     const { status } = await Location.requestForegroundPermissionsAsync();
+  //     if (status !== "granted") {
+  //       console.error("Permission to access location was denied");
+  //       return;
+  //     }
+
+  //     // Get the current location every 5 seconds
+  //     const locationWatchId = await Location.watchPositionAsync(
+  //       {
+  //         accuracy: Location.Accuracy.High,
+  //         timeInterval: 5000,
+  //         distanceInterval: 0,
+  //       },
+  //       async (location) => {
+  //         const addressResponse = await Location.reverseGeocodeAsync({
+  //           latitude: location.coords.latitude,
+  //           longitude: location.coords.longitude,
+  //         });
+
+  //         // Retrieve the existing data from Firestore
+  //         const existingDataSnapshot = await getDoc(providerProfilesCollection);
+  //         const existingData = existingDataSnapshot.data();
+
+  //         // Calculate the distance between the current and existing locations
+  //         const distance = geolib.getDistance(
+  //           {
+  //             latitude: existingData?.coordinates?.latitude || 0,
+  //             longitude: existingData?.coordinates?.longitude || 0,
+  //           },
+  //           {
+  //             latitude: location.coords.latitude,
+  //             longitude: location.coords.longitude,
+  //           }
+  //         );
+
+  //         console.log("Distance:", distance);
+
+  //         await updateDoc(providerProfilesCollection, {
+  //           realTimeCoordinates: {
+  //             latitude: location.coords.latitude,
+  //             longitude: location.coords.longitude,
+  //           },
+  //           // Retain other data
+  //           // Add other fields you want to update here
+  //         });
+
+  //         // Check if the coordinates field is empty or if the distance is greater than or equal to 100 meters
+  //         if (!existingData?.coordinates || distance >= 100) {
+  //           console.log("Existing Coordinates:", existingData?.coordinates);
+  //           console.log("Distance is 100 meters far:", distance);
+  //           await updateDoc(providerProfilesCollection, {
+  //             coordinates: {
+  //               latitude: location.coords.latitude,
+  //               longitude: location.coords.longitude,
+  //             },
+  //             // Retain other data
+  //             // Add other fields you want to update here
+  //           });
+  //         }
+
+  //         if (addressResponse.length > 0) {
+  //           const addressInfo = addressResponse[0];
+  //           let cityOnly = "";
+  //           if (addressInfo.streetNumber !== null) {
+  //             cityOnly = `${addressResponse[0].streetNumber}, ${addressResponse[0].street}, ${addressResponse[0].city}`;
+  //           } else {
+  //             cityOnly = `${addressResponse[0].street}, ${addressResponse[0].city}`;
+  //           }
+  //           console.log(cityOnly);
+  //           setAddress(cityOnly);
+  //         }
+  //       }
+  //     );
+  //   } catch (error) {
+  //     console.error("Error updating location:", error);
+  //   }
+  // };
+
+  // const getCurrentLocation = async () => {
+  //   let location = await Location.getCurrentPositionAsync({
+  //     accuracy: Location.Accuracy.High,
+  //   });
+
+  //   setLocation(location);
+
+  //   console.log("Location", location);
+  // };
+
+  const updateLocation = async () => {
+    try {
       const { status } = await Location.requestBackgroundPermissionsAsync();
-      if (status === "granted") {
-        console.log("Background location enabled");
+      if (status !== "granted") {
+        console.error("Permission to access background location was denied");
+        return;
       }
-    };
-
-    checkBackgroundLocation();
-  }, []);
   
-
+      // Get the current location every 5 seconds
+  
+      await Location.startLocationUpdatesAsync(
+        getCurrentLocationTask,
+        {
+          accuracy: Location.Accuracy.High,
+          timeInterval: 5000,
+          // distanceInterval: 100,
+        },
+        async ({ locations }) => {
+          if (locations && locations.length > 0) {
+            const { coords } = locations[0];
+            console.log("Received new location data:", coords);
+          }
+        }
+      );
+    } catch (error) {
+      console.error("Error updating location:", error);
+    }
+  };
+  
   return (
     <SafeAreaView style={[styles.header, style]}>
       <View style={styles.view}>
@@ -178,17 +287,15 @@ const Header14 = ({ style }) => {
                   styles.locationWrapperFlexBox4,
                 ]}
               >
-              {address &&
                 <Text
                   style={[
                     styles.talambanCebuCity,
                     styles.currentLocationFlexBox2,
                   ]}
                 >
-                  {/* Talamban, Cebu City */}
-                  {address}
+                  {/* {addressString ? addressString : "Loading..."} */}
+                  Cebu
                 </Text>
-              }
               </View>
               <View
                 style={[

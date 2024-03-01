@@ -279,12 +279,61 @@ const ConfirmService = ({ route }) => {
       const db = getFirestore();
       const auth = getAuth();
       const providerUID = auth.currentUser.uid;
-      const providerBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", ID);
+      const providerBookingDocRef = doc(
+        db,
+        "providerProfiles",
+        providerUID,
+        "activeBookings",
+        ID
+      );
+      const userWalletCollectionRef = collection(
+        db,
+        "providerProfiles",
+        providerUID,
+        "userWallet"
+      );
+
+      const querySnapshotWallet = await getDocs(userWalletCollectionRef);
+
+      if (!querySnapshotWallet.empty && bookingPaymentMethod !== "Cash") {
+        // Access the reference to the first document
+        const firstDocumentRef = querySnapshotWallet.docs[0].ref;
+
+        // Get the current data of the first document
+        const firstDocumentData = querySnapshotWallet.docs[0].data();
+
+        // Initialize an empty array if "transactions" doesn't exist in the first document's data
+        const transactions = firstDocumentData.transactions || [];
+
+        const wallet = firstDocumentData.wallet || 0;
+
+        const newWalletValue = wallet + bookingTotal;
+
+        await updateDoc(firstDocumentRef, { wallet: newWalletValue });
+
+        // Add your new transaction object to the transactions array
+        const newTransaction = {
+          bookingID: bookingID,
+          amount: bookingTotal,
+          service: `${title} ${category}`,
+          timestamp: formattedDate,
+        };
+        transactions.push(newTransaction);
+
+        // Update the "transactions" array in the first document
+        await updateDoc(firstDocumentRef, { transactions });
+
+        console.log("New transaction added successfully.");
+      } else {
+        console.log("No documents found under userWallet.");
+      }
 
       // Start a Firestore transaction
       await runTransaction(db, async (transaction) => {
         // Get the current document
-        const providerBookingSnapshot = await transaction.get(providerBookingDocRef);
+        const providerBookingSnapshot = await transaction.get(
+          providerBookingDocRef
+        );
 
         if (!providerBookingSnapshot.exists()) {
           throw "Document does not exist!";
@@ -296,38 +345,67 @@ const ConfirmService = ({ route }) => {
         transaction.update(providerBookingDocRef, { status: "Completed" });
 
         // Move the document to the activeBookings collection
-        const activeBookingDocRef = doc(db, "providerProfiles", providerUID, "historyBookings", ID);
-        transaction.set(activeBookingDocRef, { ...userBookingData, status: "Completed" });
+        const activeBookingDocRef = doc(
+          db,
+          "providerProfiles",
+          providerUID,
+          "historyBookings",
+          ID
+        );
+        transaction.set(activeBookingDocRef, {
+          ...userBookingData,
+          status: "Completed",
+        });
 
         // Delete the document from historyBookings collection
         transaction.delete(providerBookingDocRef);
 
         // Update the provider profile
-        const providerDocRef = doc(db, 'providerProfiles', providerUID);
+        const providerDocRef = doc(db, "providerProfiles", providerUID);
         transaction.update(providerDocRef, {
-          bookingID: '',
-          bookingIndex: '',
-          bookingMatched: false,
           availability: "available",
+          bookingID: "",
+          bookingIndex: null,
+          bookingMatched: false,
         });
         console.log("Provider booking completed and moved to historyBookings");
       });
 
-      const userBookingDocRef = collection(db, "serviceBookings", customerUID, "activeBookings");
+      const userBookingDocRef = collection(
+        db,
+        "serviceBookings",
+        customerUID,
+        "activeBookings"
+      );
 
-      console.log("Passed Item ID" , itemID);
-      console.log("Passed Matched Booking ID" , matchedBookingID);
-      console.log("Passed Customer UID" , customerUID);
+      console.log("Passed Item ID", itemID);
+      console.log("Passed Matched Booking ID", matchedBookingID);
+      console.log("Passed Customer UID", customerUID);
 
-      const q = query(userBookingDocRef, where("bookingID", "==", matchedBookingID));
+      const q = query(
+        userBookingDocRef,
+        where("bookingID", "==", matchedBookingID)
+      );
       const querySnapshot = await getDocs(q);
 
       // Run a batch operation to move the booking to historyBookings and update the provider profile
       const batch = writeBatch(db);
 
       querySnapshot.forEach((document) => {
-        const docRef = doc(db, "serviceBookings", customerUID, "activeBookings", document.id);
-        const historyDocRef = doc(db, "serviceBookings", customerUID, "historyBookings", document.id);
+        const docRef = doc(
+          db,
+          "serviceBookings",
+          customerUID,
+          "activeBookings",
+          document.id
+        );
+        const historyDocRef = doc(
+          db,
+          "serviceBookings",
+          customerUID,
+          "historyBookings",
+          document.id
+        );
 
         // Copy the document to historyBookings
         batch.set(historyDocRef, { ...document.data(), status: "Completed" });
@@ -344,7 +422,7 @@ const ConfirmService = ({ route }) => {
       // navigation.navigate("BottomTabsRoot", { screen: "Homepage" });
       setIsServiceCompleted(true);
     } catch (error) {
-    console.error("Error completing service:", error);
+      console.error("Error completing service:", error);
     }
   };
 

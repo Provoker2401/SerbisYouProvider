@@ -42,9 +42,9 @@ import {
 } from "firebase/firestore"; // Updated imports
 import { toggleAnimation } from "../animations/toggleAnimation";
 import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
+import BookingNotFound from "../components/BookingNotFound";
 import CancelBookingPrompt from "../components/CancelBookingPrompt";
 import CountDownBooking from "../components/CountDownBooking";
-import BookingNotFound from "../components/BookingNotFound";
 
 
 const NewBooking = ({ route }) => {
@@ -52,13 +52,8 @@ const NewBooking = ({ route }) => {
   const mapRef = useRef(null);
 
   const [isInputFocused, setIsInputFocused] = useState(false);
-  const {
-    name,
-    userBookingID,
-    matchedBookingID,
-    bookingIndex,
-    providerCoordinates,
-  } = route.params;
+  const { name, userBookingID, matchedBookingID, bookingIndex, providerCoordinates } =
+    route.params;
   const [bookingAccepted, setBookingAccepted] = useState(false);
   const [bookingAssigned, setBookingAssigned] = useState(false);
   const [bookingID, setBookingID] = useState("");
@@ -173,38 +168,29 @@ const NewBooking = ({ route }) => {
 
     // Get the document snapshot
     const providerSnapshot = await getDoc(providerDocRef);
-
     const providerBookingID = providerSnapshot.data().bookingID;
 
-
-    // console.log("ProviderBookingID is:", providerBookingID);
-
-    if (providerBookingID) {
+    if(providerBookingID) {
       console.log("BookingID is not blank");
       try {
         const activeBookings = collection(providerDocRef, "activeBookings");
-
         const serviceBookingsCollection = collection(db, "serviceBookings");
-
+  
         // Get the service booking document using userBookingID
         const serviceBookingDocRef = doc(
           serviceBookingsCollection,
           userBookingID
         );
-
+  
         // Get the document snapshot
         const serviceBookingSnapshot = await getDoc(serviceBookingDocRef);
-
-        // check again the bookingID if empty or not // if empty console.log its empty
-        if (providerSnapshot.exists()) {
-        }
-
+  
         if (serviceBookingSnapshot.exists()) {
           // Update the acceptedBy field within the service booking document
           const updatedBookings = [...serviceBookingSnapshot.data().bookings];
           updatedBookings[bookingIndex].acceptedBy = providerUID;
           updatedBookings[bookingIndex].bookingAccepted = true;
-
+  
           // Update the service booking document
           await updateDoc(serviceBookingDocRef, {
             bookings: updatedBookings,
@@ -213,7 +199,7 @@ const NewBooking = ({ route }) => {
         } else {
           console.error("Service Booking document does not exist");
         }
-
+  
         if (providerSnapshot.exists()) {
           // Update the availability field within the provider document
           await updateDoc(providerDocRef, {
@@ -256,22 +242,19 @@ const NewBooking = ({ route }) => {
             newDocumentID: newDocumentID,
             matchedBookingID: matchedBookingID,
             providerLocation: providerLocation, // Include providerLocation in the route parameters
-          });
+          })
           setCountDownBookingVisible(false);
         } else {
           console.error("Provider Profile does not exists");
         }
       } catch (error) {
-        console.error("Error updating user data:", error);
-        // Handle the error, e.g., display an error message to the user
+        console.error("Error updating user data:", error);   // Handle the error, e.g., display an error message to the user
       }
-    } else {
+    }else{
       console.log("BookingID is blank");
-      // set visible for error booking has been canceled/already booked
-
-      setBookingNotFoundVisible(true);
-
+      setBookingNotFoundVisible(true);    // set visible for error booking has been canceled/already booked
     }
+
   };
 
   const declineBooking = async () => {
@@ -334,6 +317,7 @@ const NewBooking = ({ route }) => {
           bookingMatched: false,
           blackListed: arrayUnion(bookingID),
         });
+        setCountDownBookingVisible(false);
 
         setCountDownBookingVisible(false);
 
@@ -574,43 +558,6 @@ const NewBooking = ({ route }) => {
             Array.isArray(bookingData.bookings) &&
             bookingData.bookings.length > 0
           ) {
-            // bookingData.bookings.forEach((booking) => {
-            //   if (!booking.bookingAccepted) {
-            //     // Fetch data and display through console.log
-            //     console.log("Fetching data for booking:", booking);
-            //   }
-            // });
-            // bookingLoop: for (const booking of bookingData.bookings) {
-            //   if (!booking.bookingAccepted) {
-            //     // Fetch data and display through console.log
-            //     console.log("Fetching data for booking:", booking);
-            //     console.log("Services: " , booking.service);
-            //     const servicesData = booking.service.map((doc) => doc);
-            //     console.log("Data Services: " ,servicesData);
-            //     setBookingDate(booking.date);
-            //     setBookingTime(booking.time);
-            //     setBookingAddress(booking.address);
-            //     setBookingMaterials(booking.materials);
-            //     setBookingCategory(booking.category);
-            //     setBookingServices(booking.service);
-            //     setBookingTotal(booking.totalPrice);
-            //     setCoordinates({
-            //       latitude: booking.coordinates.latitude,
-            //       longitude: booking.coordinates.longitude,
-            //     });
-
-            //     console.log("Date: " ,bookingDate);
-            //     console.log("Time: " ,bookingTime);
-            //     console.log("Address: " ,bookingAddress);
-            //     console.log("Materials: " ,bookingMaterials);
-            //     console.log("Category: " ,bookingCategory);
-            //     console.log("Services: " ,bookingServices);
-            //     console.log("Total Price: " ,bookingTotal);
-            //     console.log("Coordinates: " ,coordinates);
-
-            //     // Use 'break' with the label to exit the loop after processing the desired booking
-            //     break bookingLoop;
-            //   }
             const indexToFetch = bookingIndex; // Set the desired index here
             const matchingBooking = bookingData.bookings[indexToFetch];
             if (matchingBooking) {
@@ -1114,7 +1061,7 @@ const NewBooking = ({ route }) => {
           <View style={styles.frameFlexBox1}>
             <View style={styles.youWillEarnWrapper}>
               <Text style={styles.text15}>
-                {/* ₱6000.00 */}₱{bookingTotal}.00
+                ₱{bookingTotal}.00
               </Text>
             </View>
           </View>
@@ -1138,7 +1085,6 @@ const NewBooking = ({ route }) => {
           </Pressable>
         </View>
       </View>
-
       <Modal animationType="fade" transparent visible={cancelModalVisible}>
         <View style={styles.logoutButtonOverlay}>
           <View style={styles.containerCancel}>
@@ -1169,7 +1115,6 @@ const NewBooking = ({ route }) => {
           </View>
         </View>
       </Modal>
-
       <Modal animationType="fade" transparent visible={BookingNotFoundVisible}>
         <View style={styles.logoutButtonOverlay}>
           <View style={styles.containerCancel}>

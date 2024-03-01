@@ -56,8 +56,6 @@ const Authentication = ({ route }) => {
 
   const [timer, setTimer] = useState(60);
 
-
-
   const [timerIntervalId, setTimerIntervalId] = useState(null);
 
   const [showWaitText, setShowWaitText] = useState(true);
@@ -241,12 +239,6 @@ const Authentication = ({ route }) => {
 
         // User signed up successfully
         console.log("Sign Up Successful!");
-
-        // Clear input fields and show success toast
-        setName("");
-        setEmail("");
-        setPassword("");
-        setPhone("");
 
         Toast.show({
           type: "success",

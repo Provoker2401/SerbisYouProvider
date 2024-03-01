@@ -1,16 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   StatusBar,
   StyleSheet,
   Pressable,
+  TouchableOpacity,
   View,
   Text,
   ScrollView,
+  Dimensions,
+  Linking,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import { Color, FontSize, Border, FontFamily, Padding } from "../GlobalStyles";
+import MapView, {
+  Marker,
+  Circle,
+  enableLatestRenderer,
+} from "react-native-maps";
 import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore"; // Updated imports
 import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
 import * as TaskManager from "expo-task-manager";
@@ -18,16 +27,27 @@ import * as Location from "expo-location";
 
 const GoToCustomer = ({ route }) => {
   const navigation = useNavigation();
-  const [address, setAddress] = useState(null);
+  const mapRef = useRef(null);
+
   const { itemID, matchedBookingID, customerUID } = route.params;
   const [bookingName, setBookingName] = useState("");
   const [bookingDate, setBookingDate] = useState("");
   const [bookingTime, setBookingTime] = useState("");
   const [bookingAddress, setBookingAddress] = useState("");
+  const [address, setAddress] = useState(null);
+
   const [bookingCoordinates, setBookingCoordinates] = useState({
     latitude: null,
     longitude: null,
   });
+  const [providerCoordinates, setProviderCoordinates] = useState({
+    latitude: null,
+    longitude: null,
+  });
+  const [bookingAddressDetails, setBookingAddressDetails] = useState({});
+
+  const [isMapReady, setIsMapReady] = useState(false);
+  const [phoneUser, setphoneUser] = useState("");
   const [bookingAddressInstruction, setBookingAddressInstruction] =
     useState("");
 
@@ -62,9 +82,72 @@ const GoToCustomer = ({ route }) => {
     }
   };
 
+  // Calculate the map height as a fraction of the screen height
+  const screenHeight = Dimensions.get("window").height;
+  const mapHeight = screenHeight * 0.4; // 40% of the screen height
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Assuming you have these states or props available
+  const providerLocation = {
+    latitude: providerCoordinates.latitude,
+    longitude: providerCoordinates.longitude,
+  };
+  const customerLocation = {
+    latitude: bookingCoordinates.latitude,
+    longitude: bookingCoordinates.longitude,
+  };
+
+  // Function to handle directions
+  const handleGetDirections = () => {
+    const data = {
+      source: providerLocation,
+      destination: customerLocation,
+      params: [
+        {
+          key: "travelmode",
+          value: "driving", // could be "walking", "bicycling" or "transit" as well
+        },
+        {
+          key: "dir_action",
+          value: "navigate", // this launches navigation directly
+        },
+      ],
+    };
+
+    const url = `https://www.google.com/maps/dir/?api=1&origin=${data.source.latitude},${data.source.longitude}&destination=${data.destination.latitude},${data.destination.longitude}&travelmode=${data.params[0].value}`;
+    Linking.openURL(url);
+  };
+
+  const onMapLayout = () => {
+    setIsMapReady(true);
+  };
+
+  const [initialMapRegion, setInitialMapRegion] = useState({
+    latitude: providerCoordinates.latitude,
+    longitude: providerCoordinates.longitude,
+    latitudeDelta: 0.008,
+    longitudeDelta: 0.008,
+  });
+
+  const [initialMarkerPosition, setInitialMarkerPosition] = useState({
+    latitude: providerCoordinates.latitude,
+    longitude: providerCoordinates.longitude,
+  });
+
+  const [markerPosition, setMarkerPosition] = useState(initialMarkerPosition);
+
+  useEffect(() => {
+    if (isMapReady) {
+      // Perform map operations here
+    }
+  }, [isMapReady]);
+
   useEffect(() => {
     async function fetchData() {
       try {
+        setIsLoading(true); // Set loading to true before fetching data
+
         const db = getFirestore(); // Use getFirestore() to initialize Firestore
 
         // Get the user's UID
@@ -80,6 +163,12 @@ const GoToCustomer = ({ route }) => {
           "activeBookings",
           itemID
         );
+        const providerProfilesCollection = doc(
+          db,
+          "providerProfiles",
+          providerUID
+        );
+        const providerDocSnapshot = await getDoc(providerProfilesCollection);
         const docSnapshot = await getDoc(userBookingDocRef);
 
         if (docSnapshot.exists()) {
@@ -90,12 +179,29 @@ const GoToCustomer = ({ route }) => {
           setBookingDate(booking.date);
           setBookingTime(booking.time);
           setBookingAddress(booking.address);
-          setBookingCoordinates({
-            latitude: booking.coordinates.latitude,
-            longitude: booking.coordinates.longitude,
-          });
+          setBookingAddressDetails(booking.addressDetails);
+          setphoneUser(booking.phone);
+          // Validate coordinates before setting them
+          const bookingLat = booking.coordinates.latitude;
+          const bookingLong = booking.coordinates.longitude;
+          if (
+            typeof bookingLat === "number" &&
+            typeof bookingLong === "number"
+          ) {
+            setBookingCoordinates({
+              latitude: bookingLat,
+              longitude: bookingLong,
+            });
+          } else {
+            console.error(
+              "Invalid booking coordinates:",
+              bookingLat,
+              bookingLong
+            );
+          }
           // setBookingAddressInstruction(booking.totalPrice);
 
+          console.log("Booking Address Details: ", bookingAddressDetails);
           console.log("Name: ", bookingName);
           console.log("Date: ", bookingDate);
           console.log("Time: ", bookingTime);
@@ -105,6 +211,33 @@ const GoToCustomer = ({ route }) => {
         } else {
           console.log("No such document!");
         }
+
+        if (providerDocSnapshot.exists()) {
+          const providerData = providerDocSnapshot.data();
+          console.log("Booking Data: ", providerData);
+          const coordinates = providerData.coordinates;
+
+          // Validate coordinates before setting them
+          const providerLat = parseFloat(coordinates.latitude);
+          const providerLong = parseFloat(coordinates.longitude);
+          if (!isNaN(providerLat) && !isNaN(providerLong)) {
+            setProviderCoordinates({
+              latitude: providerLat,
+              longitude: providerLong,
+            });
+          } else {
+            console.error(
+              "Invalid provider coordinates:",
+              providerLat,
+              providerLong
+            );
+          }
+
+          console.log("Provider Coordinates: ", providerCoordinates);
+        } else {
+          console.log("No such document!");
+        }
+        setIsLoading(false); // Set loading to false once data is fetched
       } catch (error) {
         console.error("Error retrieving data:", error);
       }
@@ -204,8 +337,12 @@ const GoToCustomer = ({ route }) => {
     }
   });
 
-  return (
-    <View style={styles.goToCustomer}>
+  return isLoading ? (
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator size={60} color="#0000FF" />
+    </View>
+  ) : (
+    <SafeAreaView style={styles.goToCustomer}>
       <StatusBar barStyle="default" />
       <ScrollView
         style={styles.body}
@@ -233,7 +370,12 @@ const GoToCustomer = ({ route }) => {
                     {bookingName}
                   </Text>
                 </View>
-                <Pressable style={styles.message}>
+                <Pressable
+                  style={styles.message}
+                  onPress={() => {
+                    Linking.openURL(`sms:${phoneUser}`);
+                  }}
+                >
                   <Image
                     style={styles.vectorIcon}
                     contentFit="cover"
@@ -245,7 +387,12 @@ const GoToCustomer = ({ route }) => {
                     source={require("../assets/vector8.png")}
                   />
                 </Pressable>
-                <Pressable style={styles.message}>
+                <Pressable
+                  style={styles.message}
+                  onPress={() => {
+                    Linking.openURL(`tel:${phoneUser}`);
+                  }}
+                >
                   <Image
                     style={styles.vectorIcon}
                     contentFit="cover"
@@ -294,7 +441,7 @@ const GoToCustomer = ({ route }) => {
                 <View style={styles.frameWrapper}>
                   <View style={styles.frame}>
                     <Text
-                      style={[styles.august112023, styles.august112023Typo]}
+                      style={[styles.universityOfSan, styles.august112023Typo]}
                     >
                       {bookingTime}
                     </Text>
@@ -302,95 +449,250 @@ const GoToCustomer = ({ route }) => {
                 </View>
               </View>
             </View>
-            <View
-              style={[styles.bookingDetailsLabelGroup, styles.bookingFlexBox]}
-            >
-              <View style={styles.bookingDetailsLabel}>
-                <Text
-                  style={[
-                    styles.addressInstructions,
-                    styles.pleaseMeetMeFlexBox,
-                  ]}
-                >
-                  Address Instructions
+            {/* <View
+            style={[styles.bookingDetailsLabelGroup, styles.bookingFlexBox]}
+          >
+            <View style={styles.bookingDetailsLabel}>
+              <Text
+                style={[
+                  styles.addressInstructions,
+                  styles.pleaseMeetMeFlexBox,
+                ]}
+              >
+                Address Instructions
+              </Text>
+            </View>
+            <View style={styles.bookingDetailsLabel3}>
+              <View style={styles.frame2}>
+                <Text style={[styles.pleaseMeetMe, styles.amClr]}>
+                  Please meet me at the blue gate, beside gate 3 siomai
                 </Text>
               </View>
-              <View style={styles.bookingDetailsLabel3}>
-                <View style={styles.frame2}>
-                  <Text style={[styles.pleaseMeetMe, styles.amClr]}>
-                    Please meet me at the blue gate, beside gate 3 siomai
-                  </Text>
-                </View>
-              </View>
             </View>
-            <View
-              style={[
-                styles.bookingDetailsLabelContainer,
-                styles.bookingFlexBox,
-              ]}
-            >
-              <View style={styles.bookingDetailsLabel4}>
-                <Text
-                  style={[styles.arriveAt, styles.amClr]}
-                >{`Arrive at `}</Text>
-                <Text style={[styles.am, styles.amClr]}>9:30 AM</Text>
-              </View>
-              <View style={[styles.frameView, styles.frameViewFlexBox]}>
-                <Pressable
-                  style={[styles.technician1Parent, styles.frameViewFlexBox]}
-                >
-                  <Image
-                    style={styles.technician1Icon}
-                    contentFit="cover"
-                    source={require("../assets/technician-1.png")}
-                  />
-                  <View style={styles.icons8Location10021Wrapper}>
-                    <Image
-                      style={[
-                        styles.icons8Location10021,
-                        styles.image2533IconLayout,
-                      ]}
-                      contentFit="cover"
-                      source={require("../assets/icons8location100-2-1.png")}
-                    />
-                  </View>
-                  <Pressable
-                    style={[styles.currentLocationBtn, styles.innerFlexBox]}
+          </View> */}
+            {bookingAddressDetails.note ? (
+              <View>
+                {bookingAddressDetails.floor ||
+                bookingAddressDetails.house ||
+                bookingAddressDetails.street ? (
+                  <View
+                    style={[
+                      styles.bookingDetailsLabelGroup,
+                      styles.bookingFlexBox,
+                    ]}
                   >
-                    <View style={styles.navigation11Wrapper}>
-                      <Image
-                        style={styles.navigation11}
-                        contentFit="cover"
-                        source={require("../assets/navigation-1-1.png")}
-                      />
+                    <View style={styles.bookingDetailsLabel}>
+                      <Text
+                        style={[
+                          styles.addressInstructions,
+                          styles.pleaseMeetMeFlexBox,
+                        ]}
+                      >
+                        Address Instructions
+                      </Text>
                     </View>
-                  </Pressable>
-                  <Image
-                    style={[styles.image2533Icon, styles.image2533IconLayout]}
-                    contentFit="cover"
-                    source={require("../assets/image-2533.png")}
-                  />
-                </Pressable>
+                    {bookingAddressDetails.label ? (
+                      <View>
+                        <View style={styles.frame2}>
+                          <Text style={[styles.pleaseMeetMe, styles.amClr]}>
+                            {bookingAddressDetails.label && (
+                              <Text
+                                style={[styles.pleaseMeetMe2, styles.amClr]}
+                              >
+                                ({bookingAddressDetails.label}){" "}
+                              </Text>
+                            )}
+                            {[
+                              bookingAddressDetails.street,
+                              bookingAddressDetails.house,
+                              bookingAddressDetails.floor,
+                            ]
+                              .filter(Boolean)
+                              .join(", ")}
+                          </Text>
+                        </View>
+                        <View style={styles.frame2}>
+                          <Text style={[styles.pleaseMeetMe, styles.amClr]}>
+                            Note: {bookingAddressDetails.note}
+                          </Text>
+                        </View>
+                      </View>
+                    ) : (
+                      <View>
+                        <View style={styles.frame2}>
+                          <Text style={[styles.pleaseMeetMe, styles.amClr]}>
+                            {[
+                              bookingAddressDetails.street,
+                              bookingAddressDetails.house,
+                              bookingAddressDetails.floor,
+                            ]
+                              .filter(Boolean)
+                              .join(", ")}
+                          </Text>
+                        </View>
+                        <View style={styles.frame2}>
+                          <Text style={[styles.pleaseMeetMe, styles.amClr]}>
+                            Note: {bookingAddressDetails.note}
+                          </Text>
+                        </View>
+                      </View>
+                    )}
+                  </View>
+                ) : (
+                  <View
+                    style={[
+                      styles.bookingDetailsLabelGroup,
+                      styles.bookingFlexBox,
+                    ]}
+                  >
+                    <View style={styles.bookingDetailsLabel}>
+                      <Text
+                        style={[
+                          styles.addressInstructions,
+                          styles.pleaseMeetMeFlexBox,
+                        ]}
+                      >
+                        Address Instructions
+                      </Text>
+                    </View>
+                    {bookingAddressDetails.label ? (
+                      <View>
+                        <View style={styles.frame2}>
+                          <Text style={[styles.pleaseMeetMe, styles.amClr]}>
+                            {bookingAddressDetails.label && (
+                              <Text
+                                style={[styles.pleaseMeetMe2, styles.amClr]}
+                              >
+                                {bookingAddressDetails.label
+                                  ? `(${bookingAddressDetails.label}) `
+                                  : ""}
+                              </Text>
+                            )}{" "}
+                            {bookingAddressDetails.note}
+                          </Text>
+                        </View>
+                      </View>
+                    ) : (
+                      <Text style={[styles.pleaseMeetMe, styles.amClr]}>
+                        {bookingAddressDetails.note}
+                      </Text>
+                    )}
+                  </View>
+                )}
               </View>
-            </View>
-            {/* <View style={[styles.frameWrapper1, styles.bookingFlexBox]}>
-              <View style={styles.componentsbuttonWrapper}>
-                <Pressable
-                  style={[
-                    styles.componentsbutton,
-                    styles.viewTimelineBtnFlexBox,
-                  ]}
-                  onPress={() => navigation.navigate("ViewBookingDetails")}
-                >
-                  <Text style={[styles.viewAllServices, styles.viewTypo]}>
-                    VIEW FULL DETAILS
-                  </Text>
-                </Pressable>
+            ) : (
+              <View>
+                {bookingAddressDetails.floor ||
+                bookingAddressDetails.house ||
+                bookingAddressDetails.street ? (
+                  <View
+                    style={[
+                      styles.bookingDetailsLabelGroup,
+                      styles.bookingFlexBox,
+                    ]}
+                  >
+                    <View style={styles.bookingDetailsLabel}>
+                      <Text
+                        style={[
+                          styles.addressInstructions,
+                          styles.pleaseMeetMeFlexBox,
+                        ]}
+                      >
+                        Address Instructions
+                      </Text>
+                    </View>
+                    {bookingAddressDetails.label ? (
+                      <View>
+                        <View style={styles.frame2}>
+                          <Text style={[styles.pleaseMeetMe, styles.amClr]}>
+                            {bookingAddressDetails.label && (
+                              <Text
+                                style={[styles.pleaseMeetMe2, styles.amClr]}
+                              >
+                                ({bookingAddressDetails.label}){" "}
+                              </Text>
+                            )}
+                            {[
+                              bookingAddressDetails.street,
+                              bookingAddressDetails.house,
+                              bookingAddressDetails.floor,
+                            ]
+                              .filter(Boolean)
+                              .join(", ")}
+                          </Text>
+                        </View>
+                      </View>
+                    ) : (
+                      <View>
+                        <View style={styles.frame2}>
+                          <Text style={[styles.pleaseMeetMe, styles.amClr]}>
+                            {[
+                              bookingAddressDetails.street,
+                              bookingAddressDetails.house,
+                              bookingAddressDetails.floor,
+                            ]
+                              .filter(Boolean)
+                              .join(", ")}
+                          </Text>
+                        </View>
+                      </View>
+                    )}
+                  </View>
+                ) : (
+                  <View style={styles.bookingDetailsLabel2}></View>
+                )}
               </View>
-            </View> */}
+            )}
           </View>
         </View>
       </ScrollView>
+      <View
+        style={[styles.bookingDetailsLabelContainer, styles.bookingFlexBox]}
+      >
+        <View style={styles.bookingDetailsLabel4}>
+          <Text style={[styles.arriveAt, styles.amClr]}>{`Arrive at `}</Text>
+          <Text style={[styles.am, styles.amClr]}>9:30 AM</Text>
+        </View>
+      </View>
+      <View style={[styles.mapContainer]}>
+        <MapView
+          ref={mapRef}
+          // style={[styles.map, { height: mapHeight }]}
+          style={styles.map}
+          region={initialMapRegion}
+          onLayout={onMapLayout}
+        >
+          {providerCoordinates.latitude && providerCoordinates.longitude && (
+            <Marker
+              coordinate={providerCoordinates}
+              title="Provider's Location"
+              draggable={false}
+              image={require("../assets/provider-2.png")}
+            />
+          )}
+          {bookingCoordinates.latitude && bookingCoordinates.longitude && (
+            <Marker
+              coordinate={{
+                latitude: bookingCoordinates.latitude,
+                longitude: bookingCoordinates.longitude,
+              }}
+              title="Customer's Location"
+              draggable={false}
+              image={require("../assets/home-2.png")}
+            />
+          )}
+          {/* Directions Button */}
+        </MapView>
+        <TouchableOpacity
+          style={styles.directionsButton}
+          onPress={handleGetDirections}
+        >
+          <Image
+            source={require("../assets/navigation-1-1.png")}
+            style={styles.buttonIcon}
+          />
+        </TouchableOpacity>
+      </View>
       <View style={[styles.goToCustomerInner, styles.innerFlexBox]}>
         <View style={styles.bookingDetailsLabel}>
           <Pressable
@@ -403,16 +705,45 @@ const GoToCustomer = ({ route }) => {
           </Pressable>
         </View>
       </View>
-      <Image
-        style={styles.serviceProviderIcon}
-        contentFit="cover"
-        source={require("../assets/service-provider-icon.png")}
-      />
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  mapContainer: {
+    // height: "50%", // or whatever height you prefer
+    flex: 1,
+    marginHorizontal: 10, // Horizontal padding
+    marginTop: 10, // Top padding
+    marginBottom: 20, // Top padding
+    borderRadius: 10, // If you want rounded corners
+    overflow: "hidden", // This property will hide the map's overflow to respect the border radius
+    borderWidth: 1,
+    borderColor: "#ccc",
+  },
+  buttonIcon: {
+    width: 30, // Size of the directions icon image
+    height: 30,
+  },
+  directionsButton: {
+    position: "absolute",
+    bottom: 10, // You can adjust this
+    right: 10, // You can adjust this
+    padding: 10,
+    backgroundColor: "white", // Your desired color
+    borderRadius: 20,
+    elevation: 10, // For Android shadow
+  },
+
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
   header: {
     backgroundColor: "#1a244d",
   },
@@ -420,8 +751,8 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     paddingHorizontal: 2,
     paddingVertical: 15,
-    alignItems: "center",
-    justifyContent: "flex-end",
+    flexGrow: 1,
+    justifyContent: "space-between", // This will push the content and map apart
   },
   viewFlexBox: {
     paddingHorizontal: 0,
@@ -454,13 +785,12 @@ const styles = StyleSheet.create({
   },
   august112023Typo: {
     color: Color.lightLabelPrimary,
-    textTransform: "capitalize",
     fontSize: FontSize.paragraphMedium15_size,
     textAlign: "left",
     flex: 1,
   },
   bookingFlexBox: {
-    marginTop: 10,
+    marginTop: 5,
     justifyContent: "center",
     alignSelf: "stretch",
   },
@@ -507,6 +837,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     alignSelf: "stretch",
+  },
+  bookingDetailsLabel2: {
+    display: "none",
   },
   customerName1: {
     fontFamily: FontFamily.workSansSemiBold,
@@ -621,12 +954,17 @@ const styles = StyleSheet.create({
     fontFamily: FontFamily.interRegular,
     color: Color.colorGray_300,
     textAlign: "left",
-    flex: 1,
+  },
+  pleaseMeetMe2: {
+    fontFamily: FontFamily.levelSemibold14,
+    color: Color.colorGray_300,
+    textAlign: "left",
   },
   frame2: {
     alignItems: "center",
     flexDirection: "row",
     flex: 1,
+    alignSelf: "stretch",
   },
   bookingDetailsLabel3: {
     marginTop: 5,
@@ -651,7 +989,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   bookingDetailsLabel4: {
-    padding: Padding.p_8xs,
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
@@ -722,10 +1059,9 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   bookingDetailsLabelContainer: {
-    paddingHorizontal: Padding.p_8xs,
-    paddingTop: Padding.p_8xs,
-    paddingBottom: Padding.p_3xs,
-    backgroundColor: Color.m3White,
+    // paddingHorizontal: Padding.p_8xs,
+    // paddingTop: Padding.p_8xs,
+    // paddingBottom: Padding.p_3xs,
   },
   viewAllServices: {
     letterSpacing: -0.1,
@@ -756,8 +1092,8 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
   },
   body: {
-    zIndex: 2,
-    alignSelf: "stretch",
+    // zIndex: 2,
+    // alignSelf: "stretch",
     flex: 1,
   },
   viewAllServices1: {
