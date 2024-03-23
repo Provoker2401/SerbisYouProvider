@@ -51,6 +51,8 @@ const ConfirmService = ({route}) => {
   const [imageFlag, setImageFlag] = useState(false);
   const [ID, setID] = useState("");
   const [isServiceCompleted, setIsServiceCompleted] = useState(false);
+  const [category, setCategory] = useState("");
+  const [title, setTitle] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -82,6 +84,8 @@ const ConfirmService = ({route}) => {
           setBookingID(booking.bookingID);
           setBookingPaymentMethod(booking.paymentMethod);
           setBookingTotal(booking.totalPrice);
+          setTitle(booking.title);
+          setCategory(booking.category);
 
           console.log("Booking ID: " , bookingID);
           console.log("Payment Method: " , bookingPaymentMethod);
@@ -184,6 +188,84 @@ const ConfirmService = ({route}) => {
   };
 
   const handleCompletedService = async () => {
+     // timestamp
+    //service
+    const currentDate = new Date();
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    const formattedDate = `${
+      monthNames[currentDate.getMonth()]
+    } ${currentDate.getDate()}`;
+
+    console.log("Booking ID: ", bookingID);
+    console.log("Payment Method: ", bookingPaymentMethod);
+    console.log("Total: ", bookingTotal);
+    console.log(`${title} ${category}`);
+
+    // try {
+    //   const db = getFirestore();
+    //   const auth = getAuth();
+    //   const providerUID = auth.currentUser.uid;
+
+    //   // Construct a reference to the "userWallet" collection under the provider's profile
+    //   const userWalletCollectionRef = collection(
+    //     db,
+    //     "providerProfiles",
+    //     providerUID,
+    //     "userWallet"
+    //   );
+
+    //   // Get all documents in the "userWallet" collection
+    //   const querySnapshot = await getDocs(userWalletCollectionRef);
+
+    //   if (!querySnapshot.empty && bookingPaymentMethod !== "Cash") {
+    //     // Access the reference to the first document
+    //     const firstDocumentRef = querySnapshot.docs[0].ref;
+
+    //     // Get the current data of the first document
+    //     const firstDocumentData = querySnapshot.docs[0].data();
+
+    //     // Initialize an empty array if "transactions" doesn't exist in the first document's data
+    //     const transactions = firstDocumentData.transactions || [];
+
+    //     const wallet = firstDocumentData.wallet || 0;
+
+    //     const newWalletValue = wallet + bookingTotal;
+
+    //     await updateDoc(firstDocumentRef, { wallet: newWalletValue });
+
+    //     // Add your new transaction object to the transactions array
+    //     const newTransaction = {
+    //       bookingID: bookingID,
+    //       amount: bookingTotal,
+    //       service: `${title} ${category}`,
+    //       timestamp: formattedDate,
+    //     };
+    //     transactions.push(newTransaction);
+
+    //     // Update the "transactions" array in the first document
+    //     await updateDoc(firstDocumentRef, { transactions });
+
+    //     console.log("New transaction added successfully.");
+    //   } else {
+    //     console.log("No documents found under userWallet.");
+    //   }
+    // } catch (error) {
+    //   console.error("Error:", error);
+    // }
+    
     try {
       const db = getFirestore();
       const auth = getAuth();

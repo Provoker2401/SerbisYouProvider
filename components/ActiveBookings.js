@@ -185,8 +185,7 @@ const ActiveBookings = ({ style }) => {
                     styles.viewAllServicesLayout,
                   ]}
                 >
-                  Currently you don’t have any upcoming booking. Track
-                  your booking from here.
+                  Currently, you don’t have any bookings scheduled. Manage your availability and review past past activities here.
                 </Text>
               </View>
               <View style={[styles.frameWrapper, styles.frameWrapperFlexBox]}>

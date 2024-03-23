@@ -7,6 +7,7 @@ import {
   Pressable,
   Text,
   TextInput,
+  TouchableWithoutFeedback
 } from "react-native";
 import { useState } from "react";
 import { FontSize, FontFamily, Color, Padding, Border } from "../GlobalStyles";
@@ -31,6 +32,16 @@ const SignUp = () => {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const eyeIconSource = showPassword
+    ? require("../assets/hide-pass.png")
+    : require("../assets/-icon-eye-empty.png");
 
   const isValidPhilippinePhoneNumber = (phoneNumber) => {
     // Clean the input by removing non-digit characters
@@ -373,7 +384,7 @@ const SignUp = () => {
                   </Text>
                   <View style={styles.fullNameInputWrapper}>
                     <View style={styles.leftNumberGroup}>
-                      <View style={styles.leftNumber1}>
+                      {/* <View style={styles.leftNumber1}>
                         <Image
                           style={[
                             styles.image2354Icon,
@@ -396,16 +407,27 @@ const SignUp = () => {
                           contentFit="cover"
                           source={require("../assets/vector-31.png")}
                         />
-                      </View>
+                      </View> */}
                       <TextInput
                         style={[styles.passwordInput, styles.leftName1FlexBox]}
                         placeholder="Password"
                         keyboardType="default"
-                        secureTextEntry={true}
+                        secureTextEntry={!showPassword}
                         placeholderTextColor="#d1d3d4"
                         value={password}
                         onChangeText={(text) => setPassword(text)}
                       />
+                      <TouchableWithoutFeedback
+                        onPress={togglePasswordVisibility}
+                      >
+                        <View style={styles.leftNumber}>
+                          <Image
+                            style={styles.iconEyeEmpty}
+                            contentFit="cover"
+                            source={eyeIconSource}
+                          />
+                        </View>
+                      </TouchableWithoutFeedback>
                     </View>
                   </View>
                 </View>
@@ -426,33 +448,29 @@ const SignUp = () => {
                 ]}
               >
                 <Text
-                  style={[styles.bySigningUp, styles.text2Clr]}
-                >{`By signing up, you agree to our
-  and`}</Text>
-                <Text
-                  style={[
-                    styles.termsOfServiceContainer,
-                    styles.privacyPolicyPosition,
-                  ]}
+                  style={[styles.bySigningUpContainer, styles.signIn1FlexBox]}
                 >
-                  <Text style={styles.text2Clr}>{` `}</Text>
                   <Text
-                    style={[styles.termsOfService, styles.termsOfServiceTypo]}
-                  >
-                    Terms of Service
-                  </Text>
-                  <Text style={styles.text2Clr}>,</Text>
-                </Text>
-                <Text
-                  style={[styles.privacyPolicy, styles.privacyPolicyPosition]}
-                >
-                  <Text style={styles.text2Clr}>{`        `}</Text>
-                  <Text style={styles.privacyPolicy1}>
-                    <Text style={styles.termsOfServiceTypo}>
+                    style={styles.text2Clr}
+                  >{`By signing up, you agree to our
+`}</Text>
+                  <View style={styles.termsOfServiceContainer}>
+                    <Pressable onPress={() => navigation.navigate("TermsAndConditions")}>
+                      <Text
+                        style={[styles.termsOfServiceTypo]}
+                      >
+                        Terms of Service
+                      </Text>
+                    </Pressable>
+                    <Text style={styles.bySigningUp}>{`, and `}</Text>
+                    <Pressable onPress={() => navigation.navigate("PrivacyPolicy")}>
+                      <Text
+                        style={[styles.termsOfServiceTypo]}
+                      >
                       Privacy Policy
-                    </Text>
-                    <Text style={styles.text4}>.</Text>
-                  </Text>
+                      </Text>
+                    </Pressable>
+                  </View>
                 </Text>
               </View>
               <View style={[styles.frame1, styles.frame1SpaceBlock]}>
@@ -536,6 +554,15 @@ const styles = StyleSheet.create({
   termsOfServiceTypo: {
     fontFamily: FontFamily.robotoBold,
     fontWeight: "600",
+    fontSize: 16,
+    color: Color.colorDarkslateblue_100,
+  },
+  bySigningUpContainer: {
+    letterSpacing: 1,
+    fontSize: FontSize.bodyLgBodyLgRegular_size,
+  },
+  signIn1FlexBox: {
+    textAlign: "center",
   },
   text6Typo: {
     color: Color.neutralShades0475,
@@ -558,6 +585,10 @@ const styles = StyleSheet.create({
     maxWidth: "100%",
     maxHeight: "100%",
     overflow: "hidden",
+  },
+  iconEyeEmpty: {
+    width: 20,
+    height: 17,
   },
   union: {
     left: "12.08%",
@@ -732,20 +763,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bySigningUp: {
-    zIndex: 0,
-    letterSpacing: 1,
     fontFamily: FontFamily.m3BodyLarge,
-    textAlign: "center",
-    fontSize: FontSize.bodyLgBodyLgRegular_size,
-    lineHeight: 24,
-    flex: 1,
+    color: Color.lightLabelPrimary,
   },
   termsOfService: {
     color: Color.colorDarkslateblue_100,
   },
   termsOfServiceContainer: {
-    left: 27,
-    zIndex: 1,
+    // left: 27,
+    // zIndex: 1,
+    justifyContent: "center",
+    flexDirection: "row",
+    alignItems: "center",
   },
   text4: {
     fontWeight: "500",

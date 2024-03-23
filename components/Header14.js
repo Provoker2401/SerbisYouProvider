@@ -8,7 +8,7 @@ import {
   Pressable,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useIsFocused, useFocusEffect} from "@react-navigation/native";
 import * as Location from "expo-location";
 import { Image } from "expo-image";
 import {
@@ -23,12 +23,417 @@ import {
   updateDoc,
 } from "firebase/firestore"; // Updated imports
 import * as geolib from "geolib";
+import axios from "axios";
 import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
 import { Color, Padding, FontSize, FontFamily, Border } from "../GlobalStyles";
+import * as TaskManager from "expo-task-manager";
 
 const Header14 = ({ style }) => {
+  const isFocused = useIsFocused();
   const navigation = useNavigation();
+  const [location, setLocation] = useState(null);
   const [address, setAddress] = useState(null);
+  const [reverse, setReverse] = useState(null);
+  const [addressString, setAddressString] = useState(null);
+  const [isRunning, setIsRunning] = useState(false);
+
+  const getCurrentLocationTask = "background-location-task";
+
+  const db = getFirestore();
+  const auth = getAuth();
+  const userUID = auth.currentUser.uid;
+  const providerProfilesCollection = doc(db, "providerProfiles", userUID);
+
+  TaskManager.defineTask(getCurrentLocationTask, async ({ data, error }) => {
+    if (error) {
+      console.error("Background location task error:", error);
+      return;
+    }
+
+    if (data) {
+      try {
+        if (data.locations && data.locations.length > 0) {
+          const { coords } = data.locations[0];
+          const { latitude, longitude } = coords;
+          console.log(
+            "Received new location data from TaskManager - Latitude:",
+            latitude,
+            "Longitude:",
+            longitude
+          );
+
+          const addressResponse = await Location.reverseGeocodeAsync({
+            latitude: latitude,
+            longitude: longitude,
+          });
+
+          const apiKey = "AIzaSyAuaR8dxr95SLUTU-cidS7I-3uB6mEoJmA"; // Replace with your Google Maps API key
+          const response = await axios.get(
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&result_type=street_address&key=${apiKey}`
+          );
+    
+          if (addressResponse.length > 0) {
+            const addressInfo = addressResponse[0];
+            console.log("Address: ", addressInfo);
+    
+            if (addressInfo.streetNumber !== null && addressInfo.street !== null && addressInfo.city !== null) {
+              const cityOnly = `${addressResponse[0].streetNumber}, ${addressResponse[0].street}, ${addressResponse[0].city}`;
+              console.log(cityOnly);
+              setAddress(cityOnly);
+            } else {
+              console.log("Google Maps or OSM will be used");
+              if (response.data.results && response.data.results.length > 0) {
+                const firstResult = response.data.results[0];
+                console.log("First Result: ", firstResult);
+     
+                const addressComponents1 = firstResult.address_components.filter(
+                  (component) => {
+                    // Check if any of the component's types match the excluded list
+                    return !component.types.some(type => 
+                      ["administrative_area_level_1", "administrative_area_level_2", "postal_code", "country"].includes(type)
+                    );
+                  }
+                );
+                console.log("Components Address: ", addressComponents1);
+        
+                const formattedAddress1 = addressComponents1
+                  .map((component) => component.long_name)
+                  .join(", ");
+        
+                setAddress(formattedAddress1);
+                console.log("City Address:", formattedAddress1);
+              } else {
+                // If Google Geocoding API doesn't return results, try OpenStreetMap Nominatim API
+                try {
+                  const osmResponse = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+                  );
+                  const osmData = await osmResponse.json();
+                  console.log("OSM Data:", osmData);
+                  if (osmData.display_name) {
+                    const addressParts = osmData.display_name.split(", ");
+                    console.log("Address Parts:", addressParts);
+   
+                    // Remove the last 3 parts (region, zip code, and country)
+                    const modifiedAddress = addressParts.slice(0, -4).join(", ");
+                    console.log("Modified Address:", modifiedAddress);
+                    
+                    // New variable for city address
+                    let cityAddress = "";
+        
+                    // Loop through addressParts to find specific city names
+                    for (const part of addressParts) {
+                      if (["Cebu", "Cebu City"].includes(part)) {
+                        cityAddress = "Cebu City";
+                        break; // Exit loop once the city is found
+                      } else if (["Mandaue", "Mandaue City"].includes(part)) {
+                        cityAddress = "Mandaue City";
+                        break; // Exit loop once the city is found
+                      } else if (["Lapu-Lapu", "Lapu-Lapu City"].includes(part)) {
+                        cityAddress = "Lapu-Lapu City";
+                        break; // Exit loop once the city is found
+                      } 
+                    }
+    
+                    console.log(cityAddress);
+        
+                    // Use the cityAddress variable
+                    if (cityAddress) {
+                      const fullAddress = modifiedAddress + ", " + cityAddress;
+                      console.log("City Address:", fullAddress);
+                      setAddress(fullAddress);
+                    } else {
+                      cityAddress = osmData.address.city;
+                      const fullAddress = modifiedAddress + ", " + cityAddress;
+                      // Handle case where no specific city is found
+                      console.log("Address is out of Cebu City");
+                      setAddress(fullAddress);
+                    }
+                  } else {
+                    console.log("Error fetching location with OpenStreetMap");
+                  }
+                } catch (osmError) {
+                  console.error(
+                    "Error fetching location with OpenStreetMap:",
+                    osmError
+                  );
+                }
+              }
+            }
+          }
+
+          const docSnapshot = await getDoc(providerProfilesCollection);
+          if (docSnapshot.exists()) {
+            const coordinates = docSnapshot.data().realTimeCoordinates;
+            console.log("Coordinates ", coordinates);
+
+            // Update the real-time coordinates field in Firestore
+            await updateDoc(providerProfilesCollection, {
+              coordinates: {
+                latitude: latitude,
+                longitude: longitude,
+              },
+            });
+
+
+          }
+        }
+      } catch (error) {
+        console.error("Error updating Firestore document:", error);
+      }
+    }
+  });
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Code to start your function here
+      updateLocation();
+      setIsRunning(true);
+      return () => {
+        // Cleanup function: Stop the function when the screen loses focus
+        if (isRunning) {
+          // Code to stop the function here
+          stopUpdateLocation();
+          console.log("Stop the finding");
+        }
+      };
+    }, [isRunning]) // Only run when isRunning changes
+  );
+
+  const stopUpdateLocation = async () => {
+    try {
+      await Location.stopLocationUpdatesAsync(getCurrentLocationTask);
+      console.log("Background location stopped");
+      await TaskManager.unregisterAllTasksAsync();
+      console.log("All tasks unregistered");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // const updateLocation = async () => {
+  //   try {
+  //     const db = getFirestore();
+  //     const auth = getAuth();
+  //     const userUID = auth.currentUser.uid;
+  //     const providerProfilesCollection = doc(db, "providerProfiles", userUID);
+
+  //     const { status } = await Location.requestForegroundPermissionsAsync();
+  //     if (status !== "granted") {
+  //       console.error("Permission to access location was denied");
+  //       return;
+  //     }
+
+  //     // Get the current location every 5 seconds
+  //     const locationWatchId = await Location.watchPositionAsync(
+  //       {
+  //         accuracy: Location.Accuracy.High,
+  //         timeInterval: 5000,
+  //         distanceInterval: 0,
+  //       },
+  //       async (location) => {
+  //         const addressResponse = await Location.reverseGeocodeAsync({
+  //           latitude: location.coords.latitude,
+  //           longitude: location.coords.longitude,
+  //         });
+
+  //         // Retrieve the existing data from Firestore
+  //         const existingDataSnapshot = await getDoc(providerProfilesCollection);
+  //         const existingData = existingDataSnapshot.data();
+
+  //         // Calculate the distance between the current and existing locations
+  //         const distance = geolib.getDistance(
+  //           {
+  //             latitude: existingData?.coordinates?.latitude || 0,
+  //             longitude: existingData?.coordinates?.longitude || 0,
+  //           },
+  //           {
+  //             latitude: location.coords.latitude,
+  //             longitude: location.coords.longitude,
+  //           }
+  //         );
+
+  //         console.log("Distance:", distance);
+
+  //         await updateDoc(providerProfilesCollection, {
+  //           realTimeCoordinates: {
+  //             latitude: location.coords.latitude,
+  //             longitude: location.coords.longitude,
+  //           },
+  //           // Retain other data
+  //           // Add other fields you want to update here
+  //         });
+
+  //         // Check if the coordinates field is empty or if the distance is greater than or equal to 100 meters
+  //         if (!existingData?.coordinates || distance >= 100) {
+  //           console.log("Existing Coordinates:", existingData?.coordinates);
+  //           console.log("Distance is 100 meters far:", distance);
+  //           await updateDoc(providerProfilesCollection, {
+  //             coordinates: {
+  //               latitude: location.coords.latitude,
+  //               longitude: location.coords.longitude,
+  //             },
+  //             // Retain other data
+  //             // Add other fields you want to update here
+  //           });
+  //         }
+
+  //         if (addressResponse.length > 0) {
+  //           const addressInfo = addressResponse[0];
+  //           let cityOnly = "";
+  //           if (addressInfo.streetNumber !== null) {
+  //             cityOnly = `${addressResponse[0].streetNumber}, ${addressResponse[0].street}, ${addressResponse[0].city}`;
+  //           } else {
+  //             cityOnly = `${addressResponse[0].street}, ${addressResponse[0].city}`;
+  //           }
+  //           console.log(cityOnly);
+  //           setAddress(cityOnly);
+  //         }
+  //       }
+  //     );
+  //   } catch (error) {
+  //     console.error("Error updating location:", error);
+  //   }
+  // };
+
+  // const getCurrentLocation = async () => {
+  //   let location = await Location.getCurrentPositionAsync({
+  //     accuracy: Location.Accuracy.High,
+  //   });
+
+  //   setLocation(location);
+
+  //   console.log("Location", location);
+  // };
+
+  const updateLocation = async () => {
+    try {
+      const { status } = await Location.requestBackgroundPermissionsAsync();
+      if (status !== "granted") {
+        console.error("Permission to access background location was denied");
+        return;
+      }
+
+      // Get the current location every 5 seconds
+
+      await Location.startLocationUpdatesAsync(
+        getCurrentLocationTask,
+        {
+          accuracy: Location.Accuracy.High,
+          timeInterval: 5000,
+          // distanceInterval: 100,
+        },
+        async ({ locations }) => {
+          if (locations && locations.length > 0) {
+            const { coords } = locations[0];
+            const { latitude, longitude } = coords;
+            console.log("Received new location data:", coords);
+          }
+          const addressResponse = await Location.reverseGeocodeAsync({
+            latitude: latitude,
+            longitude: longitude,
+          });
+
+          const apiKey = "AIzaSyAuaR8dxr95SLUTU-cidS7I-3uB6mEoJmA"; // Replace with your Google Maps API key
+          const response = await axios.get(
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&result_type=street_address&key=${apiKey}`
+          );
+    
+          if (addressResponse.length > 0) {
+            const addressInfo = addressResponse[0];
+            console.log("Address: ", addressInfo);
+    
+            if (addressInfo.streetNumber !== null && addressInfo.street !== null && addressInfo.city !== null) {
+              const cityOnly = `${addressResponse[0].streetNumber}, ${addressResponse[0].street}, ${addressResponse[0].city}`;
+              console.log(cityOnly);
+              setAddress(cityOnly);
+            } else {
+              console.log("Google Maps or OSM will be used");
+              if (response.data.results && response.data.results.length > 0) {
+                const firstResult = response.data.results[0];
+                console.log("First Result: ", firstResult);
+     
+                const addressComponents1 = firstResult.address_components.filter(
+                  (component) => {
+                    // Check if any of the component's types match the excluded list
+                    return !component.types.some(type => 
+                      ["administrative_area_level_1", "administrative_area_level_2", "postal_code", "country"].includes(type)
+                    );
+                  }
+                );
+                console.log("Components Address: ", addressComponents1);
+        
+                const formattedAddress1 = addressComponents1
+                  .map((component) => component.long_name)
+                  .join(", ");
+        
+                setAddress(formattedAddress1);
+                console.log("City Address:", formattedAddress1);
+              } else {
+                // If Google Geocoding API doesn't return results, try OpenStreetMap Nominatim API
+                try {
+                  const osmResponse = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+                  );
+                  const osmData = await osmResponse.json();
+                  console.log("OSM Data:", osmData);
+                  if (osmData.display_name) {
+                    const addressParts = osmData.display_name.split(", ");
+                    console.log("Address Parts:", addressParts);
+   
+                    // Remove the last 3 parts (region, zip code, and country)
+                    const modifiedAddress = addressParts.slice(0, -4).join(", ");
+                    console.log("Modified Address:", modifiedAddress);
+                    
+                    // New variable for city address
+                    let cityAddress = "";
+        
+                    // Loop through addressParts to find specific city names
+                    for (const part of addressParts) {
+                      if (["Cebu", "Cebu City"].includes(part)) {
+                        cityAddress = "Cebu City";
+                        break; // Exit loop once the city is found
+                      } else if (["Mandaue", "Mandaue City"].includes(part)) {
+                        cityAddress = "Mandaue City";
+                        break; // Exit loop once the city is found
+                      } else if (["Lapu-Lapu", "Lapu-Lapu City"].includes(part)) {
+                        cityAddress = "Lapu-Lapu City";
+                        break; // Exit loop once the city is found
+                      } 
+                    }
+    
+                    console.log(cityAddress);
+        
+                    // Use the cityAddress variable
+                    if (cityAddress) {
+                      const fullAddress = modifiedAddress + ", " + cityAddress;
+                      console.log("City Address:", fullAddress);
+                      setAddress(fullAddress);
+                    } else {
+                      cityAddress = osmData.address.city;
+                      const fullAddress = modifiedAddress + ", " + cityAddress;
+                      // Handle case where no specific city is found
+                      console.log("Address is out of Cebu City");
+                      setAddress(fullAddress);
+                    }
+                  } else {
+                    console.log("Error fetching location with OpenStreetMap");
+                  }
+                } catch (osmError) {
+                  console.error(
+                    "Error fetching location with OpenStreetMap:",
+                    osmError
+                  );
+                }
+              }
+            }
+          }
+        }
+      );
+    } catch (error) {
+      console.error("Error updating location:", error);
+    }
+  };
 
   // useEffect(() => {
   //   (async () => {
@@ -173,93 +578,94 @@ const Header14 = ({ style }) => {
   
   //   return () => clearInterval(interval); // Cleanup on unmount
   // }, []);
-  useEffect(() => {
-    const updateLocation = async () => {
-      try {
-        const db = getFirestore();
-        const auth = getAuth();
-        const userUID = auth.currentUser.uid;
-        const providerProfilesCollection = doc(db, "providerProfiles", userUID);
+
+  // useEffect(() => {
+  //   const updateLocation = async () => {
+  //     try {
+  //       const db = getFirestore();
+  //       const auth = getAuth();
+  //       const userUID = auth.currentUser.uid;
+  //       const providerProfilesCollection = doc(db, "providerProfiles", userUID);
   
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          console.error("Permission to access location was denied");
-          return;
-        }
+  //       const { status } = await Location.requestForegroundPermissionsAsync();
+  //       if (status !== "granted") {
+  //         console.error("Permission to access location was denied");
+  //         return;
+  //       }
   
-        // Get the current location every 5 seconds
-        const locationWatchId = await Location.watchPositionAsync(
-          { accuracy: Location.Accuracy.High, timeInterval: 5000, distanceInterval: 0 },
-          async (location) => {
-            const addressResponse = await Location.reverseGeocodeAsync({
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-            });
+  //       // Get the current location every 5 seconds
+  //       const locationWatchId = await Location.watchPositionAsync(
+  //         { accuracy: Location.Accuracy.High, timeInterval: 5000, distanceInterval: 0 },
+  //         async (location) => {
+  //           const addressResponse = await Location.reverseGeocodeAsync({
+  //             latitude: location.coords.latitude,
+  //             longitude: location.coords.longitude,
+  //           });
   
-            // Retrieve the existing data from Firestore
-            const existingDataSnapshot = await getDoc(providerProfilesCollection);
-            const existingData = existingDataSnapshot.data();
+  //           // Retrieve the existing data from Firestore
+  //           const existingDataSnapshot = await getDoc(providerProfilesCollection);
+  //           const existingData = existingDataSnapshot.data();
   
-            // Calculate the distance between the current and existing locations
-            const distance = geolib.getDistance(
-              {
-                latitude: existingData?.coordinates?.latitude || 0,
-                longitude: existingData?.coordinates?.longitude || 0,
-              },
-              {
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-              }
-            );
+  //           // Calculate the distance between the current and existing locations
+  //           const distance = geolib.getDistance(
+  //             {
+  //               latitude: existingData?.coordinates?.latitude || 0,
+  //               longitude: existingData?.coordinates?.longitude || 0,
+  //             },
+  //             {
+  //               latitude: location.coords.latitude,
+  //               longitude: location.coords.longitude,
+  //             }
+  //           );
   
-            console.log("Distance:", distance);
+  //           console.log("Distance:", distance);
   
-            await updateDoc(providerProfilesCollection, {
-              realTimeCoordinates: {
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-              },
-              // Retain other data
-              // Add other fields you want to update here
-            });
-            // Check if the coordinates field is empty or if the distance is greater than or equal to 100 meters
-            if (!existingData?.coordinates || distance >= 100) {
-              console.log("Existing Coordinates:", existingData?.coordinates);
-              console.log("Distance is 100 meters far:", distance);
-              await updateDoc(providerProfilesCollection, {
-                coordinates: {
-                  latitude: location.coords.latitude,
-                  longitude: location.coords.longitude,
-                },
-                // Retain other data
-                // Add other fields you want to update here
-              });
-            }
+  //           await updateDoc(providerProfilesCollection, {
+  //             realTimeCoordinates: {
+  //               latitude: location.coords.latitude,
+  //               longitude: location.coords.longitude,
+  //             },
+  //             // Retain other data
+  //             // Add other fields you want to update here
+  //           });
+  //           // Check if the coordinates field is empty or if the distance is greater than or equal to 100 meters
+  //           if (!existingData?.coordinates || distance >= 100) {
+  //             console.log("Existing Coordinates:", existingData?.coordinates);
+  //             console.log("Distance is 100 meters far:", distance);
+  //             await updateDoc(providerProfilesCollection, {
+  //               coordinates: {
+  //                 latitude: location.coords.latitude,
+  //                 longitude: location.coords.longitude,
+  //               },
+  //               // Retain other data
+  //               // Add other fields you want to update here
+  //             });
+  //           }
   
-            if (addressResponse.length > 0) {
-              const addressInfo = addressResponse[0];
-              let cityOnly = "";
-              if (addressInfo.streetNumber !== null) {
-                cityOnly = `${addressResponse[0].streetNumber}, ${addressResponse[0].street}, ${addressResponse[0].city}`;
-              } else {
-                cityOnly = `${addressResponse[0].street}, ${addressResponse[0].city}`;
-              }
-              console.log(cityOnly);
-              setAddress(cityOnly);
-            }
-          }
-        );
-      } catch (error) {
-        console.error("Error updating location:", error);
-      }
-    };
+  //           if (addressResponse.length > 0) {
+  //             const addressInfo = addressResponse[0];
+  //             let cityOnly = "";
+  //             if (addressInfo.streetNumber !== null) {
+  //               cityOnly = `${addressResponse[0].streetNumber}, ${addressResponse[0].street}, ${addressResponse[0].city}`;
+  //             } else {
+  //               cityOnly = `${addressResponse[0].street}, ${addressResponse[0].city}`;
+  //             }
+  //             console.log(cityOnly);
+  //             setAddress(cityOnly);
+  //           }
+  //         }
+  //       );
+  //     } catch (error) {
+  //       console.error("Error updating location:", error);
+  //     }
+  //   };
   
-    updateLocation();
+  //   updateLocation();
   
-    return () => {
-      // Cleanup on unmount
-    };
-  }, []);
+  //   return () => {
+  //     // Cleanup on unmount
+  //   };
+  // }, []);
   
 
   return (
@@ -318,7 +724,6 @@ const Header14 = ({ style }) => {
                     styles.currentLocationFlexBox2,
                   ]}
                 >
-                  {/* Talamban, Cebu City */}
                   {address}
                 </Text>
               }

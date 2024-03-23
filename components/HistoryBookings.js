@@ -365,7 +365,7 @@ const HistoryBookings = ({ style }) => {
               </View>
               <View style={styles.frameWrapperFlexBox}>
                 <Text style={[styles.noUpcomingBookings, styles.bookingsTypo]}>
-                  No Upcoming Bookings
+                  No Past Bookings
                 </Text>
                 <Text
                   style={[
@@ -373,8 +373,7 @@ const HistoryBookings = ({ style }) => {
                     styles.viewAllServicesLayout,
                   ]}
                 >
-                  Currently you don’t have any upcoming booking. Track
-                  your booking from here.
+                  Your booking history is empty. View all completed appointments and past activities here.
                 </Text>
               </View>
               <View style={[styles.frameWrapper, styles.frameWrapperFlexBox]}>

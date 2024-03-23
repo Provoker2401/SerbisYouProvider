@@ -148,7 +148,6 @@ const styles = StyleSheet.create({
 
   },
   activeFlexBox: {
-    marginTop: 15,
     alignItems: "center",
     alignSelf: "stretch",
     backgroundColor: Color.m3White,

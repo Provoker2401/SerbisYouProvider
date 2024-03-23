@@ -96,9 +96,7 @@ const EReceipt = ({ route }) => {
           setTotalPrice(booking.totalPrice);
           setPayment(booking.paymentMethod);
           setBookingID(booking.bookingID);
-
           setBookingServices(booking.service);
-
           setCategory(booking.category);
         } else {
           console.log("No such document");
@@ -118,6 +116,20 @@ const EReceipt = ({ route }) => {
       `Booking ID: ${bookingID} has been copied to clipboard.`
     );
   }, [bookingID]);
+
+  const getFormattedServiceName = () => {
+    if (!serviceTitle || !category) {
+      return 'Service'; // Default text or handle as needed
+    }
+
+    // Check if the title is "Pet Care" or "Gardening"
+    if (serviceTitle === "Pet Care" || serviceTitle === "Gardening" || serviceTitle === "Cleaning") {
+      return category;
+    } else {
+      // If not, concatenate the title and category
+      return `${serviceTitle} ${category}`;
+    }
+  };
 
   return (
     <View style={styles.eReceipt}>
@@ -275,7 +287,7 @@ const EReceipt = ({ route }) => {
                           ]}
                         >
                           <Text style={styles.plumbingInstallation}>
-                            {serviceTitle} {category}
+                            {getFormattedServiceName()}
                           </Text>
                         </View>
                       </View>

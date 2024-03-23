@@ -38,6 +38,7 @@ const ViewBookingDetails = ({ route }) => {
   const [bookingProperty, setBookingProperty] = useState("");
   const [bookingMaterials, setBookingMaterials] = useState("");
   const [bookingCategory, setBookingCategory] = useState("");
+  const [bookingTitle, setBookingTitle] = useState("");
   const [bookingServices, setBookingServices] = useState([]);
   const [bookingPaymentMethod, setBookingPaymentMethod] = useState("");
   const [bookingSubtotal, setBookingSubtotal] = useState("");
@@ -132,6 +133,7 @@ const ViewBookingDetails = ({ route }) => {
           setBookingAddress(booking.address);
           setBookingProperty(booking.propertyType);
           setBookingCategory(booking.category);
+          setBookingTitle(booking.title);
           setBookingServices(booking.service);
           setBookingSubtotal(booking.subTotal);
           setBookingDistanceFee(booking.feeDistance);
@@ -229,6 +231,7 @@ const ViewBookingDetails = ({ route }) => {
           setBookingAddress(booking.address);
           setBookingProperty(booking.propertyType);
           setBookingCategory(booking.category);
+          setBookingTitle(booking.title);
           setBookingServices(booking.service);
           setBookingSubtotal(booking.subTotal);
           setBookingDistanceFee(booking.feeDistance);
@@ -264,6 +267,92 @@ const ViewBookingDetails = ({ route }) => {
       fetchActiveBookings();
     }
   }, [matchedBookingID, providerLocation, itemID]); // Dependency Array
+
+  const getFormattedServiceName = () => {
+    if (!bookingTitle || !bookingCategory) {
+      return 'Service'; // Default text or handle as needed
+    }
+
+    // Check if the title is "Pet Care" or "Gardening"
+    if (bookingTitle === "Pet Care" || bookingTitle === "Gardening" || bookingTitle === "Cleaning") {
+      return bookingCategory;
+    } else {
+      // If not, concatenate the title and category
+      return `${bookingTitle} ${bookingCategory}`;
+    }
+  };
+
+  const getServiceImageSource = (category, service) => {
+    if(category === "Plumbing") {
+      switch (service) {
+        case "Installation":
+          return require("../assets/plumbing-installation.png");
+        case "Repairs/Replacement":
+          return require("../assets/plumbing-repair.png");
+        default:
+          return require("../assets/plumbing-installation.png");
+      }
+    }else if(category === "Electrical") {
+      switch (service) {
+        case "Installation":
+          return require("../assets/electrical-installation.png");
+        case "Repairs/Replacement":
+          return require("../assets/electrical-repair.png");
+        default:
+          return require("../assets/electrical-installation.png");
+      }
+    }else if(category === "Carpentry") {
+      switch (service) {
+        case "Installation":
+          return require("../assets/carpentry-installation.png");
+        case "Repairs/Replacement":
+          return require("../assets/carpentry-repair.png");
+        case "Furniture Assembly And Disassembly":
+          return require("../assets/furniture-assembly-and-disassembly.png");
+        default:
+          return require("../assets/carpentry-installation.png");
+      }
+    }else if(category === "Cleaning" || category === "Pet Care" || category === "Gardening"){
+      switch (service) {
+        case "Standard Cleaning":
+          return require("../assets/standard-cleaning.png");
+        case "Deep Cleaning":
+          return require("../assets/deep-cleaning.png");
+        case "Electronic Appliance Cleaning":
+          return require("../assets/electronic-appliance-cleaning.png");
+        case "Pest Control":
+          return require("../assets/pest-control.png");
+        case "Dog Training":
+          return require("../assets/dog-training.png");
+        case "Dog Pet Grooming":
+          return require("../assets/pet-grooming.png");
+        case "Cat Pet Grooming":
+          return require("../assets/pet-grooming.png");
+        case "Bird Pet Grooming":
+          return require("../assets/pet-grooming.png");
+        case "Rabbit Pet Grooming":
+          return require("../assets/pet-grooming.png");
+        case "Dog Pet Sitting":
+          return require("../assets/pet-sitting.png");
+        case "Cat Pet Sitting":
+          return require("../assets/pet-sitting.png");
+        case "Bird Pet Sitting":
+          return require("../assets/pet-sitting.png");
+        case "Rabbit Pet Sitting":
+          return require("../assets/pet-sitting.png");
+        case "Garden Maintenance":
+          return require("../assets/garden-maintenance.png");
+        case "Landscape Design and Planning":
+          return require("../assets/landscape-design-and-planning.png");
+        case "Irrigation System Installation/Repairs":
+          return require("../assets/irrigation-system.png");
+        case "Pest and Disease Management":
+          return require("../assets/pest-and-disease-management.png");
+        default:
+          return require("../assets/standard-cleaning.png");
+      }
+    }
+  };
 
   const handleGetDirections = () => {
     const customerLocation = bookingCoordinates;
@@ -518,7 +607,7 @@ const ViewBookingDetails = ({ route }) => {
                       <Image
                         style={styles.plumbingInstallationPic}
                         contentFit="cover"
-                        source={require("../assets/plumbing-installation-pic.png")}
+                        source={getServiceImageSource(bookingTitle, bookingCategory)}
                       />
                     </View>
                   </View>
@@ -532,7 +621,7 @@ const ViewBookingDetails = ({ route }) => {
                   <View style={styles.frameWrapper6}>
                     <View style={styles.frame2}>
                       <Text style={[styles.august112023, styles.amFlexBox]}>
-                        {bookingCategory}
+                        {getFormattedServiceName()}
                       </Text>
                     </View>
                   </View>

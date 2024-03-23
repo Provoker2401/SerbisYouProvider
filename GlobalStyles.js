@@ -18,7 +18,7 @@ export const FontFamily = {
   m3BodyLarge: "Roboto-Regular",
   interRegular: "Inter-Regular",
   georamaLight: "Georama-Light",
-  abhayaLibreExtraBold: "Abhaya Libre ExtraBold",
+  abhayaLibreExtraBold: "AbhayaLibre-ExtraBold",
   workSansSemiBold: "WorkSans-SemiBold",
   robotoBlack: "Roboto-Black",
   montserratMedium: "Montserrat-Medium",
@@ -26,6 +26,7 @@ export const FontFamily = {
   subheadlineBold: "SF Pro Text",
   workSansRegular: "WorkSans-Regular",
   workSansBold: "WorkSans-Bold",
+  workSansExtraBold: "WorkSans-ExtraBold",
 };
 /* font sizes */
 export const FontSize = {

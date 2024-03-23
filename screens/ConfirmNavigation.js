@@ -1,21 +1,7 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Button, Text, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from "expo-image";
-import Swiper from 'react-native-swiper';
-import LinearGradient from 'expo-linear-gradient';
-import {GestureHandlerRootView , PanGestureHandler} from 'react-native-gesture-handler';
-import Animated, {
-  useAnimatedGestureHandler,
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  interpolate,
-  Extrapolate,
-  Extrapolation,
-  interpolateColor,
-  runOnJS,
-} from 'react-native-reanimated';
 import SwipeButton from 'rn-swipe-button';
 import { Padding, Border, FontSize, FontFamily, Color } from "../GlobalStyles";
 import { useNavigation } from "@react-navigation/native";
@@ -132,8 +118,6 @@ const ConfirmNavigation = ({route}) => {
 //     // You can add additional logic here if needed
 //     setConfirmed(true);
 //   };
-
-    const [disableCBButton, setDisableCBButton] = useState(false)
     const defaultStatusMessage = '';
     const [swipeStatusMessage, setSwipeStatusMessage] = useState(
     defaultStatusMessage,
@@ -184,6 +168,45 @@ const ConfirmNavigation = ({route}) => {
           await updateDoc(userBookingDocRef, {
             status: "In Transit"
           });
+
+          const notifDocRef = doc(db, "userProfiles", userUID);
+          const notifCollection = collection(notifDocRef, "notifications");
+
+          const today = new Date();
+          const options = {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          };
+          const formattedDate = today.toLocaleDateString("en-US", options); // Adjust locale as needed
+
+          const bookingDataNotif = {
+            // Using bookingID as the key for the map inside the document
+            [matchedBookingID]: {
+              subTitle: `Your booking ${matchedBookingID} has been confirmed`,
+              title: "Booking Successful!",
+              // You can add more fields here if needed
+            },
+          };
+
+          const notificationDocRef = doc(notifCollection, formattedDate);
+
+          try {
+            const notificationDoc = await getDoc(notificationDocRef);
+            if (notificationDoc.exists()) {
+              // Document exists, update it
+              await setDoc(notificationDocRef, bookingDataNotif, {
+                merge: true,
+              });
+              console.log("Notification updated successfully!");
+            } else {
+              // Document doesn't exist, create it
+              await setDoc(notificationDocRef, bookingDataNotif);
+              console.log("New notification document created!");
+            }
+          } catch (error) {
+            console.error("Error updating notification:", error);
+          }
     
           setIsLoading(false);
     

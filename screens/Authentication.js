@@ -30,6 +30,7 @@ import {
 import Toast from "react-native-toast-message";
 // import * as FirebaseRecaptcha from "expo-firebase-recaptcha";
 import axios from "axios";
+import messaging from '@react-native-firebase/messaging';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDWQablgpC3ElsqOQuVhQU2YFsri1VmCss",
@@ -187,18 +188,31 @@ const Authentication = ({ route }) => {
           password
         );
         const provider = providerCredential.user;
+        const fcmToken = await messaging().getToken();
 
-        // Get the user's UID
+        // Get the provider's UID
         const providerUid = provider.uid;
+        const providerAuth = auth.currentUser.uid;
 
         // Initialize Firestore and reference the 'providerProfiles' collection
         const providerDocRef = doc(db, "providerProfiles", providerUid);
+        const currentProviderDocRef = doc(db, "providerProfiles", providerAuth);
+
+        // Check if a document with the same UID already exists
+        const providerDoc = await getDoc(currentProviderDocRef);
+
+        if (providerDoc.exists()) {
+          // Provider signed up successfully, but a document with the same UID already exists
+          console.log("A provider with this UID already exists");
+          return;
+        }
 
         // Save provider data to Firestore using the UID as the document ID
         await setDoc(providerDocRef, {
           name: name,
           email: email,
           phone: `+63${phone}`,
+          fcmToken: fcmToken,
           availability: "available", // Set default availability to false
           blackListed: [], // Initialize blackListed array with no values yet
           bookingID: "",
@@ -209,6 +223,24 @@ const Authentication = ({ route }) => {
             longitude: "",
           },
         });
+
+        // Create subcollections with empty fields
+        const notifications = collection(currentProviderDocRef, "notifications");
+        const today = new Date();
+        const options = {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        };
+        const formattedDate = today.toLocaleDateString("en-US", options); // Adjust locale as needed
+
+        await setDoc(doc(notifications, formattedDate), {
+          accountCreation: {
+            subTitle: "Your account has been created",
+            title: "Account Setup Successful!",
+          }
+        });
+
         // Create subcollections with empty fields
         const appForm1Ref = collection(providerDocRef, "appForm1"); // Replace 'subcollection_name' with your desired subcollection name
         await addDoc(appForm1Ref, {
@@ -230,6 +262,8 @@ const Authentication = ({ route }) => {
           subcategories: "",
           services: "",
         });
+        // Second empty document
+        await addDoc(appForm3Ref, {});
 
         const userWalletRef = collection(providerDocRef, "userWallet"); // Replace 'subcollection_name' with your desired subcollection name
         await addDoc(userWalletRef, {

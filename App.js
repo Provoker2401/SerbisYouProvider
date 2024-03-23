@@ -100,9 +100,6 @@ import ApplicationForm1 from "./screens/ApplicationForm1";
 
 import Homepage from "./screens/Homepage";
 import BookingsActive from "./screens/BookingsActive";
-import BookingsHistory from "./screens/BookingsHistory";
-import EmptyBookingsActive from "./screens/EmptyBookingsActive";
-import EmptyBookingsHistory from "./screens/EmptyBookingsHistory";
 import Notifications from "./screens/Notifications";
 import NotificationsEmpty from "./screens/NotificationsEmpty";
 import UserProfile from "./screens/UserProfile";
@@ -1003,35 +1000,11 @@ const App = () => {
                 })}
               />
               <Stack.Screen
-                name="BookingsHistory"
-                component={BookingsHistory}
-                options={(props) => ({
-                  headerShown: true,
-                  header: () => <Header15 />,
-                })}
-              />
-              <Stack.Screen
                 name="NotificationsEmpty"
                 component={NotificationsEmpty}
                 options={(props) => ({
                   headerShown: true,
                   header: () => <Header16 />,
-                })}
-              />
-              <Stack.Screen
-                name="EmptyBookingsHistory"
-                component={EmptyBookingsHistory}
-                options={(props) => ({
-                  headerShown: true,
-                  header: () => <Header17 />,
-                })}
-              />
-              <Stack.Screen
-                name="EmptyBookingsActive"
-                component={EmptyBookingsActive}
-                options={(props) => ({
-                  headerShown: true,
-                  header: () => <Header18 />,
                 })}
               />
             </Stack.Navigator>
