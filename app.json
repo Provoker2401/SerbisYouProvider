@@ -1,10 +1,10 @@
 {
   "expo": {
     "name": "serbisyouprovider",
-    "slug": "serbisyouprovider",
+    "slug": "serbisyou-provider",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/serbisyouwhite-2.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -22,12 +22,19 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
-      }
+        "foregroundImage": "./assets/serbisyouwhite-1@3x.png",
+        "backgroundColor": "#003459"
+      },
+      "package": "com.adamscaberte23.serbisyouprovider"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/SerbisYouLogo1.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2414edef-1a92-4673-9748-f3a8b0533345"
+      }
+    },
+    "owner": "adamscaberte23"
   }
 }

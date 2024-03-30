@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "211063140592",
+    "project_id": "testingauth-9126f",
+    "storage_bucket": "testingauth-9126f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:211063140592:android:35c5ed7e98444fec565235",
+        "android_client_info": {
+          "package_name": "com.provoker2401.serbisyouv3"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "211063140592-j5r3jqmr5nodpibkicavomo6htep29tl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOehNbLinLpb4BEu8lmAPeadbqqdlfbzQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "211063140592-j5r3jqmr5nodpibkicavomo6htep29tl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

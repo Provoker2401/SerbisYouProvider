@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { View, StyleSheet, Text, Pressable, Modal } from "react-native";
+import { View, StyleSheet, Text, Pressable } from "react-native";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import { Padding, Border, FontSize, FontFamily, Color } from "../GlobalStyles";
@@ -11,12 +11,15 @@ import {
     updateDoc,
     where,
     getDocs,
+    setDoc,
     query,
   } from "firebase/firestore"; // Updated imports
-  import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
+  import { getAuth } from "firebase/auth";
 
 const PerformServicePrompt = ({ onClose, itemID, matchedBookingID, customerUID, onProgress}) => {
   const navigation = useNavigation();
+  const [bookingTitle, setBookingTitle] = useState("");
+  const [bookingCategory, setBookingCategory] = useState("");
   const [yesBtnVisible, setYesBtnVisible] = useState(false);
 
   const serviceIsPerformed = async (itemID) => {
@@ -33,6 +36,16 @@ const PerformServicePrompt = ({ onClose, itemID, matchedBookingID, customerUID, 
       console.log("Passed Matched Booking ID" , matchedBookingID);
       console.log("Passed Customer UID" , customerUID);
 
+      const docSnapshot = await getDoc(userBookingDocRef);
+
+      if (docSnapshot.exists()) {
+        const booking = docSnapshot.data();
+        setBookingTitle(booking.title);
+        setBookingCategory(booking.category);
+      } else {
+        console.log("No such document!");
+      }
+
       const q = query(bookingRef, where("bookingID", "==", matchedBookingID));
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((document) => {
@@ -46,6 +59,44 @@ const PerformServicePrompt = ({ onClose, itemID, matchedBookingID, customerUID, 
       await updateDoc(userBookingDocRef, {
         status: "In Progress"
       });
+
+      const notifDocRef = doc(db, "userProfiles", customerUID);
+      const notifCollection = collection(notifDocRef, "notifications");
+
+      const today = new Date();
+      const options = {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      };
+      const formattedDate = today.toLocaleDateString("en-US", options); // Adjust locale as needed
+
+      const bookingDataNotif = {
+        // Using bookingID as the key for the map inside the document
+        [matchedBookingID]: {
+          subTitle: `Your ${getFormattedServiceName()} Service is currently being worked on by the service provider`,
+          title: `Service in Progress`,
+        },
+      };
+
+      const notificationDocRef = doc(notifCollection, formattedDate);
+
+      try {
+        const notificationDoc = await getDoc(notificationDocRef);
+        if (notificationDoc.exists()) {
+          // Document exists, update it
+          await setDoc(notificationDocRef, bookingDataNotif, {
+            merge: true,
+          });
+          console.log("Notification updated successfully!");
+        } else {
+          // Document doesn't exist, create it
+          await setDoc(notificationDocRef, bookingDataNotif);
+          console.log("New notification document created!");
+        }
+      } catch (error) {
+        console.error("Error updating notification:", error);
+      }
   
       console.log("Status updated to 'In Progress'");
   
@@ -53,6 +104,20 @@ const PerformServicePrompt = ({ onClose, itemID, matchedBookingID, customerUID, 
       onProgress();
     } catch (error) {
       console.error("Error updating status:", error);
+    }
+  };
+
+  const getFormattedServiceName = () => {
+    if (!bookingTitle || !bookingCategory) {
+      return 'Service'; // Default text or handle as needed
+    }
+
+    // Check if the title is "Pet Care" or "Gardening"
+    if (bookingTitle === "Pet Care" || bookingTitle === "Gardening") {
+      return bookingCategory;
+    } else {
+      // If not, concatenate the title and category
+      return `${bookingTitle} ${bookingCategory}`;
     }
   };
 

@@ -21,6 +21,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  updateDoc,
   query,
   onSnapshot,
 } from "firebase/firestore"; // Updated imports
@@ -830,16 +831,7 @@ const Homepage = ({ route }) => {
                 </View>
               </View>
             </View>
-            <View style={[styles.searchBar, styles.searchBarSpaceBlock]}>
-              <Text
-                style={[styles.searchWhatYou, styles.searchWhatYouTypo]}
-              >{`Fill up the Application Form `}</Text>
-              <Image
-                style={styles.searchBarChild}
-                contentFit="cover"
-                source={require("../assets/group-34308.png")}
-              />
-            </View>
+
           </View>
         </View>
         <View style={[styles.counters, styles.view2SpaceBlock]}>
@@ -880,7 +872,7 @@ const Homepage = ({ route }) => {
               <Image
                 style={[styles.icon2, styles.iconLayout1]}
                 contentFit="cover"
-                source={require("../assets/icon15.png")}
+                source={require("../assets/icon14.png")}
               />
             </View>
             <View style={[styles.totalService, styles.totalBorder]}>
@@ -1013,18 +1005,6 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     flexDirection: "row",
     alignSelf: "stretch",
-  },
-  searchBar: {
-    borderRadius: Border.br_3xs,
-    backgroundColor: Color.colorDarkslategray_600,
-    borderColor: "#f2f2f2",
-    width: 312,
-    height: 50,
-    paddingHorizontal: Padding.p_smi,
-    paddingVertical: Padding.p_4xs,
-    display: "none",
-    marginTop: 5,
-    flexDirection: "row",
   },
   totalEarning2: {
     marginTop: 10,
@@ -1209,10 +1189,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     flex: 1,
   },
-  searchWhatYouTypo: {
-    fontFamily: FontFamily.level2Medium12,
-    fontWeight: "500",
-  },
   view2SpaceBlock: {
     marginTop: 20,
     alignSelf: "stretch",
@@ -1315,20 +1291,6 @@ const styles = StyleSheet.create({
     paddingVertical: Padding.p_8xs,
     marginLeft: 10,
     justifyContent: "center",
-  },
-  searchWhatYou: {
-    letterSpacing: -0.1,
-    lineHeight: 18,
-    color: "#9b9e9f",
-    display: "none",
-    fontSize: FontSize.typographyTaglineSmallRegular_size,
-    textAlign: "left",
-  },
-  searchBarChild: {
-    width: 32,
-    marginLeft: 102,
-    height: 32,
-    display: "none",
   },
   verticalGap: {
     marginBottom: 10,

@@ -24,6 +24,7 @@ import {
   addDoc,
   updateDoc
 } from "firebase/firestore";
+import Toast from "react-native-toast-message";
 
 const Wallet = () => {
   const navigation = useNavigation();
@@ -116,6 +117,13 @@ const Wallet = () => {
           console.log("No or multiple documents found in userWallet.");
         }
       } else {
+        Toast.show({
+          type: "error",
+          position: "top",
+          text1: "Wallet value is 0",
+          text2: "Cannot proceed with cash out❗" ,
+          visibilityTime: 5000,
+        });
         console.error("Cannot proceed with cash out. Wallet value is 0.");
       }
     } catch (error) {
@@ -154,8 +162,6 @@ const Wallet = () => {
       console.error("Error fetching user transactions:", error);
     }
   };
-
-  fetchUserTransactions();
 
   return (
     <View style={styles.wallet}>
@@ -205,15 +211,15 @@ const Wallet = () => {
                 {transaction.service}
               </Text>
               <View style={styles.octParent}>
-                <Text style={styles.octTypo}> {transaction.bookingID}</Text>
+                <Text style={styles.octTypo}>{transaction.bookingID}</Text>
                 <Text style={[styles.oct2, styles.octTypo]}>
-                  {transaction.timestamp}
+                {transaction.timestamp}
                 </Text>
               </View>
             </View>
             <View style={styles.php300Wrapper}>
               <Text style={[styles.php300, styles.php300Typo]}>
-                Php {transaction.amount}
+                ₱{transaction.amount}
               </Text>
             </View>
           </View>
@@ -285,7 +291,7 @@ const styles = StyleSheet.create({
     fontSize: FontSize.size_3xs,
     textAlign: "left",
     color: Color.colorGray90,
-    fontFamily: FontFamily.interLight,
+    fontFamily: FontFamily.level2Medium12,
     fontWeight: "300",
     alignSelf: "stretch",
   },
@@ -424,7 +430,7 @@ const styles = StyleSheet.create({
   },
   frameGroup: {
     paddingHorizontal: Padding.p_xs,
-    paddingVertical: 0,
+    paddingVertical: 8,
     marginTop: 5,
     overflow: "hidden",
     alignItems: "center",

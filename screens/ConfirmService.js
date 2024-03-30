@@ -15,10 +15,10 @@ import {
   getFirestore,
   doc,
   getDoc,
-  updateDoc,
   runTransaction,
   writeBatch,
   getDocs,
+  setDoc,
   collection,
   where,
   query,
@@ -331,11 +331,139 @@ const ConfirmService = ({route}) => {
       await batch.commit();
       console.log("User Booking completed and moved to historyBookings");
 
+      const notifDocRef = doc(db, "userProfiles", customerUID);
+      const notifCollection = collection(notifDocRef, "notifications");
+
+      const today = new Date();
+      const options = {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      };
+      const formattedDate = today.toLocaleDateString("en-US", options); // Adjust locale as needed
+
+      const bookingDataNotif = {
+        // Using bookingID as the key for the map inside the document
+        [matchedBookingID]: {
+          subTitle: `Your ${getFormattedServiceName()} Service has been successfully completed`,
+          title: `Service Completed!`,
+        },
+      };
+
+      const notificationDocRef = doc(notifCollection, formattedDate);
+
+      try {
+        const notificationDoc = await getDoc(notificationDocRef);
+        if (notificationDoc.exists()) {
+          // Document exists, update it
+          await setDoc(notificationDocRef, bookingDataNotif, {
+            merge: true,
+          });
+          console.log("Notification updated successfully!");
+        } else {
+          // Document doesn't exist, create it
+          await setDoc(notificationDocRef, bookingDataNotif);
+          console.log("New notification document created!");
+        }
+      } catch (error) {
+        console.error("Error updating notification:", error);
+      }
+
       // Navigate to PerformTheService screen with itemId
       // navigation.navigate("BottomTabsRoot", { screen: "Homepage" });
       setIsServiceCompleted(true);
+
+      // Wait for the delay
+      console.log("Still waiting for 10 seconds...");
+      await new Promise(resolve => setTimeout(resolve, 10 * 1000));
+
+      const notifDocRef2 = doc(db, "providerProfiles", providerUID);
+      const notifCollection2 = collection(notifDocRef2, "notifications");
+
+      if(bookingPaymentMethod !== "Cash"){
+        const bookingDataNotif = {
+          // Using bookingID as the key for the map inside the document
+          [generateRandomBookingIDWithNumbers()]: {
+            subTitle: `Your ${bookingPaymentMethod} has been charged ₱${bookingTotal}.00 for booking ${matchedBookingID}`,
+            title: `Payment Charged Successfully`,
+          },
+        };
+  
+        const notificationDocRef = doc(notifCollection, formattedDate);
+
+        console.log("Setting up Payment notification!");
+  
+        try {
+          const notificationDoc = await getDoc(notificationDocRef);
+          if (notificationDoc.exists()) {
+            // Document exists, update it
+            await setDoc(notificationDocRef, bookingDataNotif, {
+              merge: true,
+            });
+            console.log("Notification updated successfully!");
+          } else {
+            // Document doesn't exist, create it
+            await setDoc(notificationDocRef, bookingDataNotif);
+            console.log("New notification document created!");
+          }
+        } catch (error) {
+          console.error("Error updating notification:", error);
+        }
+        const bookingDataNotif2 = {
+          // Using bookingID as the key for the map inside the document
+          [generateRandomBookingIDWithNumbers()]: {
+            subTitle: `Your wallet has been credited ₱${bookingTotal}.00 for booking ${matchedBookingID} via ${bookingPaymentMethod}`,
+            title: `Wallet Credited`,
+          },
+        };
+  
+        const notificationDocRef2 = doc(notifCollection2, formattedDate);
+
+        console.log("Setting up Payment notification!");
+  
+        try {
+          const notificationDoc = await getDoc(notificationDocRef2);
+          if (notificationDoc.exists()) {
+            // Document exists, update it
+            await setDoc(notificationDocRef2, bookingDataNotif2, {
+              merge: true,
+            });
+            console.log("Notification updated successfully!");
+          } else {
+            // Document doesn't exist, create it
+            await setDoc(notificationDocRef2, bookingDataNotif2);
+            console.log("New notification document created!");
+          }
+        } catch (error) {
+          console.error("Error updating notification:", error);
+        }
+      }
     } catch (error) {
     console.error("Error completing service:", error);
+    }
+  };
+
+  function generateRandomBookingIDWithNumbers(length = 8) {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let bookingID = "";
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      bookingID += characters.charAt(randomIndex);
+    }
+    return bookingID;
+  }
+
+  const getFormattedServiceName = () => {
+    if (!title || !category) {
+      return 'Service'; // Default text or handle as needed
+    }
+
+    // Check if the title is "Pet Care" or "Gardening"
+    if (title === "Pet Care" || title === "Gardening") {
+      return category;
+    } else {
+      // If not, concatenate the title and category
+      return `${title} ${category}`;
     }
   };
 

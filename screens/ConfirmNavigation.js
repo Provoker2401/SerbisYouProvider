@@ -6,7 +6,7 @@ import SwipeButton from 'rn-swipe-button';
 import { Padding, Border, FontSize, FontFamily, Color } from "../GlobalStyles";
 import { useNavigation } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
-import { getFirestore, updateDoc, doc, query, collection, where, getDocs } from 'firebase/firestore';
+import { getFirestore, updateDoc, doc, query, collection, where, getDoc, setDoc, getDocs } from 'firebase/firestore';
 
 
 import rightArrow from '../assets/arrow-right.png';
@@ -15,6 +15,8 @@ const ConfirmNavigation = ({route}) => {
     const navigation = useNavigation();
     const { itemID, matchedBookingID, customerUID } = route.params;
     const [toggleState, setToggleState] = useState(false);
+    const [bookingTitle, setBookingTitle] = useState("");
+    const [bookingCategory, setBookingCategory] = useState("");
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -154,6 +156,15 @@ const ConfirmNavigation = ({route}) => {
           console.log("Passed Item ID" , itemID);
           console.log("Passed Matched Booking ID" , matchedBookingID);
           console.log("Passed Customer UID" , customerUID);
+          const docSnapshot = await getDoc(userBookingDocRef);
+
+          if (docSnapshot.exists()) {
+            const booking = docSnapshot.data();
+            setBookingTitle(booking.title);
+            setBookingCategory(booking.category);
+          } else {
+            console.log("No such document!");
+          }
 
           const q = query(bookingRef, where("bookingID", "==", matchedBookingID));
           const querySnapshot = await getDocs(q);
@@ -169,7 +180,7 @@ const ConfirmNavigation = ({route}) => {
             status: "In Transit"
           });
 
-          const notifDocRef = doc(db, "userProfiles", userUID);
+          const notifDocRef = doc(db, "userProfiles", customerUID);
           const notifCollection = collection(notifDocRef, "notifications");
 
           const today = new Date();
@@ -183,8 +194,8 @@ const ConfirmNavigation = ({route}) => {
           const bookingDataNotif = {
             // Using bookingID as the key for the map inside the document
             [matchedBookingID]: {
-              subTitle: `Your booking ${matchedBookingID} has been confirmed`,
-              title: "Booking Successful!",
+              subTitle: `Your service provider for ${getFormattedServiceName()} is currently in transit and will arrive to your location shortly`,
+              title: `Your booking ${matchedBookingID} is on the way to you`,
               // You can add more fields here if needed
             },
           };
@@ -217,6 +228,20 @@ const ConfirmNavigation = ({route}) => {
           setIsLoading(false);
         }
     };
+
+  const getFormattedServiceName = () => {
+    if (!bookingTitle || !bookingCategory) {
+      return 'Service'; // Default text or handle as needed
+    }
+
+    // Check if the title is "Pet Care" or "Gardening"
+    if (bookingTitle === "Pet Care" || bookingTitle === "Gardening") {
+      return bookingCategory;
+    } else {
+      // If not, concatenate the title and category
+      return `${bookingTitle} ${bookingCategory}`;
+    }
+  };
 
   return (
     <View style={styles.container}>

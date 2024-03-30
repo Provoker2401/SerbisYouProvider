@@ -250,7 +250,7 @@ const EReceipt = ({ route }) => {
                     { transform: [{ rotate: arrowTransform }] },
                   ]}
                   contentFit="cover"
-                  source={require("../assets/polygon-up2.png")}
+                  source={require("../assets/polygon-up.png")}
                 />
               </TouchableOpacity>
               {showContent && (

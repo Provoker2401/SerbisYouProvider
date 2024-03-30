@@ -20,11 +20,13 @@ import {
   getFirestore,
   doc,
   getDoc,
+  updateDoc,
   collection,
   query,
   where,
   getDocs,
 } from "firebase/firestore";
+import messaging from '@react-native-firebase/messaging';
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -59,6 +61,7 @@ const SignIn = () => {
         try {
           const docSnapshot = await getDoc(providerProfilesRef);
           if (docSnapshot.exists()) {
+            const providerProfileData = docSnapshot.data();
             // User's UID is found in providerProfiles
             console.log("Provider signed in");
             Toast.show({
@@ -68,27 +71,27 @@ const SignIn = () => {
               text2: "You have successfully signed up✅",
               visibilityTime: 3000,
             });
-            const userData = docSnapshot.data();
-            const appForm1Ref = collection(providerProfilesRef, "appForm1"); // Reference to the 'appForm1' subcollection
-            // Fetch all documents within 'appForm1' subcollection
-            const appForm1Snapshot = await getDocs(appForm1Ref);
-
-            // Check if there are documents in the 'appForm1' subcollection
-            // if (!appForm1Snapshot.empty) {
-            //   // Assuming that there's only one document in 'appForm1'
-            //   const appForm1Data = appForm1Snapshot.docs[0].data();
-            //   const appForm1Id = appForm1Snapshot.docs[0].id; // Get the document ID
-            //   const city = appForm1Data.city;
-
-            //   if (city === "") {
-            //     navigation.navigate("ApplicationForm1"); // Redirect to ApplicationForm1 if city is empty
-            //   } else {
-            //     navigation.navigate("BottomTabsRoot", { screen: "Homepage" }); // Redirect to HomeScreen if city has a value
+            
+            // const authStatus = await messaging().requestPermission();
+            // const enabled =
+            //   authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+            //   authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+          
+            // if (enabled) {
+            //   console.log('Authorization status:', authStatus);
+            //   const fcmToken = await messaging().getToken();
+            //   if(providerProfileData.fcmToken !== fcmToken) {
+            //     await updateDoc(providerProfilesRef, {
+            //       fcmToken: fcmToken,
+            //     });
+            //     console.log("Updated fcmToken for this user: ", fcmToken);
+            //   }else{
+            //     console.log("fcmToken is still the same");
             //   }
-            // } else {
-            //   console.log("No documents found in appForm1 subcollection");
-            //   // Handle the case if no documents are found in the 'appForm1' subcollection
             // }
+
+           
+
             // Continue with navigation
             navigation.navigate("BottomTabsRoot", { screen: "Homepage" });
             // navigation.navigate("ApplicationForm1")
