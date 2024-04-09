@@ -325,14 +325,14 @@ const HistoryBookings = ({ style }) => {
           // textAlign: "left",
           // fontFamily: FontFamily.levelSemibold14,
           // fontWeight: "600",
-          scrollable
-          calendarAnimation={{ type: 'sequence', duration: 30 }}
+          // scrollable
+          // calendarAnimation={{ type: 'sequence', duration: 30 }}
           daySelectionAnimation={{ type: 'background', duration: 300, highlightColor: '#007EA7' }}
           style={{ height: 100, width: '100%'}}
           calendarHeaderStyle={{ color: 'black', fontFamily: FontFamily.levelSemibold14 }}
           dateNameStyle={{ color: 'black', fontSize: 10}}
           dateNumberStyle={{ color: 'black', fontFamily: FontFamily.montserratMedium}}
-          dayContainerStyle={{flex: 1, alignItems: 'center', justifyContent: 'center', width: 60, height: 60, paddingVertical: 10}}
+          dayContainerStyle={{ alignItems: 'center', justifyContent: 'center', width: 46, height: 46, paddingVertical: 10}}
           calendarColor={'white'}
           iconContainer={{ flex: 0.1 }}
           highlightDateNameStyle={{ color: 'white' }}
@@ -412,13 +412,10 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
   },
   leftArrow: {
-    left: 0,
-    top: -48,
     width: 25,
     height: 25,
   },
   rightArrow: {
-    bottom: 48,
     width: 25,
     height: 25,
   },
@@ -650,10 +647,6 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     alignItems: "flex-end",
-  },
-  frameParent1: {
-    flexDirection: "row",
-    alignSelf: "stretch",
   },
   frameParent: {
     justifyContent: "center",
@@ -916,7 +909,7 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
   },
   frameParent1: {
-    paddingVertical: Padding.p_41xl,
+    paddingVertical: Padding.p_xl,
     paddingHorizontal: Padding.p_xl,
     borderRadius: Border.br_5xs,
     justifyContent: "center",

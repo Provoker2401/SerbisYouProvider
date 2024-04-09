@@ -34,7 +34,7 @@ const GoToCustomer = ( {route} ) => {
   const navigation = useNavigation();
   const mapRef = useRef(null);
 
-  const [address, setAddress] = useState(null);
+  // const [address, setAddress] = useState(null);
   const {itemID, matchedBookingID, customerUID} = route.params;
   const [bookingName, setBookingName] = useState("");
   const [bookingDate, setBookingDate] = useState("");
@@ -46,6 +46,7 @@ const GoToCustomer = ( {route} ) => {
 
   const [isMapReady, setIsMapReady] = useState(false);
   const [phoneUser, setphoneUser] = useState("");
+  const getCurrentLocationTask = "background-location-task";
 
   // Calculate the map height as a fraction of the screen height
   const screenHeight = Dimensions.get("window").height;
@@ -53,36 +54,67 @@ const GoToCustomer = ( {route} ) => {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  const [inTransit, setInTransit] = useState(true);
+  // const [inTransit, setInTransit] = useState(true);
 
-  const LOCATION_TASK_NAME = "background-location-task";
+  // const LOCATION_TASK_NAME = "background-location-task";
 
-  const db = getFirestore();
-  const auth = getAuth();
-  const userUID = auth.currentUser.uid;
-  const providerProfilesCollection = doc(db, "providerProfiles", userUID);
+  // const updateLocation = async () => {
+  //   try {
+  //     // Get the current location every 5 seconds
+  //     await Location.startLocationUpdatesAsync(
+  //       LOCATION_TASK_NAME,
+  //       {
+  //         accuracy: Location.Accuracy.High,
+  //         timeInterval: 5000,
+  //         distanceInterval: 100,
+  //       },
+  //       async ({ locations }) => {
+  //         if (locations && locations.length > 0) {
+  //           const { coords } = locations[0];
+  //           console.log("Received new location data:", coords);
+  //           setProviderCoordinates({ latitude, longitude });
+  //         }
+  //       }
+  //     );
+  //   } catch (error) {
+  //     console.error("Error updating location:", error);
+  //   }
+  // };
 
-  const updateLocation = async () => {
-    try {
-      // Get the current location every 5 seconds
-      await Location.startLocationUpdatesAsync(
-        LOCATION_TASK_NAME,
-        {
-          accuracy: Location.Accuracy.High,
-          timeInterval: 5000,
-          distanceInterval: 100,
-        },
-        async ({ locations }) => {
-          if (locations && locations.length > 0) {
-            const { coords } = locations[0];
-            console.log("Received new location data:", coords);
-          }
-        }
-      );
-    } catch (error) {
-      console.error("Error updating location:", error);
-    }
-  };
+  // useEffect(() => {
+  //   const updateLocation = async () => {
+  //     try {
+  //       await Location.startLocationUpdatesAsync("background-location-task", {
+  //         accuracy: Location.Accuracy.High,
+  //         timeInterval: 5000, // Fetch location every 5 seconds
+  //         distanceInterval: 100, // Or every 100 meters distance covered
+  //       }, ({ locations }) => {
+  //         if (locations && locations.length > 0) {
+  //           const { latitude, longitude } = locations[0].coords;
+  //           setProviderCoordinates({ latitude, longitude });
+
+  //           // Update provider coordinates in Firestore
+  //           const db = getFirestore();
+  //           const auth = getAuth();
+  //           const providerUID = auth.currentUser.uid;
+  //           const providerProfilesCollection = doc(db, "providerProfiles", providerUID);
+  //           updateDoc(providerProfilesCollection, {
+  //             realTimeCoordinates: { latitude, longitude }
+  //           });
+  //         }
+  //       });
+  //     } catch (error) {
+  //       console.error("Error updating location:", error);
+  //     }
+  //   };
+
+  //   updateLocation();
+
+  //   return () => {
+  //     // Cleanup function to stop location updates when component unmounts
+  //     Location.stopLocationUpdatesAsync("background-location-task");
+  //   };
+  // }, []);
 
   // Assuming you have these states or props available
   const providerLocation = {
@@ -96,6 +128,7 @@ const GoToCustomer = ( {route} ) => {
 
   // Function to handle directions
   const handleGetDirections = () => {
+    // const { latitude, longitude } = bookingCoordinates;
     const data = {
       source: providerLocation,
       destination: customerLocation,
@@ -141,7 +174,7 @@ const GoToCustomer = ( {route} ) => {
 
 
   useEffect(() => {
-    async function fetchData() {
+    const fetchData = async () => {
       try {
         setIsLoading(true); // Set loading to true before fetching data
 
@@ -155,8 +188,12 @@ const GoToCustomer = ( {route} ) => {
 
         const providerProfilesCollection = doc(db, "providerProfiles", providerUID);
         const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
-        const providerDocSnapshot = await getDoc(providerProfilesCollection);
-        const docSnapshot = await getDoc(userBookingDocRef);
+        const [providerDocSnapshot, docSnapshot] = await Promise.all([
+          getDoc(providerProfilesCollection),
+          getDoc(userBookingDocRef)
+        ]);
+
+        let fetchedProviderCoordinates = null;
 
         if (docSnapshot.exists()) {
           const booking = docSnapshot.data();
@@ -168,17 +205,18 @@ const GoToCustomer = ( {route} ) => {
           setBookingAddress(booking.address);
           setBookingAddressDetails(booking.addressDetails);
           setphoneUser(booking.phone);
+          setBookingCoordinates({
+            latitude: booking.coordinates.latitude,
+            longitude: booking.coordinates.longitude,
+          });
           // Validate coordinates before setting them
-          const bookingLat = booking.coordinates.latitude;
-          const bookingLong = booking.coordinates.longitude;
-          if (typeof bookingLat === 'number' && typeof bookingLong === 'number') {
-            setBookingCoordinates({
-              latitude: bookingLat,
-              longitude: bookingLong,
-            });
-          } else {
-            console.error('Invalid booking coordinates:', bookingLat, bookingLong);
-          }
+          // const bookingLat = booking.coordinates.latitude;
+          // const bookingLong = booking.coordinates.longitude;
+          // if (typeof bookingLat === 'number' && typeof bookingLong === 'number') {
+ 
+          // } else {
+          //   console.error('Invalid booking coordinates:', bookingLat, bookingLong);
+          // }
           // setBookingAddressInstruction(booking.totalPrice);
 
           console.log("Booking Address Details: " ,bookingAddressDetails);
@@ -195,66 +233,83 @@ const GoToCustomer = ( {route} ) => {
         
         if (providerDocSnapshot.exists()) {
           const providerData = providerDocSnapshot.data();
-          console.log("Booking Data: ", providerData);
           const coordinates = providerData.coordinates;
-          
-        // Validate coordinates before setting them
-        const providerLat = parseFloat(coordinates.latitude);
-        const providerLong = parseFloat(coordinates.longitude);
-        if (!isNaN(providerLat) && !isNaN(providerLong)) {
-          setProviderCoordinates({
-            latitude: providerLat,
-            longitude: providerLong,
-          });
-        } else {
-          console.error('Invalid provider coordinates:', providerLat, providerLong);
-        }
-
-          console.log("Provider Coordinates: " , providerCoordinates);
-
+  
+          const providerLat = parseFloat(coordinates.latitude);
+          const providerLong = parseFloat(coordinates.longitude);
+          if (!isNaN(providerLat) && !isNaN(providerLong)) {
+            fetchedProviderCoordinates = { latitude: providerLat, longitude: providerLong };
+            setProviderCoordinates(fetchedProviderCoordinates);
+          } else {
+            console.error('Invalid provider coordinates:', providerLat, providerLong);
+          }
+  
+          console.log("Provider Coordinates from Firestore: ", fetchedProviderCoordinates);
+  
         } else {
           console.log("No such document!");
         }
+  
+        // Now, fetch and update real-time location
+        // await Location.startLocationUpdatesAsync(getCurrentLocationTask, {
+        //   accuracy: Location.Accuracy.High,
+        //   timeInterval: 5000, // Fetch location every 5 seconds
+        //   //distanceInterval: 100, // Or every 100 meters distance covered
+        // }, async ({ locations }) => {
+        //   if (locations && locations.length > 0) {
+        //     const { latitude1, longitude1 } = locations[0].coords;
+  
+        //     console.log("Provider Coordinates from Location Updates: ", { latitude1, longitude1 });
+  
+        //     // Update provider coordinates in Firestore
+        //     const db = getFirestore();
+        //     const auth = getAuth();
+        //     const providerUID = auth.currentUser.uid;
+        //     const providerProfilesCollection = doc(db, "providerProfiles", providerUID);
+        //     // updateDoc(providerProfilesCollection, {
+        //     //   realTimeCoordinates: { latitude1, longitude1 }
+        //     // });
+  
+        //     if (fetchedProviderCoordinates &&
+        //       fetchedProviderCoordinates.latitude === latitude1 &&
+        //       fetchedProviderCoordinates.longitude === longitude1) {
+        //       setProviderCoordinates(fetchedProviderCoordinates);
+        //     } else {
+        //       setProviderCoordinates({ latitude1, longitude1 });
+        //     }
+        //   }
+        // });
+  
         setIsLoading(false); // Set loading to false once data is fetched
       } catch (error) {
         console.error("Error retrieving data:", error);
       }
+
     }
   
     fetchData(); // Call the fetchData function immediately
+
+    // Cleanup function to stop location updates when component unmounts
+
   }, []); 
 
 
 
   const handleArrival = async (itemID) => {
     try {
-      // const db = getFirestore();
-      // const auth = getAuth();
-      // const providerUID = auth.currentUser.uid;
-      // const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
-  
-      // // Update the status in Firestore
-      // await updateDoc(userBookingDocRef, {
-      //   status: "In Progress"
-      // });
-  
-      // console.log("Status updated to 'In Progress'");
-  
-      // Navigate to PerformTheService screen with itemId
-      stopUpdateLocation();
       navigation.navigate("PerformTheService", { itemID: itemID, matchedBookingID: matchedBookingID, customerUID: customerUID});
     } catch (error) {
       console.error("Error updating status:", error);
     }
   };
 
-  useEffect(() => {
-    console.log("Booking Coordinates: ", bookingCoordinates);
-  }, [bookingCoordinates]);
+  // useEffect(() => {
+  //   console.log("Booking Coordinates: ", bookingCoordinates);
+  // }, [bookingCoordinates]);
   
-  useEffect(() => {
-    console.log("Provider Coordinates: ", providerCoordinates);
-  }, [providerCoordinates]);
+  // useEffect(() => {
+  //   console.log("Provider Coordinates: ", providerCoordinates);
+  // }, [providerCoordinates]);
   
   useEffect(() => {
     if (providerCoordinates.latitude && providerCoordinates.longitude &&
@@ -276,70 +331,70 @@ const GoToCustomer = ( {route} ) => {
     }
   }, [providerCoordinates, bookingCoordinates]);
 
-  useEffect(() => {
-    updateLocation();
-  }, []);
+  // useEffect(() => {
+  //   updateLocation();
+  // }, []);
 
-  const stopUpdateLocation = async () => {
-    try {
-      await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
-      console.log("Background location stopped");
-      await TaskManager.unregisterAllTasksAsync();
-      console.log("All tasks unregistered");
+  // const stopUpdateLocation = async () => {
+  //   try {
+  //     await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
+  //     console.log("Background location stopped");
+  //     await TaskManager.unregisterAllTasksAsync();
+  //     console.log("All tasks unregistered");
 
-      setInTransit(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  //     setInTransit(false);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
-  TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
-    if (error) {
-      console.error("Background location task error:", error);
-      return;
-    }
+  // TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
+  //   if (error) {
+  //     console.error("Background location task error:", error);
+  //     return;
+  //   }
 
-    if (data) {
-      try {
-        if (data.locations && data.locations.length > 0) {
-          const { coords } = data.locations[0];
-          const { latitude, longitude } = coords;
-          console.log(
-            "Received new location data from TaskManager - Latitude:",
-            latitude,
-            "Longitude:",
-            longitude
-          );
+  //   if (data) {
+  //     try {
+  //       if (data.locations && data.locations.length > 0) {
+  //         const { coords } = data.locations[0];
+  //         const { latitude, longitude } = coords;
+  //         console.log(
+  //           "Received new location data from TaskManager - Latitude:",
+  //           latitude,
+  //           "Longitude:",
+  //           longitude
+  //         );
 
-          const docSnapshot = await getDoc(providerProfilesCollection);
-          if (docSnapshot.exists()) {
-            const coordinates = docSnapshot.data().realTimeCoordinates;
-            console.log("Coordinats ", coordinates);
+  //         const docSnapshot = await getDoc(providerProfilesCollection);
+  //         if (docSnapshot.exists()) {
+  //           const coordinates = docSnapshot.data().realTimeCoordinates;
+  //           console.log("Coordinats ", coordinates);
 
-            // Update the real-time coordinates field in Firestore
-            await updateDoc(providerProfilesCollection, {
-              realTimeCoordinates: {
-                latitude: latitude,
-                longitude: longitude,
-              },
-              // Retain other data
-              // Add other fields you want to update here
-            });
-          }
-          // // Update Firestore document with the new location data
-          // await updateDoc(providerProfilesCollection, {
-          //   realTimeCoordinates: {
-          //     latitude: latitude,
-          //     longitude: longitude,
-          //   },
-          // });
-          // console.log("Location data updated in Firestore with UID of:" ,docSnapshot);
-        }
-      } catch (error) {
-        console.error("Error updating Firestore document:", error);
-      }
-    }
-  });
+  //           // Update the real-time coordinates field in Firestore
+  //           await updateDoc(providerProfilesCollection, {
+  //             realTimeCoordinates: {
+  //               latitude: latitude,
+  //               longitude: longitude,
+  //             },
+  //             // Retain other data
+  //             // Add other fields you want to update here
+  //           });
+  //         }
+  //         // // Update Firestore document with the new location data
+  //         // await updateDoc(providerProfilesCollection, {
+  //         //   realTimeCoordinates: {
+  //         //     latitude: latitude,
+  //         //     longitude: longitude,
+  //         //   },
+  //         // });
+  //         // console.log("Location data updated in Firestore with UID of:" ,docSnapshot);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error updating Firestore document:", error);
+  //     }
+  //   }
+  // });
 
 
   return isLoading ? (
@@ -450,27 +505,6 @@ const GoToCustomer = ( {route} ) => {
               </View>
             </View>
           </View>
-          {/* <View
-            style={[styles.bookingDetailsLabelGroup, styles.bookingFlexBox]}
-          >
-            <View style={styles.bookingDetailsLabel}>
-              <Text
-                style={[
-                  styles.addressInstructions,
-                  styles.pleaseMeetMeFlexBox,
-                ]}
-              >
-                Address Instructions
-              </Text>
-            </View>
-            <View style={styles.bookingDetailsLabel3}>
-              <View style={styles.frame2}>
-                <Text style={[styles.pleaseMeetMe, styles.amClr]}>
-                  Please meet me at the blue gate, beside gate 3 siomai
-                </Text>
-              </View>
-            </View>
-          </View> */}
           { bookingAddressDetails.note ? (
             <View>
               { (bookingAddressDetails.floor || bookingAddressDetails.house || bookingAddressDetails.street) ? (

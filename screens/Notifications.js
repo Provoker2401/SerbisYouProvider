@@ -22,53 +22,70 @@ import {
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
+import Spinner from "react-native-loading-spinner-overlay";
 
 const Notifications = () => {
   const navigation = useNavigation();
   const db = getFirestore();
   const auth = getAuth();
+  const [loading, setLoading] = useState(true); // Initialize loading state as true
   const [notifications, setNotifications] = useState([]);
+  let loadingData = true;
 
   const providerAuth = auth.currentUser.uid;
 
-  useEffect(() => {
-    const getNotifications = async () => {
-      try {
-        const userDocRef = doc(db, "providerProfiles", providerAuth);
 
-        // Reference to the notifications collection within the user's document
-        const notificationsCollectionRef = collection(
-          userDocRef,
-          "notifications"
-        );
+  const getNotifications = async () => {
+    try {
+      const userDocRef = doc(db, "providerProfiles", providerAuth);
 
-        // Set up a real-time listener for the notifications collection
-        const unsubscribe = onSnapshot(notificationsCollectionRef, (snapshot) => {
+      // Reference to the notifications collection within the user's document
+      const notificationsCollectionRef = collection(
+        userDocRef,
+        "notifications"
+      );
+
+      // Set up a real-time listener for the notifications collection
+      const unsubscribe = onSnapshot(query(notificationsCollectionRef, orderBy("date", "desc")), (snapshot) => {
+        if (snapshot.empty) {
+          // Handle case when notifications collection is empty
+          setNotifications([]); // Set notifications to empty array
+          loadingData = false;
+        } else {
           const notificationsData = [];
 
           // Iterate over each document in the notifications collection
           snapshot.forEach((doc) => {
-            console.log("Notification Document ID:", doc.id);
-            console.log("Notification Document Data:", doc.data());
+            // console.log("Notification Document ID:", doc.id);
+            // console.log("Notification Document Data:", doc.data());
 
+            const { date, ...dataWithoutDate } = doc.data();
             notificationsData.push({
               id: doc.id,
-              data: doc.data(),
+              data: dataWithoutDate,
             });
           });
 
           // Update the state with the new notifications data
           setNotifications(notificationsData);
-        });
+          loadingData = true;
+        }
+      });
 
-        // Return a cleanup function to unsubscribe from the listener when component unmounts
-        return () => unsubscribe();
-      } catch (error) {
-        console.log("Error fetching notifications:", error);
-      }
-    };
+      // Return a cleanup function to unsubscribe from the listener when component unmounts
+      return () => unsubscribe();
+    } catch (error) {
+      console.log("Error fetching notifications:", error);
+    }
+  };
 
-    getNotifications();
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      getNotifications();
+      setLoading(false);
+    }, 1000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
@@ -86,115 +103,83 @@ const Notifications = () => {
         showsHorizontalScrollIndicator={true}
         contentContainerStyle={styles.bodyScrollViewContent}
       >
-        {notifications?.length === 0 ? (
-          <View
-          style={[styles.noNotifications, styles.noNotificationsSpaceBlock]}
-          >
-            <View style={styles.viewParentFlexBox}>
-              <Image
-                style={styles.frameItem}
-                contentFit="cover"
-                source={require("../assets/frame-34615.png")}
-              />
-              <View
-                style={[styles.noNotificationsParent, styles.viewParentFlexBox]}
-              >
-                <Text style={styles.noNotifications1}>No Notifications!</Text>
-                <View
-                  style={[
-                    styles.youDontHaveAnyNotificatioWrapper,
-                    styles.navigationBarHomeFlexBox,
-                  ]}
-                >
-                  <Text style={[styles.youDontHave, styles.youDontHaveLayout]}>
-                    You don’t have any notification yet. Start accepting bookings to get started.
-                  </Text>
-                </View>
-              </View>
-            </View>
-            <View
-              style={[styles.viewAllServicesBtnWrapper, styles.viewParentFlexBox]}
-            >
-              <Pressable style={styles.viewAllServicesBtn} onPress={() =>navigation.navigate("BottomTabsRoot", { screen: "Homepage" })}>
-                <Text style={[styles.viewAllServices, styles.youDontHaveLayout]}>
-                  View all services
-                </Text>
-              </Pressable>
-            </View>
-          </View>
-        ) : (
-          <View style={styles.bodyInner}>
-            {notifications.map((notification) => (
-              <View 
-                key={notification.id}
-                style={styles.frameGroup}
-              >
-                <View style={styles.todayWrapper}>
-                  <Text style={[styles.today, styles.todayClr]}>{notification.id}</Text>
-                </View>
-                {Object.keys(notification.data).map((key) => (
-                  <View 
-                    style={[styles.orderCanceled, styles.orderSpaceBlock]}
-                    key={key}
-                  >
-                    <View style={styles.iconWrapper}>
-                      <Image
-                        style={styles.iconLayout1}
-                        contentFit="cover"
-                        source={require("../assets/icon9.png")}
-                      />
-                    </View>
-                    <View style={styles.bookingAcceptedParent}>
-                      <Text style={[styles.creditCardConnected, styles.todayClr]}>
-                        {notification.data[key].title}{" "}
-                      </Text>
-                      <Text style={styles.youHaveAccepted}>
-                        {notification.data[key].subTitle}{" "}
-                      </Text>
+        {loading ? (
+            <Spinner visible={true} textContent={"Loading..."} />
+          ) : (
+            <View style={styles.notificationFlexBox}>
+              {notifications.length === 0 && !loadingData && (
+                <View style={[styles.noNotifications, styles.noNotificationsSpaceBlock]}>
+                  <View style={styles.viewParentFlexBox}>
+                    <Image
+                      style={styles.frameItem}
+                      contentFit="cover"
+                      source={require("../assets/frame-34615.png")}
+                    />
+                    <View
+                      style={[styles.noNotificationsParent, styles.viewParentFlexBox]}
+                    >
+                      <Text style={styles.noNotifications1}>No Notifications!</Text>
+                      <View
+                        style={[
+                          styles.youDontHaveAnyNotificatioWrapper,
+                          styles.navigationBarHomeFlexBox,
+                        ]}
+                      >
+                        <Text style={[styles.youDontHave, styles.youDontHaveLayout]}>
+                          You don’t have any notification yet. Start accepting bookings to get started.
+                        </Text>
+                      </View>
                     </View>
                   </View>
-                ))} 
-              </View>
-            ))}
-
-          </View>
-        )}
-        {/* <View style={[styles.orderAccepted3, styles.orderFlexBox]}>
-          <View style={styles.iconWrapper}>
-            <Image
-              style={styles.iconLayout1}
-              contentFit="cover"
-              source={require("../assets/icon9.png")}
-            />
-          </View>
-          <View style={styles.bookingAcceptedParent}>
-            <Text style={[styles.bookingAccepted, styles.todayTypo]}>
-              Booking Accepted
-            </Text>
-            <Text style={styles.youHaveAccepted}>
-              You have accepted a service request by Dummy Customer 5
-            </Text>
-          </View>
-          <Pressable style={styles.tripleDotBtn}>
-            <View style={styles.ellipseParent}>
-              <Image
-                style={styles.frameLayout}
-                contentFit="cover"
-                source={require("../assets/ellipse-19.png")}
-              />
-              <Image
-                style={[styles.frameInner, styles.frameLayout]}
-                contentFit="cover"
-                source={require("../assets/ellipse-19.png")}
-              />
-              <Image
-                style={[styles.frameInner, styles.frameLayout]}
-                contentFit="cover"
-                source={require("../assets/ellipse-19.png")}
-              />
+                  <View
+                    style={[styles.viewAllServicesBtnWrapper, styles.viewParentFlexBox]}
+                  >
+                    <Pressable style={styles.viewAllServicesBtn} onPress={() =>navigation.navigate("BottomTabsRoot", { screen: "Homepage" })}>
+                      <Text style={[styles.viewAllServices, styles.youDontHaveLayout]}>
+                        View all services
+                      </Text>
+                    </Pressable>
+                  </View>
+                </View>
+              )} 
+              {notifications.length > 0 && loadingData && (
+                <View style={styles.bodyInner}>
+                  {notifications.map((notification) => (
+                    <View 
+                      key={notification.id}
+                      style={styles.frameGroup}
+                    >
+                      <View style={styles.todayWrapper}>
+                        <Text style={[styles.today, styles.todayClr]}>{notification.id}</Text>
+                      </View>
+                      {Object.keys(notification.data).map((key) => (
+                        <View 
+                          style={[styles.orderCanceled, styles.orderSpaceBlock]}
+                          key={key}
+                        >
+                          <View style={styles.iconWrapper}>
+                            <Image
+                              style={styles.iconLayout1}
+                              contentFit="cover"
+                              source={require("../assets/icon9.png")}
+                            />
+                          </View>
+                          <View style={styles.bookingAcceptedParent}>
+                            <Text style={[styles.creditCardConnected, styles.todayClr]}>
+                              {notification.data[key].title}{" "}
+                            </Text>
+                            <Text style={styles.youHaveAccepted}>
+                              {notification.data[key].subTitle}{" "}
+                            </Text>
+                          </View>
+                        </View>
+                      ))} 
+                    </View>
+                  ))}
+                </View>
+              )}
             </View>
-          </Pressable>
-        </View> */}
+        )}
       </ScrollView>
     </View>
   );
@@ -209,6 +194,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignSelf: "stretch",
     backgroundColor: Color.white,
+  },
+  notificationFlexBox: {
+    justifyContent: "center",
+    alignSelf: "stretch",
+    alignItems: "stretch",
   },
   noNotifications1: {
     lineHeight: 26,
@@ -514,7 +504,6 @@ const styles = StyleSheet.create({
   },
   bodyInner: {
     marginTop: 15,
-    paddingVertical: 0,
     paddingHorizontal: Padding.p_base,
     justifyContent: "center",
     alignItems: "center",

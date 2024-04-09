@@ -188,6 +188,9 @@ const Authentication = ({ route }) => {
           password
         );
         const provider = providerCredential.user;
+
+        registerAppWithFCM();
+        
         const fcmToken = await messaging().getToken();
 
         // Get the provider's UID
@@ -211,7 +214,7 @@ const Authentication = ({ route }) => {
         await setDoc(providerDocRef, {
           name: name,
           email: email,
-          phone: `+63${phone}`,
+          phone: phone,
           fcmToken: fcmToken,
           availability: "available", // Set default availability to false
           blackListed: [], // Initialize blackListed array with no values yet
@@ -219,8 +222,8 @@ const Authentication = ({ route }) => {
           bookingMatched: false,
           bookingIndex: 0,
           coordinates: {
-            latitude: "",
-            longitude: "",
+            latitude: 10.336641527084641,
+            longitude: 123.91533800644042,
           },
         });
 
@@ -246,7 +249,7 @@ const Authentication = ({ route }) => {
         await addDoc(appForm1Ref, {
           name: name,
           email: email,
-          phone: `+63${phone}`,
+          phone: phone,
           city: "",
         });
 
@@ -298,7 +301,7 @@ const Authentication = ({ route }) => {
         });
       }
 
-      navigation.navigate("BottomTabsRoot", { screen: "Homepage" });
+      navigation.navigate("ApplicationForm1");
     } catch (error) {
       console.error("Error verification:", error.message);
 
@@ -311,6 +314,15 @@ const Authentication = ({ route }) => {
       });
     }
   };
+
+  async function registerAppWithFCM() {
+    try {
+      await messaging().registerDeviceForRemoteMessages();
+      console.log('Device registered for FCM');
+    } catch (error) {
+      console.error('Error registering device for FCM', error);
+    }
+  }
 
   return (
     <View style={[styles.authentication, styles.frameFlexBox]}>
@@ -346,9 +358,6 @@ Enter the code in that message to continue.`}</Text>
                         />
                       ))}
                   </View>
-                  <Text style={styles.weveSentA}>
-                    Entered OTP: {enteredOTP}
-                  </Text>
                 </View>
               </View>
               <View style={[styles.verifyframe, styles.frameFlexBox]}>

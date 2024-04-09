@@ -72,25 +72,23 @@ const SignIn = () => {
               visibilityTime: 3000,
             });
             
-            // const authStatus = await messaging().requestPermission();
-            // const enabled =
-            //   authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-            //   authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+            const authStatus = await messaging().requestPermission();
+            const enabled =
+              authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+              authStatus === messaging.AuthorizationStatus.PROVISIONAL;
           
-            // if (enabled) {
-            //   console.log('Authorization status:', authStatus);
-            //   const fcmToken = await messaging().getToken();
-            //   if(providerProfileData.fcmToken !== fcmToken) {
-            //     await updateDoc(providerProfilesRef, {
-            //       fcmToken: fcmToken,
-            //     });
-            //     console.log("Updated fcmToken for this user: ", fcmToken);
-            //   }else{
-            //     console.log("fcmToken is still the same");
-            //   }
-            // }
-
-           
+            if (enabled) {
+              console.log('Authorization status:', authStatus);
+              const fcmToken = await messaging().getToken();
+              if(providerProfileData.fcmToken !== fcmToken) {
+                await updateDoc(providerProfilesRef, {
+                  fcmToken: fcmToken,
+                });
+                console.log("Updated fcmToken for this user: ", fcmToken);
+              }else{
+                console.log("fcmToken is still the same");
+              }
+            }
 
             // Continue with navigation
             navigation.navigate("BottomTabsRoot", { screen: "Homepage" });
@@ -101,8 +99,8 @@ const SignIn = () => {
             Toast.show({
               type: "error",
               position: "top",
-              text1: "User not found",
-              text2: "Your authentication UID is not in providerProfiles❗",
+              text1: "Sign In error",
+              text2: "User not found❗",
               visibilityTime: 5000,
             });
           }
@@ -111,8 +109,8 @@ const SignIn = () => {
           Toast.show({
             type: "error",
             position: "top",
-            text1: "Firestore error",
-            text2: "Error while checking user profile❗",
+            text1: "Sign In error",
+            text2: "User not found❗",
             visibilityTime: 5000,
           });
         }
@@ -125,7 +123,7 @@ const SignIn = () => {
         Toast.show({
           type: "error",
           position: "top",
-          text1: errorMessage,
+          text1: "Sign In error",
           text2: "Wrong email or password❗",
           visibilityTime: 5000,
         });

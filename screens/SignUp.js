@@ -61,6 +61,8 @@ const SignUp = () => {
   };
 
   const handleSignUp = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (name === "" || email === "" || password === "" || phone === "") {
       Toast.show({
         type: "error",
@@ -82,6 +84,18 @@ const SignUp = () => {
       return;
     }
 
+    // Check if email format is valid
+    if (!emailRegex.test(email)) {
+      Toast.show({
+        type: "error",
+        position: "top",
+        text1: "Error",
+        text2: "Enter a valid email address❗",
+        visibilityTime: 5000,
+      });
+      return;
+    }
+
     const auth = getAuth();
 
     try {
@@ -90,12 +104,12 @@ const SignUp = () => {
       let duplicatePhone = false;
       let duplicateEmail = false;
 
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.phone === `+63${phone}`) {
-          duplicatePhone = true;
-        }
-      });
+      // querySnapshot.forEach((doc) => {
+      //   const data = doc.data();
+      //   if (data.phone === `+63${phone}`) {
+      //     duplicatePhone = true;
+      //   }
+      // });
 
       querySnapshot.forEach((doc) => {
         const data = doc.data();

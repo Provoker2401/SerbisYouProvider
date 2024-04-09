@@ -391,6 +391,7 @@ import {
   setDoc,
 } from "firebase/firestore";
 import Toast from "react-native-toast-message";
+import Spinner from "react-native-loading-spinner-overlay";
 
 const ApplicationForm1 = () => {
   const navigation = useNavigation();
@@ -400,8 +401,7 @@ const ApplicationForm1 = () => {
   const [email, setEmail] = useState("");
   const [city, setCity] = useState("");
   const [phone, setPhone] = useState(""); // Added phone state
-
- 
+  const [loading, setLoading] = useState(true); // Initialize loading state as true
   
   const fetchUserData = async () => {
     const auth = getAuth();
@@ -409,7 +409,6 @@ const ApplicationForm1 = () => {
       if (!currentUser) {
         setName("");
         setEmail("");
-        setLoading(false);
         return;
       }
 
@@ -429,10 +428,8 @@ const ApplicationForm1 = () => {
           const { name } = userData;
           setName(name);
           console.log("Name:", name);
-          //setLoading(false);
         } else {
           console.log("No user data found for the given UID.");
-          //setLoading(false);
         }
 
         // Fetch data from the single document inside appForm1
@@ -455,6 +452,7 @@ const ApplicationForm1 = () => {
         } else {
           console.log("No or multiple documents found in appForm1.");
         }
+        setLoading(false);
       } catch (error) {
         console.error("Error retrieving user data:", error);
         setLoading(false);
@@ -538,180 +536,186 @@ const ApplicationForm1 = () => {
         <View
           style={[styles.componentsserviceList, styles.componentsbutton3Layout]}
         >
-          <View
-            style={[
-              styles.personalDetailsFrameParent,
-              styles.detailsParentSpaceBlock,
-            ]}
-          >
-            <Pressable style={styles.personalDetailsFrame}>
-              <Text style={[styles.personalDetails, styles.detailsTypo]}>
-                Personal Details
-              </Text>
+          {loading ? (
+            <Spinner visible={true} textContent={"Loading..."} />
+          ) : (
+            <View style={styles.appFormStyle}>
               <View
                 style={[
-                  styles.componentsbutton,
-                  styles.componentsbuttonSpaceBlock,
+                  styles.personalDetailsFrameParent,
+                  styles.detailsParentSpaceBlock,
                 ]}
               >
-                <Text style={styles.viewTypo} />
-              </View>
-            </Pressable>
-            <Pressable style={styles.idProofFrame}>
-              <Text style={[styles.idProof, styles.nameTypo]}>ID Proof</Text>
-              <View
-                style={[
-                  styles.componentsbutton1,
-                  styles.componentsbuttonSpaceBlock,
-                ]}
-              >
-                <Text style={styles.viewTypo} />
-              </View>
-            </Pressable>
-            <Pressable style={styles.idProofFrame}>
-              <Text style={[styles.idProof, styles.nameTypo]}>
-                Service Details
-              </Text>
-              <View
-                style={[
-                  styles.componentsbutton1,
-                  styles.componentsbuttonSpaceBlock,
-                ]}
-              >
-                <Text style={styles.viewTypo} />
-              </View>
-            </Pressable>
-          </View>
-          <View
-            style={[
-              styles.enterYouDetailsParent,
-              styles.enterYouDetailsParentFlexBox,
-            ]}
-          >
-            <Text style={[styles.enterYouDetails, styles.detailsTypo]}>
-              Enter you Details
-            </Text>
-            <View style={[styles.frameParent, styles.frameSpaceBlock]}>
-              <View style={styles.frameGroup}>
-                <View style={styles.nameWrapper}>
-                  <Text style={[styles.name, styles.nameTypo]}>Name</Text>
-                </View>
-                <View
-                  style={[
-                    styles.frameWrapper,
-                    styles.componentsbuttonSpaceBlock,
-                  ]}
-                >
-                  <TextInput
-                    style={styles.frameTypo}
-                    placeholder="Name"
-                    placeholderTextColor="#1a1b2d"
-                    //value = {name}
-                    value={name} // Set the value of the text input to the 'name' state
-                    onChangeText={(text) => setName(text)} // This allows you to edit the name
-                  />
-                </View>
-              </View>
-              <View style={styles.frameSpaceBlock}>
-                <View style={styles.nameWrapper}>
-                  <Text style={[styles.mobileNumber, styles.nameTypo]}>
-                    Mobile Number
+                <Pressable style={styles.personalDetailsFrame}>
+                  <Text style={[styles.personalDetails, styles.detailsTypo]}>
+                    Personal Details
                   </Text>
-                </View>
-                <View
-                  style={[
-                    styles.frameWrapper,
-                    styles.componentsbuttonSpaceBlock,
-                  ]}
-                >
-                  <TextInput
-                    style={[styles.frameItem, styles.frameTypo]}
-                    value={phone} // Set the value of the text input to the 'name' state
-                    onChangeText={(text) => setPhone(text)} // This allows you to edit the name
-                    placeholderTextColor="#1a1b2d"
-                  />
+                  <View
+                    style={[
+                      styles.componentsbutton,
+                      styles.componentsbuttonSpaceBlock,
+                    ]}
+                  >
+                    <Text style={styles.viewTypo} />
+                  </View>
+                </Pressable>
+                <Pressable style={styles.idProofFrame}>
+                  <Text style={[styles.idProof, styles.nameTypo]}>ID Proof</Text>
+                  <View
+                    style={[
+                      styles.componentsbutton1,
+                      styles.componentsbuttonSpaceBlock,
+                    ]}
+                  >
+                    <Text style={styles.viewTypo} />
+                  </View>
+                </Pressable>
+                <Pressable style={styles.idProofFrame}>
+                  <Text style={[styles.idProof, styles.nameTypo]}>
+                    Service Details
+                  </Text>
+                  <View
+                    style={[
+                      styles.componentsbutton1,
+                      styles.componentsbuttonSpaceBlock,
+                    ]}
+                  >
+                    <Text style={styles.viewTypo} />
+                  </View>
+                </Pressable>
+              </View>
+              <View
+                style={[
+                  styles.enterYouDetailsParent,
+                  styles.enterYouDetailsParentFlexBox,
+                ]}
+              >
+                <Text style={[styles.enterYouDetails, styles.detailsTypo]}>
+                  Enter you Details
+                </Text>
+                <View style={[styles.frameParent, styles.frameSpaceBlock]}>
+                  <View style={styles.frameGroup}>
+                    <View style={styles.nameWrapper}>
+                      <Text style={[styles.name, styles.nameTypo]}>Name</Text>
+                    </View>
+                    <View
+                      style={[
+                        styles.frameWrapper,
+                        styles.componentsbuttonSpaceBlock,
+                      ]}
+                    >
+                      <TextInput
+                        style={styles.frameTypo}
+                        placeholder="Name"
+                        placeholderTextColor="#1a1b2d"
+                        //value = {name}
+                        value={name} // Set the value of the text input to the 'name' state
+                        onChangeText={(text) => setName(text)} // This allows you to edit the name
+                      />
+                    </View>
+                  </View>
+                  <View style={styles.frameSpaceBlock}>
+                    <View style={styles.nameWrapper}>
+                      <Text style={[styles.mobileNumber, styles.nameTypo]}>
+                        Mobile Number
+                      </Text>
+                    </View>
+                    <View
+                      style={[
+                        styles.frameWrapper,
+                        styles.componentsbuttonSpaceBlock,
+                      ]}
+                    >
+                      <TextInput
+                        style={[styles.frameItem, styles.frameTypo]}
+                        value={phone} // Set the value of the text input to the 'name' state
+                        onChangeText={(text) => setPhone(text)} // This allows you to edit the name
+                        placeholderTextColor="#1a1b2d"
+                      />
+                    </View>
+                  </View>
+                  <View style={styles.frameSpaceBlock}>
+                    <View style={styles.nameWrapper}>
+                      <Text style={[styles.name, styles.nameTypo]}>Email</Text>
+                    </View>
+                    <View
+                      style={[
+                        styles.frameWrapper,
+                        styles.componentsbuttonSpaceBlock,
+                      ]}
+                    >
+                      <TextInput
+                        style={styles.frameTypo}
+                        value={email} // Set the value of the text input to the 'name' state
+                        onChangeText={(text) => setEmail(text)} // This allows you to edit the name
+                        placeholderTextColor="#1a1b2d"
+                      />
+                    </View>
+                  </View>
+                  <View style={styles.frameSpaceBlock}>
+                    <View style={styles.nameWrapper}>
+                      <Text style={[styles.name, styles.nameTypo]}>City</Text>
+                    </View>
+                    <View
+                      style={[
+                        styles.frameWrapper,
+                        styles.componentsbuttonSpaceBlock,
+                      ]}
+                    >
+                      <TextInput
+                        style={styles.frameTypo}
+                        value={city} // Set the value of the text input to the 'name' state
+                        onChangeText={(text) => setCity(text)} // This allows you to edit the name
+                        placeholderTextColor="#1a1b2d"
+                      />
+                    </View>
+                  </View>
                 </View>
               </View>
-              <View style={styles.frameSpaceBlock}>
-                <View style={styles.nameWrapper}>
-                  <Text style={[styles.name, styles.nameTypo]}>Email</Text>
-                </View>
-                <View
+              <View
+                style={[
+                  styles.componentsbuttonWrapper,
+                  styles.enterYouDetailsParentFlexBox,
+                ]}
+              >
+                <Pressable
                   style={[
-                    styles.frameWrapper,
-                    styles.componentsbuttonSpaceBlock,
+                    styles.componentsbutton3,
+                    styles.componentsbuttonSpaceBlock1,
                   ]}
-                >
-                  <TextInput
-                    style={styles.frameTypo}
-                    value={email} // Set the value of the text input to the 'name' state
-                    onChangeText={(text) => setEmail(text)} // This allows you to edit the name
-                    placeholderTextColor="#1a1b2d"
-                  />
-                </View>
-              </View>
-              <View style={styles.frameSpaceBlock}>
-                <View style={styles.nameWrapper}>
-                  <Text style={[styles.name, styles.nameTypo]}>City</Text>
-                </View>
-                <View
-                  style={[
-                    styles.frameWrapper,
-                    styles.componentsbuttonSpaceBlock,
-                  ]}
-                >
-                  <TextInput
-                    style={styles.frameTypo}
-                    value={city} // Set the value of the text input to the 'name' state
-                    onChangeText={(text) => setCity(text)} // This allows you to edit the name
-                    placeholderTextColor="#1a1b2d"
-                  />
-                </View>
+                  onPress={async () => {
+                    if (!isValidPhilippinePhoneNumber(phone)) {
+                      Toast.show({
+                        type: "error",
+                        position: "top",
+                        text1: "Error",
+                        text2: "Enter a valid  phone number with format +63❗",
+                        visibilityTime: 5000,
+                      });
+                      return;
+                    }
+                    if (areInputsNotEmpty()) {
+                      // All inputs are not empty, navigate to "ApplicationForm2"
+                      await updateFirestoreData();
+                      navigation.navigate("ApplicationForm2");
+                    } else {
+                      Toast.show({
+                        type: "error",
+                        position: "top",
+                        text1: "Error",
+                        text2: "Form Incomplete",
+                        visibilityTime: 5000,
+                      });
+                      return;
+                    }
+                  }}            >
+                  <Text style={[styles.viewAllServices3, styles.viewTypo]}>
+                    Next
+                  </Text>
+                </Pressable>
               </View>
             </View>
-          </View>
-          <View
-            style={[
-              styles.componentsbuttonWrapper,
-              styles.enterYouDetailsParentFlexBox,
-            ]}
-          >
-            <Pressable
-              style={[
-                styles.componentsbutton3,
-                styles.componentsbuttonSpaceBlock1,
-              ]}
-              onPress={async () => {
-                if (!isValidPhilippinePhoneNumber(phone)) {
-                  Toast.show({
-                    type: "error",
-                    position: "top",
-                    text1: "Error",
-                    text2: "Enter a valid  phone number with format +63❗",
-                    visibilityTime: 5000,
-                  });
-                  return;
-                }
-                if (areInputsNotEmpty()) {
-                  // All inputs are not empty, navigate to "ApplicationForm2"
-                  await updateFirestoreData();
-                  navigation.navigate("ApplicationForm3");
-                } else {
-                  Toast.show({
-                    type: "error",
-                    position: "top",
-                    text1: "Error",
-                    text2: "Form Incomplete",
-                    visibilityTime: 5000,
-                  });
-                  return;
-                }
-              }}            >
-              <Text style={[styles.viewAllServices3, styles.viewTypo]}>
-                Next
-              </Text>
-            </Pressable>
-          </View>
+          )}
         </View>
       </ScrollView>
     </View>
@@ -719,6 +723,10 @@ const ApplicationForm1 = () => {
 };
 
 const styles = StyleSheet.create({
+  appFormStyle: {
+    justifyContent: "center",
+    alignSelf: "stretch",
+  },
   header: {
     backgroundColor: "#1a244d",
   },

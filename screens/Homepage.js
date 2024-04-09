@@ -451,7 +451,18 @@ const Homepage = ({ route }) => {
           totalServiceCollectionRef,
           (querySnapshot) => {
             const numberOfHistory = querySnapshot.size;
-            setTotalHistory(numberOfHistory);
+
+            // Filter documents with status Upcoming
+            const filteredTotalServices = querySnapshot.docs.filter(
+              (doc) => {
+                const status = doc.data().status;
+                return status === "Completed" || status === "Canceled";
+              }
+            );
+
+            const numberOfTotalServices = filteredTotalServices.length;
+
+            setTotalHistory(numberOfTotalServices);
           }
         );
 

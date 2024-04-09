@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   StyleProp,
@@ -6,13 +6,26 @@ import {
   StyleSheet,
   Text,
   Pressable,
+  Modal,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
+import LogoutModal from "./LogoutModal";
 import { Color, Padding, FontSize, FontFamily, Border } from "../GlobalStyles";
 
 const ProfileHeader = ({ style }) => {
+  const [logoutButtonVisible, setLogoutButtonVisible] = useState(false);
+
+  const openLogoutButton = useCallback(() => {
+    setLogoutButtonVisible(true);
+  }, []);
+
+  const closeLogoutButton = useCallback(() => {
+    setLogoutButtonVisible(false);
+  }, []);
+
   return (
+    <>
     <SafeAreaView style={[styles.header, style]}>
       <View style={[styles.view, styles.viewFlexBox]}>
         <View style={styles.serbisyouwhite2Wrapper}>
@@ -23,17 +36,43 @@ const ProfileHeader = ({ style }) => {
           />
         </View>
         <Text style={[styles.profile, styles.profileTypo]}>Profile</Text>
-        <Pressable style={[styles.logoutButton, styles.viewFlexBox]}>
+        <Pressable style={[styles.logoutButton, styles.viewFlexBox]} onPress={openLogoutButton}>
           <View style={styles.headlineWrapper}>
             <Text style={[styles.headline, styles.profileTypo]}>Log Out</Text>
           </View>
         </Pressable>
       </View>
     </SafeAreaView>
+
+    <Modal animationType="fade" transparent visible={logoutButtonVisible}>
+      <View style={styles.logoutButtonOverlay}>
+        <Pressable
+          style={styles.logoutButtonBg}
+          onPress={closeLogoutButton}
+        />
+        <LogoutModal onClose={closeLogoutButton} />
+      </View>
+    </Modal>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
+  logoutButtonOverlay: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(113, 113, 113, 0.3)",
+  },
+  logoutButtonBg: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    left: 0,
+    top: 0,
+  },
+
+
   header: {
     backgroundColor: Color.colorDarkslateblue_100,
   },

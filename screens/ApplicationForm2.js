@@ -180,6 +180,7 @@ const ApplicationForm2 = () => {
       } else {
         console.error('No appForm2 document found for the current user.');
       }
+      navigation.navigate("ApplicationForm3");
     } catch (error) {
       console.error('Error updating user data:', error);
       // Handle the error, e.g., display an error message to the user
@@ -209,8 +210,6 @@ const ApplicationForm2 = () => {
       const storageRef = ref(storage, `ProviderIDPicsFront/${provider.uid}`);
 
       try {
-
-        
         // Read the image file as a blob
         const response = await fetch(selectedImageURI);
         const blob = await response.blob();
@@ -221,32 +220,38 @@ const ApplicationForm2 = () => {
         // Get the download URL of the uploaded image
         const downloadURL = await getDownloadURL(snapshot.ref);
 
-         // Now you can use `downloadURL` to update the Firestore document in appForm2
-      const db = getFirestore();
+          // Now you can use `downloadURL` to update the Firestore document in appForm2
+        const db = getFirestore();
 
-      // Create references to the user's document and the appForm2 subcollection
-      const userDocRef = doc(db, 'providerProfiles', provider.uid);
-      const appForm2Ref = collection(userDocRef, 'appForm2');
+        // Create references to the user's document and the appForm2 subcollection
+        const userDocRef = doc(db, 'providerProfiles', provider.uid);
+        const appForm2Ref = collection(userDocRef, 'appForm2');
 
-      // Query the appForm2 subcollection to get the first document
-      const appForm2Snapshot = await getDocs(appForm2Ref);
-      const appForm2Doc = appForm2Snapshot.docs[0];
+        // Query the appForm2 subcollection to get the first document
+        const appForm2Snapshot = await getDocs(appForm2Ref);
+        const appForm2Doc = appForm2Snapshot.docs[0];
 
-      if (appForm2Doc) {
-        // Update the idProofimgFront field within the appForm2 document
-        await updateDoc(appForm2Doc.ref, {
-          idProofimgFront: downloadURL,
-        });
+        if (appForm2Doc) {
+          // Update the idProofimgFront field within the appForm2 document
+          await updateDoc(appForm2Doc.ref, {
+            idProofimgFront: downloadURL,
+          });
 
-        console.log("FRONT uploaded successfully:", downloadURL);
-      } else {
-        console.error("No appForm2 document found for the current user.");
+          console.log("FRONT uploaded successfully:", downloadURL);
+          Toast.show({
+            type: "success",
+            position: "top",
+            text1: "Front Page uploaded successfully✅",
+            visibilityTime: 3000,
+          });
+        } else {
+          console.error("No appForm2 document found for the current user.");
+        }
+      } catch (error) {
+        console.error("Error uploading image to Firebase Storage:", error);
       }
-    } catch (error) {
-      console.error("Error uploading image to Firebase Storage:", error);
     }
-  }
-};
+  };
 
   const pickImageBack = async () => {
      
@@ -284,31 +289,37 @@ const ApplicationForm2 = () => {
         // Get the download URL of the uploaded image
         const downloadURL = await getDownloadURL(snapshot.ref);
 
-         // Now you can use `downloadURL` to update the Firestore document in appForm2
-      const db = getFirestore();
+          // Now you can use `downloadURL` to update the Firestore document in appForm2
+        const db = getFirestore();
 
-      // Create references to the user's document and the appForm2 subcollection
-      const userDocRef = doc(db, 'providerProfiles', provider.uid);
-      const appForm2Ref = collection(userDocRef, 'appForm2');
+        // Create references to the user's document and the appForm2 subcollection
+        const userDocRef = doc(db, 'providerProfiles', provider.uid);
+        const appForm2Ref = collection(userDocRef, 'appForm2');
 
-      // Query the appForm2 subcollection to get the first document
-      const appForm2Snapshot = await getDocs(appForm2Ref);
-      const appForm2Doc = appForm2Snapshot.docs[0];
+        // Query the appForm2 subcollection to get the first document
+        const appForm2Snapshot = await getDocs(appForm2Ref);
+        const appForm2Doc = appForm2Snapshot.docs[0];
 
-      if (appForm2Doc) {
-        // Update the idProofimgFront field within the appForm2 document
-        await updateDoc(appForm2Doc.ref, {
-          idProofimgBack: downloadURL,
-        });
+        if (appForm2Doc) {
+          // Update the idProofimgFront field within the appForm2 document
+          await updateDoc(appForm2Doc.ref, {
+            idProofimgBack: downloadURL,
+          });
 
-        console.log("FRONT uploaded successfully:", downloadURL);
-      } else {
-        console.error("No appForm2 document found for the current user.");
+          console.log("FRONT uploaded successfully:", downloadURL);
+          Toast.show({
+            type: "success",
+            position: "top",
+            text1: "Back Page uploaded successfully✅",
+            visibilityTime: 3000,
+          });
+        } else {
+          console.error("No appForm2 document found for the current user.");
+        }
+      } catch (error) {
+        console.error("Error uploading image to Firebase Storage:", error);
       }
-    } catch (error) {
-      console.error("Error uploading image to Firebase Storage:", error);
     }
-  }
   };
 
   return (
@@ -561,16 +572,16 @@ const styles = StyleSheet.create({
   },
   componentsbuttonSpaceBlock: {
     marginRight: 30,
-    backgroundColor: Color.colorDarkslateblue_300,
+    backgroundColor: Color.colorLightgray_100,
     paddingVertical: Padding.p_xs,
-    paddingHorizontal: Padding.p_3xl,
+    paddingHorizontal: Padding.p_lg,
     borderRadius: Border.br_5xs,
     flexDirection: "row",
     flex: 1,
   },
   componentsbuttonSpaceBlock69: {
     marginLeft: 30,
-    backgroundColor: Color.colorDarkslateblue_300,
+    backgroundColor: Color.colorLightgray_100,
     paddingVertical: Padding.p_xs,
     paddingHorizontal: Padding.p_3xl,
     borderRadius: Border.br_5xs,
@@ -646,7 +657,7 @@ const styles = StyleSheet.create({
     marginRight: 30,
     backgroundColor: Color.colorDarkslateblue_200,
     paddingVertical: Padding.p_xs,
-    paddingHorizontal: Padding.p_3xl,
+    paddingHorizontal: Padding.p_xl,
     borderRadius: Border.br_5xs,
     flexDirection: "row",
     flex: 1,
@@ -656,7 +667,7 @@ const styles = StyleSheet.create({
     marginLeft: 30,
     backgroundColor: Color.colorDarkslateblue_200,
     paddingVertical: Padding.p_xs,
-    paddingHorizontal: Padding.p_3xl,
+    paddingHorizontal: Padding.p_xl,
     borderRadius: Border.br_5xs,
     flexDirection: "row",
     flex: 1,

@@ -27,6 +27,7 @@ import GoToCustomerHeader from "./components/GoToCustomerHeader";
 import PerformTheServiceHeader from "./components/PerformTheServiceHeader";
 import ConfirmServiceHeader from "./components/ConfirmServiceHeader";
 import NewBookingHeader from "./components/NewBookingHeader";
+import LogoutModal from "./components/LogoutModal";
 import Header31 from "./components/Header31";
 
 import AboutUsFrame from "./components/AboutUsFrame";
@@ -309,6 +310,11 @@ const App = () => {
               <Stack.Screen
                 name="Segment4"
                 component={Segment4}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="LogoutModal"
+                component={LogoutModal}
                 options={{ headerShown: false }}
               />
               <Stack.Screen
@@ -609,9 +615,9 @@ const App = () => {
               <Stack.Screen
                 name="TermsAndConditions"
                 component={TermsAndConditions}
-                options={(props) => ({
+                options={({ route }) => ({
                   headerShown: true,
-                  header: () => <ProfileHeader />,
+                  header: () => <AccountHeader title="Terms and Conditions"/>,
                 })}
               />
               <Stack.Screen

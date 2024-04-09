@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   button1Typo: {
-    color: Color.white,
+    color: Color.m3White,
     textAlign: "center",
     fontWeight: "700",
   },
