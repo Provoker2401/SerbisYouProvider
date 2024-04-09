@@ -22,6 +22,7 @@ import {
   setDoc,
   doc,
   updateDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
@@ -215,7 +216,9 @@ const EditProfile = () => {
           [generateRandomBookingIDWithNumbers()]: {
             subTitle: `Your profile information has been updated`,
             title: "Profile Updated Successfully",
+            createdAt: serverTimestamp(),
           },
+          date: serverTimestamp(),
         };
   
         const notificationDocRef = doc(notifCollection, formattedDate);

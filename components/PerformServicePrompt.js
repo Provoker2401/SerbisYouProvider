@@ -13,6 +13,7 @@ import {
     getDocs,
     setDoc,
     query,
+    serverTimestamp,
   } from "firebase/firestore"; // Updated imports
   import { getAuth } from "firebase/auth";
 
@@ -76,7 +77,9 @@ const PerformServicePrompt = ({ onClose, itemID, matchedBookingID, customerUID, 
         [matchedBookingID]: {
           subTitle: `Your ${getFormattedServiceName()} Service is currently being worked on by the service provider`,
           title: `Service in Progress`,
+          createdAt: serverTimestamp(),
         },
+        date: serverTimestamp(),
       };
 
       const notificationDocRef = doc(notifCollection, formattedDate);

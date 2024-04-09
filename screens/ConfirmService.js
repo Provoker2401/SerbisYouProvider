@@ -22,6 +22,7 @@ import {
   collection,
   where,
   query,
+  serverTimestamp,
 } from "firebase/firestore"; // Updated imports
 import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
 import * as ImagePicker from "expo-image-picker";
@@ -347,7 +348,9 @@ const ConfirmService = ({route}) => {
         [matchedBookingID]: {
           subTitle: `Your ${getFormattedServiceName()} Service has been successfully completed`,
           title: `Service Completed!`,
+          createdAt: serverTimestamp(),
         },
+        date: serverTimestamp(),
       };
 
       const notificationDocRef = doc(notifCollection, formattedDate);
@@ -386,7 +389,9 @@ const ConfirmService = ({route}) => {
           [generateRandomBookingIDWithNumbers()]: {
             subTitle: `Your ${bookingPaymentMethod} has been charged ₱${bookingTotal}.00 for booking ${matchedBookingID}`,
             title: `Payment Charged Successfully`,
+            createdAt: serverTimestamp(),
           },
+          date: serverTimestamp(),
         };
   
         const notificationDocRef = doc(notifCollection, formattedDate);

@@ -25,6 +25,7 @@ import {
   getDoc,
   doc,
   setDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 
 const ChangePassword = () => {
@@ -94,7 +95,9 @@ const ChangePassword = () => {
         [generateRandomBookingIDWithNumbers()]: {
           subTitle: `Your password has been updated`,
           title: "Password Changed Successfully",
+          createdAt: serverTimestamp(),
         },
+        date: serverTimestamp(),
       };
 
       const notificationDocRef = doc(notifCollection, formattedDate);

@@ -26,6 +26,7 @@ import {
   where,
   collection,
   addDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import Toast from "react-native-toast-message";
 // import * as FirebaseRecaptcha from "expo-firebase-recaptcha";
@@ -241,7 +242,9 @@ const Authentication = ({ route }) => {
           accountCreation: {
             subTitle: "Your account has been created",
             title: "Account Setup Successful!",
-          }
+            createdAt: serverTimestamp(),
+          },
+          date: serverTimestamp(),
         });
 
         // Create subcollections with empty fields

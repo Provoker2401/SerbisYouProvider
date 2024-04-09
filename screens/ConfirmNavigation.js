@@ -6,7 +6,7 @@ import SwipeButton from 'rn-swipe-button';
 import { Padding, Border, FontSize, FontFamily, Color } from "../GlobalStyles";
 import { useNavigation } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
-import { getFirestore, updateDoc, doc, query, collection, where, getDoc, setDoc, getDocs } from 'firebase/firestore';
+import { getFirestore, updateDoc, doc, query, collection, where, getDoc, setDoc, getDocs, serverTimestamp } from 'firebase/firestore';
 
 
 import rightArrow from '../assets/arrow-right.png';
@@ -196,8 +196,9 @@ const ConfirmNavigation = ({route}) => {
             [matchedBookingID]: {
               subTitle: `Your service provider for ${getFormattedServiceName()} is currently in transit and will arrive to your location shortly`,
               title: `Your booking ${matchedBookingID} is on the way to you`,
-              // You can add more fields here if needed
+              createdAt: serverTimestamp(),
             },
+            date: serverTimestamp(),
           };
 
           const notificationDocRef = doc(notifCollection, formattedDate);
