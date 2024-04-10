@@ -3,6 +3,9 @@ import { View, StyleSheet, Text, Pressable } from "react-native";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import { Padding, Border, FontSize, FontFamily, Color } from "../GlobalStyles";
+import * as TaskManager from "expo-task-manager";
+import * as Location from "expo-location";
+
 import {
     getFirestore,
     collection,
@@ -17,15 +20,31 @@ import {
   } from "firebase/firestore"; // Updated imports
   import { getAuth } from "firebase/auth";
 
+  
 const PerformServicePrompt = ({ onClose, itemID, matchedBookingID, customerUID, onProgress}) => {
   const navigation = useNavigation();
   const [bookingTitle, setBookingTitle] = useState("");
   const [bookingCategory, setBookingCategory] = useState("");
   const [yesBtnVisible, setYesBtnVisible] = useState(false);
 
+  const getCurrentLocationTask = "background-location-task";
+
+
+  const stopUpdateLocation = async () => {
+    try {
+      await Location.stopLocationUpdatesAsync(getCurrentLocationTask);
+      console.log("Background location stopped");
+      await TaskManager.unregisterAllTasksAsync();
+      console.log("All tasks unregistered");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const serviceIsPerformed = async (itemID) => {
     try {
       console.log("Item ID: " + itemID);
+      stopUpdateLocation();
 
       const db = getFirestore();
       const auth = getAuth();

@@ -26,7 +26,7 @@ import {
   where,
   getDocs,
 } from "firebase/firestore";
-import messaging from '@react-native-firebase/messaging';
+// import messaging from '@react-native-firebase/messaging';
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -72,23 +72,23 @@ const SignIn = () => {
               visibilityTime: 3000,
             });
             
-            const authStatus = await messaging().requestPermission();
-            const enabled =
-              authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-              authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+            // const authStatus = await messaging().requestPermission();
+            // const enabled =
+            //   authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+            //   authStatus === messaging.AuthorizationStatus.PROVISIONAL;
           
-            if (enabled) {
-              console.log('Authorization status:', authStatus);
-              const fcmToken = await messaging().getToken();
-              if(providerProfileData.fcmToken !== fcmToken) {
-                await updateDoc(providerProfilesRef, {
-                  fcmToken: fcmToken,
-                });
-                console.log("Updated fcmToken for this user: ", fcmToken);
-              }else{
-                console.log("fcmToken is still the same");
-              }
-            }
+            // if (enabled) {
+            //   console.log('Authorization status:', authStatus);
+            //   const fcmToken = await messaging().getToken();
+            //   if(providerProfileData.fcmToken !== fcmToken) {
+            //     await updateDoc(providerProfilesRef, {
+            //       fcmToken: fcmToken,
+            //     });
+            //     console.log("Updated fcmToken for this user: ", fcmToken);
+            //   }else{
+            //     console.log("fcmToken is still the same");
+            //   }
+            // }
 
             // Continue with navigation
             navigation.navigate("BottomTabsRoot", { screen: "Homepage" });
