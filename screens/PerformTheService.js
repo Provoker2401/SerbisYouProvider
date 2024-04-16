@@ -106,7 +106,7 @@ const PerformTheService = ({route}) => {
     }
 
     // Check if the title is "Pet Care" or "Gardening"
-    if (bookingTitle === "Pet Care" || bookingTitle === "Gardening") {
+    if (bookingTitle === "Pet Care" || bookingTitle === "Gardening" || bookingTitle === "Cleaning") {
       return bookingCategory;
     } else {
       // If not, concatenate the title and category

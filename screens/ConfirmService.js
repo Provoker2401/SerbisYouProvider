@@ -20,6 +20,7 @@ import {
   getDocs,
   setDoc,
   collection,
+  updateDoc,
   where,
   query,
   serverTimestamp,
@@ -215,57 +216,61 @@ const ConfirmService = ({route}) => {
     console.log("Total: ", bookingTotal);
     console.log(`${title} ${category}`);
 
-    // try {
-    //   const db = getFirestore();
-    //   const auth = getAuth();
-    //   const providerUID = auth.currentUser.uid;
+    try {
+      const db = getFirestore();
+      const auth = getAuth();
+      const providerUID = auth.currentUser.uid;
 
-    //   // Construct a reference to the "userWallet" collection under the provider's profile
-    //   const userWalletCollectionRef = collection(
-    //     db,
-    //     "providerProfiles",
-    //     providerUID,
-    //     "userWallet"
-    //   );
+      // Construct a reference to the "userWallet" collection under the provider's profile
+      const userWalletCollectionRef = collection(
+        db,
+        "providerProfiles",
+        providerUID,
+        "userWallet"
+      );
 
-    //   // Get all documents in the "userWallet" collection
-    //   const querySnapshot = await getDocs(userWalletCollectionRef);
+      // Get all documents in the "userWallet" collection
+      const querySnapshot = await getDocs(userWalletCollectionRef);
 
-    //   if (!querySnapshot.empty && bookingPaymentMethod !== "Cash") {
-    //     // Access the reference to the first document
-    //     const firstDocumentRef = querySnapshot.docs[0].ref;
+      if (!querySnapshot.empty && bookingPaymentMethod !== "Cash") {
+        // Access the reference to the first document
+        const firstDocumentRef = querySnapshot.docs[0].ref;
 
-    //     // Get the current data of the first document
-    //     const firstDocumentData = querySnapshot.docs[0].data();
+        // Get the current data of the first document
+        const firstDocumentData = querySnapshot.docs[0].data();
 
-    //     // Initialize an empty array if "transactions" doesn't exist in the first document's data
-    //     const transactions = firstDocumentData.transactions || [];
+        // Initialize an empty array if "transactions" doesn't exist in the first document's data
+        const transactions = firstDocumentData.transactions || [];
+        console.log("First Transactions: " + transactions);
 
-    //     const wallet = firstDocumentData.wallet || 0;
+        const wallet = firstDocumentData.wallet || 0;
+        console.log("Wallet: " + wallet);
 
-    //     const newWalletValue = wallet + bookingTotal;
+        const newWalletValue = wallet + bookingTotal;
+        console.log("New Wallet Value: " + newWalletValue);
 
-    //     await updateDoc(firstDocumentRef, { wallet: newWalletValue });
+        await updateDoc(firstDocumentRef, { wallet: newWalletValue });
 
-    //     // Add your new transaction object to the transactions array
-    //     const newTransaction = {
-    //       bookingID: bookingID,
-    //       amount: bookingTotal,
-    //       service: `${title} ${category}`,
-    //       timestamp: formattedDate,
-    //     };
-    //     transactions.push(newTransaction);
+        // Add your new transaction object to the transactions array
+        const newTransaction = {
+          bookingID: bookingID,
+          amount: bookingTotal,
+          service: `${getFormattedServiceName()}`,
+          timestamp: formattedDate,
+        };
+        transactions.push(newTransaction);
+        console.log("New Transactions: " + transactions);
 
-    //     // Update the "transactions" array in the first document
-    //     await updateDoc(firstDocumentRef, { transactions });
+        // Update the "transactions" array in the first document
+        await updateDoc(firstDocumentRef, { transactions });
 
-    //     console.log("New transaction added successfully.");
-    //   } else {
-    //     console.log("No documents found under userWallet.");
-    //   }
-    // } catch (error) {
-    //   console.error("Error:", error);
-    // }
+        console.log("New transaction added successfully.");
+      } else {
+        console.log("No documents found under userWallet.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
     
     try {
       const db = getFirestore();
@@ -345,7 +350,7 @@ const ConfirmService = ({route}) => {
 
       const bookingDataNotif = {
         // Using bookingID as the key for the map inside the document
-        [matchedBookingID]: {
+        [`${matchedBookingID}3`]: {
           subTitle: `Your ${getFormattedServiceName()} Service has been successfully completed`,
           title: `Service Completed!`,
           createdAt: serverTimestamp(),
@@ -419,7 +424,9 @@ const ConfirmService = ({route}) => {
           [generateRandomBookingIDWithNumbers()]: {
             subTitle: `Your wallet has been credited ₱${bookingTotal}.00 for booking ${matchedBookingID} via ${bookingPaymentMethod}`,
             title: `Wallet Credited`,
+            createdAt: serverTimestamp(),
           },
+          date: serverTimestamp(),
         };
   
         const notificationDocRef2 = doc(notifCollection2, formattedDate);
@@ -464,7 +471,7 @@ const ConfirmService = ({route}) => {
     }
 
     // Check if the title is "Pet Care" or "Gardening"
-    if (title === "Pet Care" || title === "Gardening") {
+    if (title === "Pet Care" || title === "Gardening" || title === "Cleaning") {
       return category;
     } else {
       // If not, concatenate the title and category

@@ -54,6 +54,94 @@ const GoToCustomer = ( {route} ) => {
 
   const [isLoading, setIsLoading] = useState(true);
 
+  
+  const db = getFirestore();
+  const auth = getAuth();
+  const userUID = auth.currentUser.uid;
+  const providerProfilesCollection = doc(db, "providerProfiles", userUID);
+
+  TaskManager.defineTask(getCurrentLocationTask, async ({ data, error }) => {
+    if (error) {
+      console.error("Background location task error:", error);
+      return;
+    }
+
+    if (data) {
+      try {
+        if (data.locations && data.locations.length > 0) {
+          const { coords } = data.locations[0];
+          const { latitude, longitude } = coords;
+          console.log(
+            "Received new location data from TaskManager - Latitude:",
+            latitude,
+            "Longitude:",
+            longitude
+          );
+
+          const docSnapshot = await getDoc(providerProfilesCollection);
+          if (docSnapshot.exists()) {
+            const coordinates = docSnapshot.data().realTimeCoordinates;
+            console.log("Coordinates ", coordinates);
+
+            // Update the real-time coordinates field in Firestore
+            await updateDoc(providerProfilesCollection, {
+              realTimeCoordinates: {
+                latitude: latitude,
+                longitude: longitude,
+              },
+            });
+
+
+          }
+        }
+      } catch (error) {
+        console.error("Error updating Firestore document:", error);
+      }
+    }
+  });
+
+  useEffect(() => {
+    updateLocation(); // Call the updateLocation function when component mounts
+  }, []); // Empty dependency array ensures the effect is only run once after the initial render
+
+
+
+
+
+
+
+
+
+
+  const updateLocation = async () => {
+    try {
+      const { status } = await Location.requestBackgroundPermissionsAsync();
+      if (status !== "granted") {
+        console.error("Permission to access background location was denied");
+        return;
+      }
+
+      // Get the current location every 5 seconds
+
+      await Location.startLocationUpdatesAsync(
+        getCurrentLocationTask,
+        {
+          accuracy: Location.Accuracy.BestForNavigation,
+          timeInterval: 1000, // Change the time interval according to your requirement
+          // distanceInterval: 100,
+        },
+        async ({ locations }) => {
+          if (locations && locations.length > 0) {
+            const { coords } = locations[0];
+            console.log("Received new location data:", coords);
+          }
+        }
+      );
+    } catch (error) {
+      console.error("Error updating location:", error);
+    }
+  };
+
   // const [inTransit, setInTransit] = useState(true);
 
   // const LOCATION_TASK_NAME = "background-location-task";
@@ -115,6 +203,7 @@ const GoToCustomer = ( {route} ) => {
   //     Location.stopLocationUpdatesAsync("background-location-task");
   //   };
   // }, []);
+  
 
   // Assuming you have these states or props available
   const providerLocation = {
@@ -647,7 +736,17 @@ const GoToCustomer = ( {route} ) => {
                   )}
                 </View>
               ) : (
-                <View style={styles.bookingDetailsLabel2}>
+                <View style={[styles.bookingDetailsLabelGroup, styles.bookingFlexBox]}>
+                  <View style={styles.bookingDetailsLabel}>
+                    <Text
+                      style={[
+                        styles.addressInstructions,
+                        styles.pleaseMeetMeFlexBox,
+                      ]}
+                    >
+                      No Additional Address Instructions
+                    </Text>
+                  </View>
                 </View>
               )}
             </View>

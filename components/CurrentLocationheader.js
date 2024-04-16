@@ -1053,7 +1053,7 @@ const CurrentLocationheader = ({ style }) => {
                 <Image
                   style={styles.frameChild}
                   contentFit="cover"
-                  source={require("../assets/vector-4.png")}
+                  source={require("../assets/currentLocationBtn.png")}
                 />
               </View>
             </Pressable>

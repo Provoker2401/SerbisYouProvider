@@ -18,7 +18,8 @@ import {
   where,
   getDocs,
   doc,
-  onSnapshot
+  onSnapshot,
+  orderBy,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
@@ -33,7 +34,6 @@ const Notifications = () => {
   let loadingData = true;
 
   const providerAuth = auth.currentUser.uid;
-
 
   const getNotifications = async () => {
     try {
@@ -56,13 +56,16 @@ const Notifications = () => {
 
           // Iterate over each document in the notifications collection
           snapshot.forEach((doc) => {
-            // console.log("Notification Document ID:", doc.id);
-            // console.log("Notification Document Data:", doc.data());
-
             const { date, ...dataWithoutDate } = doc.data();
+
+            // Sort the data within the document by createdAt field in descending order
+            const sortedData = Object.entries(dataWithoutDate)
+            .sort(([, a], [, b]) => b.createdAt - a.createdAt)
+            .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
+
             notificationsData.push({
               id: doc.id,
-              data: dataWithoutDate,
+              data: sortedData,
             });
           });
 

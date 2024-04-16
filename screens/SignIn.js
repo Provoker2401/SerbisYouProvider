@@ -67,8 +67,8 @@ const SignIn = () => {
             Toast.show({
               type: "success",
               position: "top",
-              text1: "Sign Up Successful",
-              text2: "You have successfully signed up✅",
+              text1: "Sign In Successful",
+              text2: "You have successfully signed in✅",
               visibilityTime: 3000,
             });
             

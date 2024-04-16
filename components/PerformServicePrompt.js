@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { View, StyleSheet, Text, Pressable } from "react-native";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
@@ -16,6 +16,8 @@ import {
     serverTimestamp,
   } from "firebase/firestore"; // Updated imports
   import { getAuth } from "firebase/auth";
+  import * as TaskManager from "expo-task-manager";
+import * as Location from "expo-location";
 
 const PerformServicePrompt = ({ onClose, itemID, matchedBookingID, customerUID, onProgress}) => {
   const navigation = useNavigation();
@@ -23,9 +25,52 @@ const PerformServicePrompt = ({ onClose, itemID, matchedBookingID, customerUID, 
   const [bookingCategory, setBookingCategory] = useState("");
   const [yesBtnVisible, setYesBtnVisible] = useState(false);
 
+  const getCurrentLocationTask = "background-location-task";
+
+
+  const stopUpdateLocation = async () => {
+    try {
+      await Location.stopLocationUpdatesAsync(getCurrentLocationTask);
+      console.log("Background location stopped");
+      await TaskManager.unregisterAllTasksAsync();
+      console.log("All tasks unregistered");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const db = getFirestore(); // Use getFirestore() to initialize Firestore
+  
+        // Get the user's UID 
+        const auth = getAuth();
+        const providerUID = auth.currentUser.uid;
+        const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
+        const docSnapshot = await getDoc(userBookingDocRef);
+
+        if (docSnapshot.exists()) {
+          const booking = docSnapshot.data();
+          console.log("Booking Data: ", booking);
+          setBookingTitle(booking.title);
+          setBookingCategory(booking.category);
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error("Error retrieving data:", error);
+      }
+    }
+  
+    fetchData(); // Call the fetchData function immediately
+  }, []); 
+
   const serviceIsPerformed = async (itemID) => {
     try {
       console.log("Item ID: " + itemID);
+
+      stopUpdateLocation();
 
       const db = getFirestore();
       const auth = getAuth();
@@ -36,16 +81,6 @@ const PerformServicePrompt = ({ onClose, itemID, matchedBookingID, customerUID, 
       console.log("Passed Item ID" , itemID);
       console.log("Passed Matched Booking ID" , matchedBookingID);
       console.log("Passed Customer UID" , customerUID);
-
-      const docSnapshot = await getDoc(userBookingDocRef);
-
-      if (docSnapshot.exists()) {
-        const booking = docSnapshot.data();
-        setBookingTitle(booking.title);
-        setBookingCategory(booking.category);
-      } else {
-        console.log("No such document!");
-      }
 
       const q = query(bookingRef, where("bookingID", "==", matchedBookingID));
       const querySnapshot = await getDocs(q);
@@ -61,6 +96,9 @@ const PerformServicePrompt = ({ onClose, itemID, matchedBookingID, customerUID, 
         status: "In Progress"
       });
 
+      console.log("Booking Title: " ,bookingTitle);
+      console.log("Booking Category: " ,bookingCategory);
+
       const notifDocRef = doc(db, "userProfiles", customerUID);
       const notifCollection = collection(notifDocRef, "notifications");
 
@@ -74,7 +112,7 @@ const PerformServicePrompt = ({ onClose, itemID, matchedBookingID, customerUID, 
 
       const bookingDataNotif = {
         // Using bookingID as the key for the map inside the document
-        [matchedBookingID]: {
+        [`${matchedBookingID}2`]: {
           subTitle: `Your ${getFormattedServiceName()} Service is currently being worked on by the service provider`,
           title: `Service in Progress`,
           createdAt: serverTimestamp(),
@@ -111,12 +149,14 @@ const PerformServicePrompt = ({ onClose, itemID, matchedBookingID, customerUID, 
   };
 
   const getFormattedServiceName = () => {
+    console.log("Booking Title: " ,bookingTitle);
+    console.log("Booking Category: " ,bookingCategory);
     if (!bookingTitle || !bookingCategory) {
       return 'Service'; // Default text or handle as needed
     }
 
     // Check if the title is "Pet Care" or "Gardening"
-    if (bookingTitle === "Pet Care" || bookingTitle === "Gardening") {
+    if (bookingTitle === "Pet Care" || bookingTitle === "Gardening" || bookingTitle === "Cleaning") {
       return bookingCategory;
     } else {
       // If not, concatenate the title and category

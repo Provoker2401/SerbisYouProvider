@@ -265,7 +265,7 @@ const HistoryBookings = ({ style }) => {
 
   const getFormattedServiceName = (item) => {
     // Check if the title is "Pet Care" or "Gardening"
-    if (item.title === "Pet Care" || item.title === "Gardening") {
+    if (item.title === "Pet Care" || item.title === "Gardening" || item.title === "Cleaning") {
       return item.category;
     } else {
       // If not, concatenate the title and category

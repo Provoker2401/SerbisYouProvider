@@ -3,7 +3,6 @@ import { TouchableOpacity, Text, StyleSheet, View, Linking, Pressable} from "rea
 import { Image } from "expo-image";
 import { FontSize, FontFamily, Color, Border, Padding } from "../GlobalStyles";
 import { useNavigation } from "@react-navigation/native";
-import { getFirestore, getAuth, collection, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
 
 // Define a function to map the status to the corresponding style
 const getStatusStyle = (status) => {
@@ -46,7 +45,6 @@ const getButtonText = (status) => {
     }
   };
   
-
 const ActiveBookingCard = ({status, date, time, location, serviceName, matchedBookingID, phone, customerName, customerUID, id}) => {
 const navigation = useNavigation();
   const statusStyle = getStatusStyle(status);
@@ -54,53 +52,13 @@ const navigation = useNavigation();
 
   const handleButton =  () => {
     if (status === 'Upcoming') {
-      console.log("item ID" , id);
-      console.log("matched Booking ID" , matchedBookingID);
-      console.log("customer UID" , customerUID);
-
       navigation.navigate("ConfirmNavigation", { itemID: id, matchedBookingID: matchedBookingID, customerUID: customerUID});
-      // Construct a reference to the Firestore collection
-      // const db = getFirestore();
-      // const bookingRef = collection(db, "serviceBookings", customerUID, "activeBookings");
-      
-      // // Create a query against the collection to find the booking with the matchedBookingID
-      // const q = query(bookingRef, where("bookingID", "==", matchedBookingID));
-
-      // try {
-      //   // Execute the query
-      //   // const querySnapshot = await getDocs(q);
-      //   // querySnapshot.forEach(async (doc) => {
-      //   //   // For each document in the query result, update the status to "In Transit"
-      //   //   await updateDoc(doc.ref, { status: "In Transit" });
-      //   // });
-
-      //   // After the update, navigate to the GoToCustomer screen
-      //   navigation.navigate("ConfirmNavigation");
-      //   //navigation.navigate("ConfirmNavigation", { itemID: id, customerUID: customerUID, matchedBookingID: matchedBookingID});
-      // } catch (error) {
-      //   console.error("Error updating document: ", error);
-      // }
     } else if (status === 'In Transit') {
       navigation.navigate("PerformTheService", { itemID: id, matchedBookingID: matchedBookingID, customerUID: customerUID});
     } else if (status === 'In Progress') {
       navigation.navigate("ConfirmService", { itemID: id, matchedBookingID: matchedBookingID, customerUID: customerUID });
     }
   };
-  // const handleButton = () => {
-  //   switch (status) {
-  //     case 'Upcoming':
-  //       navigation.navigate("ConfirmNavigation", { itemID: id });
-  //       break;
-  //     case 'In Transit':
-  //       navigation.navigate("PerformTheService", { itemID: id });
-  //       break;
-  //     case 'In Progress':
-  //       navigation.navigate("ConfirmService", { itemID: id });
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // };
 
   const messageProvider = ()=>{
     Linking.openURL(`sms:${phone}`);
@@ -111,7 +69,6 @@ const navigation = useNavigation();
 
   const viewBookingDetails = () => {
     navigation.navigate("ViewBookingDetails", { itemID: id });
-
   };
   
 

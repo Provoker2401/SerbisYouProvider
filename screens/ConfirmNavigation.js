@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from "expo-image";
@@ -20,12 +20,32 @@ const ConfirmNavigation = ({route}) => {
 
     const [isLoading, setIsLoading] = useState(false);
 
-    const makeSomeRequest = () => {
-      setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 3000);
-    };
+    useEffect(() => {
+      async function fetchData() {
+        try {
+          const db = getFirestore(); // Use getFirestore() to initialize Firestore
+    
+          // Get the user's UID 
+          const auth = getAuth();
+          const providerUID = auth.currentUser.uid;
+          const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
+          const docSnapshot = await getDoc(userBookingDocRef);
+  
+          if (docSnapshot.exists()) {
+            const booking = docSnapshot.data();
+            console.log("Booking Data: ", booking);
+            setBookingTitle(booking.title);
+            setBookingCategory(booking.category);
+          } else {
+            console.log("No such document!");
+          }
+        } catch (error) {
+          console.error("Error retrieving data:", error);
+        }
+      }
+    
+      fetchData(); // Call the fetchData function immediately
+    }, []); 
 
 //     const handleToggle = (value) => setToggleState(value);
 //     const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
@@ -156,15 +176,6 @@ const ConfirmNavigation = ({route}) => {
           console.log("Passed Item ID" , itemID);
           console.log("Passed Matched Booking ID" , matchedBookingID);
           console.log("Passed Customer UID" , customerUID);
-          const docSnapshot = await getDoc(userBookingDocRef);
-
-          if (docSnapshot.exists()) {
-            const booking = docSnapshot.data();
-            setBookingTitle(booking.title);
-            setBookingCategory(booking.category);
-          } else {
-            console.log("No such document!");
-          }
 
           const q = query(bookingRef, where("bookingID", "==", matchedBookingID));
           const querySnapshot = await getDocs(q);
@@ -180,6 +191,9 @@ const ConfirmNavigation = ({route}) => {
             status: "In Transit"
           });
 
+          console.log("Booking Title: " ,bookingTitle);
+          console.log("Booking Category: " ,bookingCategory);
+
           const notifDocRef = doc(db, "userProfiles", customerUID);
           const notifCollection = collection(notifDocRef, "notifications");
 
@@ -193,7 +207,7 @@ const ConfirmNavigation = ({route}) => {
 
           const bookingDataNotif = {
             // Using bookingID as the key for the map inside the document
-            [matchedBookingID]: {
+            [`${matchedBookingID}1`]: {
               subTitle: `Your service provider for ${getFormattedServiceName()} is currently in transit and will arrive to your location shortly`,
               title: `Your booking ${matchedBookingID} is on the way to you`,
               createdAt: serverTimestamp(),
@@ -231,12 +245,14 @@ const ConfirmNavigation = ({route}) => {
     };
 
   const getFormattedServiceName = () => {
+    console.log("Booking Title: " ,bookingTitle);
+    console.log("Booking Category: " ,bookingCategory);
     if (!bookingTitle || !bookingCategory) {
       return 'Service'; // Default text or handle as needed
     }
 
     // Check if the title is "Pet Care" or "Gardening"
-    if (bookingTitle === "Pet Care" || bookingTitle === "Gardening") {
+    if (bookingTitle === "Pet Care" || bookingTitle === "Gardening" || bookingTitle === "Cleaning") {
       return bookingCategory;
     } else {
       // If not, concatenate the title and category

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  StyleProp,
-  ViewStyle,
   StyleSheet,
   View,
   Text,
@@ -14,15 +12,10 @@ import { Padding, Color, Border, FontSize, FontFamily } from "../GlobalStyles";
 import {
   getFirestore,
   collection,
-  doc,
-  getDoc,
-  getDocs,
-  setDoc,
-  where,
   query,
   onSnapshot,
 } from "firebase/firestore"; // Updated imports
-import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import ActiveBookingCard from './ActiveBookingCard';
 
 const ActiveBookings = ({ style }) => {
@@ -35,76 +28,35 @@ const ActiveBookings = ({ style }) => {
     const providerUID = auth.currentUser.uid;
 
     const q = query(collection(db, "providerProfiles", providerUID, "activeBookings"));
-    // const providerProfilesCollection = doc(db, "providerProfiles", providerUID);
-
-    // getDoc(providerProfilesCollection)
-    // .then(async (docSnapshot) => {
-    //   if (docSnapshot.exists()) {
-    //     const customerData = docSnapshot.data();
-    //     setCustomerUID(customerData.bookingID);
-    //     console.log("Customer UID: ", customerUID);
-    //   } else {
-    //     console.log("No such document!");
-    //   }
-    // })
-    // .catch((error) => {
-    //   console.error("Error getting document:", error);
-    // })
 
     // Set up the listener with onSnapshot
     onSnapshot(q, (querySnapshot) => {
       let bookings = [];
-      // if (!querySnapshot.empty) { 
-      //   querySnapshot.forEach((doc) => {
-      //     // doc.data() is never undefined for query doc snapshots
-      //     bookings.push({ id: doc.id, ...doc.data() });
-      //     setActiveBookings(bookings);
-      //   });
-      //   console.log("Bookings: " , bookings);
-      //   // return bookings;
-      // }else {
-      //   setActiveBookings([]);
-      //   console.log("The 'activeBookings' collection is empty.");
-      // }
-      querySnapshot.forEach((doc) => {
-        // Only push if the document is not empty
-        console.log("Document: " , doc.data().bookingID);
-        if (doc.data().bookingID !== undefined) {
-          bookings.push({ id: doc.id, ...doc.data() });
+      if (!querySnapshot.empty) { 
+        querySnapshot.forEach((doc) => {
+          if (doc.data().bookingID !== undefined) {
+            bookings.push({ id: doc.id, ...doc.data() });
+          }
+        });
+        if (bookings.length > 0) {
+          setActiveBookings(bookings);
+          console.log("Bookings: ", bookings);
+        } else {
+          setActiveBookings([]);
+          console.log("The 'activeBookings' collection is empty or has no data.");
         }
-      });
-      console.log("Bookings Length: " ,bookings.length);
-      if (bookings.length > 0) {
-        setActiveBookings(bookings);
-        console.log("Bookings: ", bookings);
-      } else {
+      }else {
         setActiveBookings([]);
-        console.log("The 'activeBookings' collection is empty or has no data.");
+        console.log("The 'activeBookings' collection is empty.");
       }
     }, (error) => {
-      // Handle errors, e.g., permission issues
       console.log("Error fetching active bookings: ", error);
     });
-
-  // Return the unsubscribe function to stop listening to changes
-  // return typeof unsubscribe === 'function' ? unsubscribe : () => {};
-    // const querySnapshot = await getDocs(q);
-    // let bookings = [];
-    // if (!querySnapshot.empty) {
-    //   querySnapshot.forEach((doc) => {
-    //     // doc.data() is never undefined for query doc snapshots
-    //     bookings.push({ id: doc.id, ...doc.data() });
-    //   });
-    //   console.log("Bookings: " , bookings);
-    //   return bookings;
-    // }else {
-    //   console.log("The 'activeBookings' collection is empty.");
-    // }
   };
 
   const getFormattedServiceName = (item) => {
-    // Check if the title is "Pet Care" or "Gardening"
-    if (item.title === "Pet Care" || item.title === "Gardening") {
+    // Check if the title is "Pet Care" or "Gardening" or "Cleaning"
+    if (item.title === "Pet Care" || item.title === "Gardening" || item.title === "Cleaning") {
       return item.category;
     } else {
       // If not, concatenate the title and category
@@ -121,28 +73,6 @@ const ActiveBookings = ({ style }) => {
 
     loadActiveBookings();
   }, []);
-
-  // useEffect(() => {
-  //   const unsubscribe = fetchActiveBookings();
-  
-  //   // Clean up the subscription on unmount
-  //   return () => {
-  //     unsubscribe();
-  //   };
-  // }, []);
-  
-  // useEffect(() => {
-  //   let isMounted = true; // Track the mount status
-  //   const unsubscribe = fetchActiveBookings();
-  
-  //   return () => {
-  //     isMounted = false; // Update the mount status
-  //     if (typeof unsubscribe === 'function') {
-  //       unsubscribe(); // Unsubscribe if it's a function
-  //     }
-  //   };
-  // }, []);
-
   
   const renderItem = ({ item, index }) => {
     return (
@@ -542,7 +472,7 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
   },
   frameParent1: {
-    paddingVertical: Padding.p_121xl,
+    paddingVertical: 80,
     paddingHorizontal: Padding.p_xl,
     borderRadius: Border.br_5xs,
     justifyContent: "center",

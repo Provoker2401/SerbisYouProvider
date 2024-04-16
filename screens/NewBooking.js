@@ -76,8 +76,8 @@ const NewBooking = ({ route }) => {
   const [bookingSubTotal, setBookingSubTotal] = useState(0);
   const [bookingTotal, setBookingTotal] = useState("");
   const [coordinates, setCoordinates] = useState({
-    latitude: null,
-    longitude: null,
+    latitude: 10.336641527084641,
+    longitude: 123.91533800644042,
   });
   const [isMapReady, setIsMapReady] = useState(false);
 
@@ -99,6 +99,7 @@ const NewBooking = ({ route }) => {
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
 
   const [CountDownBookingVisible, setCountDownBookingVisible] = useState(false);
+  const [CountDownBookingFlag, setCountDownBookingFlag] = useState(true);
   const [BookingNotFoundVisible, setBookingNotFoundVisible] = useState(false);
   const [countdown, setCountdown] = useState(60); // Initial countdown value in seconds
   const intervalRef = useRef(null);
@@ -113,7 +114,7 @@ const NewBooking = ({ route }) => {
   }, []);
 
   useEffect(() => {
-    if (countdown === 15) {
+    if (countdown === 15 && CountDownBookingFlag) {
       setCountDownBookingVisible(true);
     } else if (countdown === 0) {
       declineBooking();
@@ -233,6 +234,8 @@ const NewBooking = ({ route }) => {
             totalPrice: bookingTotal,
             status: "Upcoming",
           });
+          setCountDownBookingVisible(false);
+          setCountDownBookingFlag(false);
           // Get the unique ID of the newly added document
           const newDocumentID = docRef.id;
           console.log("Document added to 'activeBookings' successfully.");
@@ -241,7 +244,6 @@ const NewBooking = ({ route }) => {
             matchedBookingID: matchedBookingID,
             providerLocation: providerLocation, // Include providerLocation in the route parameters
           })
-          setCountDownBookingVisible(false);
         } else {
           console.error("Provider Profile does not exists");
         }
@@ -316,6 +318,7 @@ const NewBooking = ({ route }) => {
           blackListed: arrayUnion(bookingID),
         });
         setCountDownBookingVisible(false);
+        setCountDownBookingFlag(false);
 
         navigation.navigate("BottomTabsRoot", {
           screen: "Homepage",
@@ -644,10 +647,16 @@ const NewBooking = ({ route }) => {
             const matchingBooking = bookingData.bookings[indexToFetch];
             if (matchingBooking) {
               // Fetch data and display through console.log
+              const materials = matchingBooking.materials;
               console.log("Fetching data for booking:", matchingBooking);
               console.log("Services: ", matchingBooking.service);
               const servicesData = matchingBooking.service.map((doc) => doc);
               console.log("Data Services: ", servicesData);
+              if (materials == "useProviderMaterials") {
+                setBookingMaterials("Supplied by Provider");
+              } else {
+                setBookingMaterials("Customer-Provided");
+              }
               setBookingAccepted(matchingBooking.bookingAccepted);
               setBookingAssigned(matchingBooking.bookingAssigned);
               setBookingID(matchingBooking.bookingID);
@@ -667,7 +676,6 @@ const NewBooking = ({ route }) => {
               setBookingAddress(matchingBooking.address);
               setBookingAddressDetails(matchingBooking.addressDetails);
               setBookingCustomerUID(matchingBooking.customerUID);
-              setBookingMaterials(matchingBooking.materials);
               setBookingCategory(matchingBooking.category);
               setBookingServices(matchingBooking.service);
               setCoordinates({
@@ -805,12 +813,12 @@ const NewBooking = ({ route }) => {
           region={initialMapRegion}
           onLayout={onMapLayout}
         >
-          <Marker
+          {/* <Marker
             coordinate={markerPosition}
             title="Provider's Location"
             draggable={false}
             image={require("../assets/provider-2.png")}
-          />
+          /> */}
           {coordinates.latitude && coordinates.longitude && (
             <Marker
               coordinate={coordinates}
@@ -831,9 +839,6 @@ const NewBooking = ({ route }) => {
           />
         </TouchableOpacity>
       </View>
-      {/* </View> */}
-      {/* </View> */}
-
       <ScrollView
         style={styles.body}
         indicatorStyle="default"
@@ -843,47 +848,7 @@ const NewBooking = ({ route }) => {
         contentContainerStyle={styles.bodyScrollViewContent}
       >
         <View style={[styles.bodyInner, styles.frameFlexBox3]}>
-          {/* <MapView
-                ref={mapRef}
-                style={styles.map}
-                region={initialMapRegion}
-                onLayout={onMapLayout}
-                // onPress={handleMapPress}
-                // provider={PROVIDER_GOOGLE}
-              >
-                <Marker
-                  coordinate={markerPosition}
-                  title="Pinned Location"
-                  draggable={false}
-                  // onDragEnd={handleMarkerDragEnd}
-                  image={require("../assets/icons8location100-2-1.png")}
-                />
-              </MapView> */}
           <View style={styles.frameParent}>
-            {/* <View style={[styles.frameWrapper, styles.frameFlexBox2]}>
-              <ImageBackground
-                style={[styles.frameContainer, styles.frameFlexBox2]}
-                resizeMode="cover"
-                source={require("../assets/frame26085032.png")}
-              >
-             
-                <View
-                  style={[
-                    styles.icons8Location10021Wrapper,
-                    styles.icons8Position,
-                  ]}
-                >
-                  <Image
-                    style={[
-                      styles.icons8Location10021,
-                      styles.frameWrapper7Layout,
-                    ]}
-                    contentFit="cover"
-                    source={require("../assets/icons8location100-2-1.png")}
-                  />
-                </View>
-              </ImageBackground>
-            </View> */}
             <View
               style={[styles.bookingDetailsLabelWrapper, styles.parentFlexBox]}
             >
@@ -938,7 +903,6 @@ const NewBooking = ({ route }) => {
                 <View style={styles.frameFrame}>
                   <View style={[styles.frame, styles.frameFlexBox3]}>
                     <Text style={[styles.august112023, styles.textTypo1]}>
-                      {/* December 11, 2023 */}
                       {bookingDate}
                     </Text>
                   </View>
@@ -962,7 +926,6 @@ const NewBooking = ({ route }) => {
                 <View style={styles.frameFrame}>
                   <View style={[styles.frame, styles.frameFlexBox3]}>
                     <Text style={[styles.august112023, styles.textTypo1]}>
-                      {/* 7:30 AM */}
                       {bookingTime}
                     </Text>
                   </View>
@@ -986,7 +949,6 @@ const NewBooking = ({ route }) => {
                 <View style={styles.frameFrame}>
                   <View style={styles.frame2}>
                     <Text style={[styles.august112023, styles.textTypo1]}>
-                      {/* University of San Carlos, Nasipit, Talamban, Cebu City */}
                       {bookingAddress}
                     </Text>
                   </View>
@@ -1010,7 +972,6 @@ const NewBooking = ({ route }) => {
                 <View style={styles.frameWrapper3}>
                   <View style={styles.frame2}>
                     <Text style={[styles.august112023, styles.textTypo1]}>
-                      {/* Customer-Provided/supplied by Provider */}
                       {bookingMaterials}
                     </Text>
                   </View>
@@ -1084,7 +1045,6 @@ const NewBooking = ({ route }) => {
                                   styles.septicTankTypo,
                                 ]}
                               >
-                                {/* Septic Tank */}
                                 {name}
                               </Text>
                             </View>
@@ -1104,25 +1064,12 @@ const NewBooking = ({ route }) => {
                               >
                                 <View style={styles.bookingDetailsLabel}>
                                   <Text style={[styles.text, styles.textTypo1]}>
-                                    {/* 1 */}
                                     {value}
                                   </Text>
                                 </View>
                               </View>
                             </View>
                           </View>
-                          {/* <View
-                          style={[
-                            styles.frameWrapper25,
-                            styles.frameWrapperFlexBox,
-                          ]}
-                        >
-                          <View style={styles.frame2}>
-                            <Text style={[styles.text6, styles.textTypo]}>
-                              ₱1500.00
-                            </Text>
-                          </View>
-                        </View> */}
                         </View>
                       );
                     })}
@@ -1353,7 +1300,7 @@ const styles = StyleSheet.create({
     textAlign: "left",
   },
   textTypo1: {
-    textTransform: "capitalize",
+    // textTransform: "capitalize",
     fontSize: FontSize.paragraphMedium15_size,
     fontFamily: FontFamily.workSansRegular,
   },
