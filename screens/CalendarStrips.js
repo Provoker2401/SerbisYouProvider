@@ -9,64 +9,7 @@ const CalendarStrips = ({style}) => {
   const [customDatesStyles, setCustomDatesStyles] = useState([]);
   const [markedDates, setMarkedDates] = useState([]);
 
-  // useEffect(() => {
-  //   let newCustomDatesStyles = [];
-  //   let newMarkedDates = [];
-  //   let startDate = moment();
-  //   for (let i = 0; i < 7; i++) {
-  //     let date = startDate.clone().add(i, 'days');
-  //     let dayOfWeek = date.isoWeekday();
 
-  //     newCustomDatesStyles.push({
-  //       startDate: date,
-  //       dateNameStyle: { color: 'blue' },
-  //       dateNumberStyle: { color: 'purple' },
-  //       highlightDateNameStyle: { color: 'pink' },
-  //       highlightDateNumberStyle: { color: 'yellow' },
-  //       dateContainerStyle: { backgroundColor: `#${(`#00000${(Math.random() * (1 << 24) | 0).toString(16)}`).slice(-6)}` },
-  //     });
-
-  //     let dots = [];
-  //     let lines = [];
-
-  //     // if (i % 2) {
-  //     //   lines.push({
-  //     //     color: 'white',
-  //     //     selectedColor: 'white',
-  //     //   });
-  //     // } else {
-  //     //   dots.push({
-  //     //     color: 'red',
-  //     //     selectedColor: 'yellow',
-  //     //   });
-  //     // }
-
-  //     // Add yellow line for Monday, Wednesday, Friday
-  //     if ([1, 3, 5].includes(dayOfWeek)) {
-  //       lines.push({
-  //         color: 'yellow',
-  //         selectedColor: 'yellow',
-  //       });
-  //     }
-
-  //     // Add orange dot for Tuesday, Thursday
-  //     if ([2, 4].includes(dayOfWeek)) {
-  //       dots.push({
-  //         color: 'orange',
-  //         selectedColor: 'orange',
-  //       });
-  //     }
-
-  //     newMarkedDates.push({
-  //       date,
-  //       dots,
-  //       lines
-  //     });
-  //   }
-
-  //   setCustomDatesStyles(newCustomDatesStyles);
-  //   setMarkedDates(newMarkedDates);
-  // }, []);
 
   useEffect(() => {
     let newMarkedDates = [];

@@ -10,7 +10,7 @@ import { getFirestore, collection, doc, getDoc, getDocs, updateDoc } from 'fireb
 import { launchImageLibrary } from 'react-native-image-picker';
 import { PermissionsAndroid } from 'react-native'; // Import PermissionsAndroid for Android permissions
 import * as ImagePicker from "expo-image-picker";
-import { app, firebaseConfig } from "../App"; // Update the path as needed
+// import { app, firebaseConfig } from "../App"; // Update the path as needed
 
 import {
   getStorage,

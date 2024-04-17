@@ -93,6 +93,7 @@ const Onboarding3 = () => {
             <View style={styles.buttons}>
               <Pressable
                 style={styles.getStartedBtn}
+                testID="next-button"
                 onPress={() => navigation.navigate("SignIn")}
               >
                 <Text style={[styles.getStarted, styles.getStartedTypo]}>

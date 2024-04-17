@@ -31,7 +31,7 @@ import {
 import Toast from "react-native-toast-message";
 // import * as FirebaseRecaptcha from "expo-firebase-recaptcha";
 import axios from "axios";
-import messaging from '@react-native-firebase/messaging';
+import messaging from "@react-native-firebase/messaging";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDWQablgpC3ElsqOQuVhQU2YFsri1VmCss",
@@ -145,7 +145,7 @@ const Authentication = ({ route }) => {
 
       console.log("Response data:", response.data);
     } catch (error) {
-      console.error("Error:", error.message);
+      // console.error("Error:", error.message);
 
       Toast.show({
         type: "error",
@@ -191,7 +191,7 @@ const Authentication = ({ route }) => {
         const provider = providerCredential.user;
 
         registerAppWithFCM();
-        
+
         const fcmToken = await messaging().getToken();
 
         // Get the provider's UID
@@ -229,7 +229,10 @@ const Authentication = ({ route }) => {
         });
 
         // Create subcollections with empty fields
-        const notifications = collection(currentProviderDocRef, "notifications");
+        const notifications = collection(
+          currentProviderDocRef,
+          "notifications"
+        );
         const today = new Date();
         const options = {
           year: "numeric",
@@ -293,7 +296,7 @@ const Authentication = ({ route }) => {
           visibilityTime: 3000,
         });
       } catch (error) {
-        console.error("Sign-up error:", error);
+        // console.error("Sign-up error:", error);
 
         Toast.show({
           type: "error",
@@ -306,7 +309,7 @@ const Authentication = ({ route }) => {
 
       navigation.navigate("ApplicationForm1");
     } catch (error) {
-      console.error("Error verification:", error.message);
+      // console.error("Error verification:", error.message);
 
       Toast.show({
         type: "error",
@@ -321,9 +324,9 @@ const Authentication = ({ route }) => {
   async function registerAppWithFCM() {
     try {
       await messaging().registerDeviceForRemoteMessages();
-      console.log('Device registered for FCM');
+      console.log("Device registered for FCM");
     } catch (error) {
-      console.error('Error registering device for FCM', error);
+      // console.error("Error registering device for FCM", error);
     }
   }
 
@@ -337,13 +340,11 @@ const Authentication = ({ route }) => {
             <View style={[styles.body, styles.frameFlexBox]}>
               <View style={styles.frameFlexBox}>
                 <View style={styles.frame3}>
-                  <Text
-                    style={styles.authentication1}
-                  >{`    Authentication `}</Text>
-                  <Text
-                    style={styles.weveSentA}
-                  >{`We’ve sent a code to the phone number provided.
-Enter the code in that message to continue.`}</Text>
+                  <Text style={styles.authentication1}>Authentication</Text>
+                  <Text style={styles.weveSentA}>
+                    We’ve sent a code to the phone number provided. Enter the
+                    code in that message to continue.
+                  </Text>
                   <View style={[styles.otpframe]}>
                     {Array(6)
                       .fill(0)
@@ -364,7 +365,11 @@ Enter the code in that message to continue.`}</Text>
                 </View>
               </View>
               <View style={[styles.verifyframe, styles.frameFlexBox]}>
-                <Pressable style={styles.componentsbutton} onPress={verifyCode}>
+                <Pressable
+                  style={styles.componentsbutton}
+                  testID="send-verification-button"
+                  onPress={verifyCode}
+                >
                   <Text style={styles.signIn}>Verify Code</Text>
                 </Pressable>
               </View>
