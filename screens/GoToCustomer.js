@@ -62,7 +62,7 @@ const GoToCustomer = ( {route} ) => {
 
   TaskManager.defineTask(getCurrentLocationTask, async ({ data, error }) => {
     if (error) {
-      console.error("Background location task error:", error);
+      // console.error("Background location task error:", error);
       return;
     }
 
@@ -95,7 +95,7 @@ const GoToCustomer = ( {route} ) => {
           }
         }
       } catch (error) {
-        console.error("Error updating Firestore document:", error);
+        // console.error("Error updating Firestore document:", error);
       }
     }
   });
@@ -117,7 +117,7 @@ const GoToCustomer = ( {route} ) => {
     try {
       const { status } = await Location.requestBackgroundPermissionsAsync();
       if (status !== "granted") {
-        console.error("Permission to access background location was denied");
+        // console.error("Permission to access background location was denied");
         return;
       }
 
@@ -138,7 +138,7 @@ const GoToCustomer = ( {route} ) => {
         }
       );
     } catch (error) {
-      console.error("Error updating location:", error);
+      // console.error("Error updating location:", error);
     }
   };
 
@@ -330,7 +330,7 @@ const GoToCustomer = ( {route} ) => {
             fetchedProviderCoordinates = { latitude: providerLat, longitude: providerLong };
             setProviderCoordinates(fetchedProviderCoordinates);
           } else {
-            console.error('Invalid provider coordinates:', providerLat, providerLong);
+            // console.error('Invalid provider coordinates:', providerLat, providerLong);
           }
   
           console.log("Provider Coordinates from Firestore: ", fetchedProviderCoordinates);
@@ -371,7 +371,7 @@ const GoToCustomer = ( {route} ) => {
   
         setIsLoading(false); // Set loading to false once data is fetched
       } catch (error) {
-        console.error("Error retrieving data:", error);
+        // console.error("Error retrieving data:", error);
       }
 
     }
@@ -388,7 +388,7 @@ const GoToCustomer = ( {route} ) => {
     try {
       navigation.navigate("PerformTheService", { itemID: itemID, matchedBookingID: matchedBookingID, customerUID: customerUID});
     } catch (error) {
-      console.error("Error updating status:", error);
+      // console.error("Error updating status:", error);
     }
   };
 

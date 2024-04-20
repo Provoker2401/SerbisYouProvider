@@ -1,5 +1,5 @@
 import React, { Component, useState, useEffect } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+// import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Pressable,
   StyleSheet,
@@ -544,7 +544,7 @@ const EditService = () => {
           setSelectedItems(extractedSelectedItems);
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        // console.error("Error fetching data:", error);
       }
     };
 
@@ -681,7 +681,7 @@ const EditService = () => {
         console.log("No or multiple documents found in appForm1.");
       }
     } catch (error) {
-      console.error("Error updating Firestore data:", error);
+      // console.error("Error updating Firestore data:", error);
     }
   };
 

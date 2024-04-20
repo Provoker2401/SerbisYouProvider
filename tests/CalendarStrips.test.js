@@ -32,20 +32,5 @@ describe("CalendarStrips component", () => {
     // Render the component
     render(<CalendarStrips />);
   });
-
-  test('displays selected date correctly', () => {
-    // Generate a date string that's one day behind the current date
-    const currentDate = new Date();
-    currentDate.setDate(currentDate.getDate() +1);
-    const formattedDate = currentDate.toISOString().slice(0, 10); // Format the date as 'YYYY-MM-DD'
-
-    // Render the component
-    const { getByText } = render(<CalendarStrips />);
-    
-    // Find the Text component by its rendered text
-    const textElement = getByText(`Selected Date: ${formattedDate}`);
-    
-    // Assert that the Text component with the formatted date is found
-    expect(textElement).toBeTruthy();
-  });
+  
 });

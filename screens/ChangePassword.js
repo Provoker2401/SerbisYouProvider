@@ -36,7 +36,6 @@ const ChangePassword = () => {
   const [textInputConfirmPass, settextInputConfirmPass] = React.useState("");
   const [textInputCurrentPass, settextInputCurrentPass] = React.useState("");
   const [errorMessageVisible, setErrorMessageVisible] = React.useState(false); // for current password
-  
 
   const newPassword = textInputNewPass;
   const confirmPassword = textInputConfirmPass;
@@ -78,7 +77,7 @@ const ChangePassword = () => {
 
       // If reauthentication is successful, proceed with the password update
       await updatePassword(user, newPassword);
-      
+
       const db = getFirestore();
       const notifDocRef = doc(db, "providerProfiles", providerUID);
       const notifCollection = collection(notifDocRef, "notifications");
@@ -178,6 +177,8 @@ const ChangePassword = () => {
                     style={styles.eyeOffIcon}
                     contentFit="cover"
                     source={require("../assets/eye-off.png")}
+                    testID="eye-off-icon"
+
                   />
                 </View>
               </View>
@@ -202,6 +203,7 @@ const ChangePassword = () => {
                   <Image
                     style={styles.eyeOffIcon}
                     contentFit="cover"
+                    testID="eye-off-icon2"
                     source={require("../assets/eye-off.png")}
                   />
                 </View>
@@ -227,6 +229,7 @@ const ChangePassword = () => {
                   <Image
                     style={styles.eyeOffIcon}
                     contentFit="cover"
+                    testID="eye-off-icon3"
                     source={require("../assets/eye-off.png")}
                   />
                 </View>
@@ -248,23 +251,22 @@ const ChangePassword = () => {
                 <Text style={styles.titleLabel}>Password Strength:</Text>
               </View>
               <View style={styles.weakParent}>
-              
-              {
-                textInputNewPass.length >= 8 ? (
+                {textInputNewPass.length >= 8 ? (
                   /[A-Z]/.test(textInputNewPass) ? (
                     /[!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/.test(textInputNewPass) ? (
-                      <Text style={[styles.strong, styles.strongPosition]}>STRONG</Text>
+                      <Text style={[styles.strong, styles.strongPosition]}>
+                        STRONG
+                      </Text>
                     ) : (
-                      <Text style={[styles.average, styles.badgePosition]}>AVERAGE</Text>
+                      <Text style={[styles.average, styles.badgePosition]}>
+                        AVERAGE
+                      </Text>
                     )
                   ) : (
                     <Text style={[styles.weak, styles.weakTypo]}>WEAK</Text>
                   )
-                ) : null
-              }
+                ) : null}
 
-                  
-              
                 {/* <Text style={[styles.weak, styles.weakTypo]}>WEAK</Text>
                 <Text style={[styles.average, styles.badgePosition]}>
                   AVERAGE
@@ -280,19 +282,17 @@ const ChangePassword = () => {
                 contentFit="cover"
                 source={require("../assets/rectangle-4408.png")}
               />
-              {
-                textInputNewPass.length >= 8 ? (
-                  /[A-Z]/.test(textInputNewPass) ? (
-                    /[!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/.test(textInputNewPass) ? (
-                      <View style={[styles.strongBar, styles.barLayout]} />
-                    ) : (
-                      <View style={[styles.averageBar, styles.barLayout]} />
-                    )
+              {textInputNewPass.length >= 8 ? (
+                /[A-Z]/.test(textInputNewPass) ? (
+                  /[!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/.test(textInputNewPass) ? (
+                    <View style={[styles.strongBar, styles.barLayout]} />
                   ) : (
-                    <View style={[styles.weakBar, styles.barLayout]} />
+                    <View style={[styles.averageBar, styles.barLayout]} />
                   )
-                ) : null
-              }
+                ) : (
+                  <View style={[styles.weakBar, styles.barLayout]} />
+                )
+              ) : null}
 
               {/* <View style={[styles.weakBar, styles.barLayout]} />
               <View style={[styles.averageBar, styles.barLayout]} />
@@ -577,7 +577,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     top: 0,
-
   },
   averageBar: {
     backgroundColor: Color.colorOrange_100,
@@ -709,4 +708,3 @@ const styles = StyleSheet.create({
 });
 
 export default ChangePassword;
-

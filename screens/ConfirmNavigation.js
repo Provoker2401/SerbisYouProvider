@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from "expo-image";
-import SwipeButton from 'rn-swipe-button';
+import {SwipeButton} from 'rn-swipe-button';
 import { Padding, Border, FontSize, FontFamily, Color } from "../GlobalStyles";
 import { useNavigation } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
@@ -40,7 +40,7 @@ const ConfirmNavigation = ({route}) => {
             console.log("No such document!");
           }
         } catch (error) {
-          console.error("Error retrieving data:", error);
+          // console.error("Error retrieving data:", error);
         }
       }
     
@@ -231,7 +231,7 @@ const ConfirmNavigation = ({route}) => {
               console.log("New notification document created!");
             }
           } catch (error) {
-            console.error("Error updating notification:", error);
+            // console.error("Error updating notification:", error);
           }
     
           setIsLoading(false);
@@ -239,7 +239,7 @@ const ConfirmNavigation = ({route}) => {
           // Navigate to the "GoToCustomer" screen
           navigation.navigate('GoToCustomer', { itemID: itemID, matchedBookingID: matchedBookingID, customerUID: customerUID});
         } catch (error) {
-          console.error("Error updating Firestore documents:", error);
+          // console.error("Error updating Firestore documents:", error);
           setIsLoading(false);
         }
     };

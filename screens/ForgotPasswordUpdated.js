@@ -48,6 +48,7 @@ const ForgotPasswordUpdated = () => {
             <Pressable
               style={styles.signInBtn}
               onPress={() => navigation.navigate("SignIn")}
+              testID="sign-in-button"
             >
               <View style={[styles.button, styles.buttonSpaceBlock]}>
                 <Text style={[styles.button1, styles.button1Typo]}>
