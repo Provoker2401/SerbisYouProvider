@@ -10,6 +10,7 @@ const Splash = () => {
         <Image
           style={[styles.serbisyouwhite1Icon, styles.splashLayout]}
           contentFit="cover"
+          testID="serbisyou-logo"
           source={require("../assets/serbisyouwhite-1.png")}
         />
         <Text style={[styles.serbisyou, styles.providerTypo]}>SerbisYou</Text>

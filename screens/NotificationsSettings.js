@@ -13,7 +13,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 // import { Switch as RNESwitch } from "@rneui/themed";
 import { FontSize, FontFamily, Padding, Border, Color } from "../GlobalStyles";
-import messaging from '@react-native-firebase/messaging';
 
 const NotificationsSettings = () => {
   const [toggleSwitchValue, setToggleSwitchValue] = useState(false);
@@ -40,66 +39,66 @@ const NotificationsSettings = () => {
     setIsChatEnabled((previousState) => !previousState);
   };
 
-  const requestUserPermission = async () => {
-    const authStatus = await messaging().requestPermission();
-    const enabled =
-      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  // const requestUserPermission = async () => {
+  //   const authStatus = await messaging().requestPermission();
+  //   const enabled =
+  //     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+  //     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-    if (enabled) {
-      console.log("Authorization status:", authStatus);
-    }
-  };
+  //   if (enabled) {
+  //     console.log("Authorization status:", authStatus);
+  //   }
+  // };
 
-  useEffect(() => {
-    if (requestUserPermission()) {
-      // return fcm token for the device
-      messaging()
-        .getToken()
-        .then((token) => {
-          console.log("Token: ", token);
-        });
-    } else {
-      console.log("Failed token status", authStatus);
-    }
+  // useEffect(() => {
+  //   if (requestUserPermission()) {
+  //     // return fcm token for the device
+  //     messaging()
+  //       .getToken()
+  //       .then((token) => {
+  //         console.log("Token: ", token);
+  //       });
+  //   } else {
+  //     console.log("Failed token status", authStatus);
+  //   }
 
-    // Check whether an initial notification is available
-    messaging()
-      .getInitialNotification()
-      .then((remoteMessage) => {
-        if (remoteMessage) {
-          console.log(
-            "Notification caused app to open from quit state:",
-            remoteMessage.notification
-          );
-          //setInitialRoute(remoteMessage.data.type);  e.g. "Settings"
-        }
-        //setLoading(false);
-      });
+  //   // Check whether an initial notification is available
+  //   messaging()
+  //     .getInitialNotification()
+  //     .then((remoteMessage) => {
+  //       if (remoteMessage) {
+  //         console.log(
+  //           "Notification caused app to open from quit state:",
+  //           remoteMessage.notification
+  //         );
+  //         //setInitialRoute(remoteMessage.data.type);  e.g. "Settings"
+  //       }
+  //       //setLoading(false);
+  //     });
 
-    // When the app is running, but in the background
-    // Assume a message-notification contains a "type" property in the data payload of the screen to open
+  //   // When the app is running, but in the background
+  //   // Assume a message-notification contains a "type" property in the data payload of the screen to open
 
-    messaging().onNotificationOpenedApp(async (remoteMessage) => {
-      console.log(
-        "Notification caused app to open from background state:",
-        remoteMessage.notification
-      );
-      // navigation.navigate(remoteMessage.data.type);
-    });
+  //   messaging().onNotificationOpenedApp(async (remoteMessage) => {
+  //     console.log(
+  //       "Notification caused app to open from background state:",
+  //       remoteMessage.notification
+  //     );
+  //     // navigation.navigate(remoteMessage.data.type);
+  //   });
 
-    // Register background handler
-    messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-      console.log("Message handled in the background!", remoteMessage);
-    });
+  //   // Register background handler
+  //   messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+  //     console.log("Message handled in the background!", remoteMessage);
+  //   });
 
-    // To listen to messages in the foreground
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-    });
+  //   // To listen to messages in the foreground
+  //   const unsubscribe = messaging().onMessage(async remoteMessage => {
+  //     Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+  //   });
 
-    return unsubscribe;
-  }, []);
+  //   return unsubscribe;
+  // }, []);
 
   return (
     <View style={styles.notificationsSettings}>
