@@ -408,6 +408,7 @@ const ViewBookingDetails = ({ route }) => {
             style={[styles.backBtnWrapper, styles.backBtnWrapperSpaceBlock]}
           >
             <Pressable
+              testID="button"
               style={[styles.backBtn, styles.btnLayout]}
               onPress={() => navigation.navigate("BottomTabsRoot", { screen: "Homepage" })}
             >

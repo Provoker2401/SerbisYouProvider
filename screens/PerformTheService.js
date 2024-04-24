@@ -93,7 +93,7 @@ const PerformTheService = ({route}) => {
           console.log("No such document!");
         }
       } catch (error) {
-        console.error("Error retrieving data:", error);
+        // console.error("Error retrieving data:", error);
       }
     }
   
@@ -207,7 +207,7 @@ const PerformTheService = ({route}) => {
   
       openCancelModal();
     } catch (error) {
-      console.error("Error updating status:", error);
+      // console.error("Error updating status:", error);
     }
   };
   const handleCompletedService = async (itemID) => {
@@ -227,7 +227,7 @@ const PerformTheService = ({route}) => {
       // Navigate to PerformTheService screen with itemId
       navigation.navigate("ConfirmService", { itemID: itemID, matchedBookingID: matchedBookingID, customerUID: customerUID });
     } catch (error) {
-      console.error("Error updating status:", error);
+      // console.error("Error updating status:", error);
     }
   };
 

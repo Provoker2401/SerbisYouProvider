@@ -26,7 +26,7 @@ import {
   where,
   getDocs,
 } from "firebase/firestore";
-import messaging from '@react-native-firebase/messaging';
+// import messaging from '@react-native-firebase/messaging';
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -95,7 +95,7 @@ const SignIn = () => {
             // navigation.navigate("ApplicationForm1")
           } else {
             // User's UID not found in providerProfiles
-            console.error("User not found in providerProfiles");
+            // console.error("User not found in providerProfiles");
             Toast.show({
               type: "error",
               position: "top",
@@ -105,7 +105,7 @@ const SignIn = () => {
             });
           }
         } catch (error) {
-          console.error("Firestore error:", error);
+          // console.error("Firestore error:", error);
           Toast.show({
             type: "error",
             position: "top",
@@ -119,7 +119,7 @@ const SignIn = () => {
         // Handle authentication errors
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.error("Authentication error:", errorCode, errorMessage);
+        // console.error("Authentication error:", errorCode, errorMessage);
         Toast.show({
           type: "error",
           position: "top",
@@ -143,6 +143,7 @@ const SignIn = () => {
           <Image
             style={styles.serbisyoublue1Icon}
             contentFit="cover"
+            testID="serbisyou-logo"
             source={require("../assets/frame.png")}
           />
           <View style={styles.serbisyouParent}>
@@ -245,6 +246,7 @@ const SignIn = () => {
                       <Pressable
                         style={[styles.signInButton1, styles.frameFlexBox]}
                         onPress={handleSignIn}
+                        testID="signIn"
                         // onPress={() => navigation.navigate("SignUp")}
                       >
                         <Text style={[styles.signIn3, styles.signTypo]}>

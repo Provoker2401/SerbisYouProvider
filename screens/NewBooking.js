@@ -196,7 +196,7 @@ const NewBooking = ({ route }) => {
           });
           console.log("acceptedBy field updated in serviceBookings document.");
         } else {
-          console.error("Service Booking document does not exist");
+          // console.error("Service Booking document does not exist");
         }
   
         if (providerSnapshot.exists()) {
@@ -245,10 +245,10 @@ const NewBooking = ({ route }) => {
             providerLocation: providerLocation, // Include providerLocation in the route parameters
           })
         } else {
-          console.error("Provider Profile does not exists");
+          // console.error("Provider Profile does not exists");
         }
       } catch (error) {
-        console.error("Error updating user data:", error);   // Handle the error, e.g., display an error message to the user
+        // console.error("Error updating user data:", error);   // Handle the error, e.g., display an error message to the user
       }
     }else{
       console.log("BookingID is blank");
@@ -297,7 +297,7 @@ const NewBooking = ({ route }) => {
 
       console.log("blackListed field updated in serviceBookings document.");
     } else {
-      console.error("Service Booking document does not exist");
+      // console.error("Service Booking document does not exist");
     }
 
     try {
@@ -329,7 +329,7 @@ const NewBooking = ({ route }) => {
         console.log("Provider document does not exist.");
       }
     } catch (error) {
-      console.error("Error updating provider document:", error);
+      // console.error("Error updating provider document:", error);
     }
   };
 
@@ -570,14 +570,14 @@ const NewBooking = ({ route }) => {
             console.log("Location not found with OpenStreetMap");
           }
         } catch (osmError) {
-          console.error(
-            "Error fetching location with OpenStreetMap:",
-            osmError
-          );
+          // console.error(
+          //   "Error fetching location with OpenStreetMap:",
+          //   osmError
+          // );
         }
       }
     } catch (error) {
-      console.error("Error fetching reverse geolocation:", error);
+      // console.error("Error fetching reverse geolocation:", error);
     }
   };
 
@@ -757,7 +757,7 @@ const NewBooking = ({ route }) => {
         //   console.log("The 'bookingAssigned' collection is empty.");
         // }
       } catch (error) {
-        console.error("Error retrieving data:", error);
+        // console.error("Error retrieving data:", error);
       }
     }
 

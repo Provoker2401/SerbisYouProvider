@@ -141,7 +141,7 @@ const SignUp = () => {
       }
     } catch (error) {
 
-      console.log("Eror Sign Up:", error);
+      // console.log("Eror Sign Up:", error);
     }
 
     navigation.navigate("Authentication", {
@@ -451,6 +451,7 @@ const SignUp = () => {
               <Pressable
                 style={styles.signUpButton}
                 onPress={handleSignUp}
+                testID="signUp-btn"
                 // onPress={() => navigation.navigate("ApplicationForm1")}
               >
                 <Text style={styles.signIn1}>Sign Up</Text>
@@ -494,6 +495,7 @@ const SignUp = () => {
                   </Text>
                   <Pressable
                     style={styles.signIn2}
+                    testID="signIn-btn"
                     onPress={() => navigation.navigate("SignIn")}
                   >
                     <Text style={[styles.text5, styles.text5Layout]}>
