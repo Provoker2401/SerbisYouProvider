@@ -36,7 +36,7 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+    // setShowPassword(!showPassword);
   };
 
   const eyeIconSource = showPassword
@@ -49,7 +49,7 @@ const SignUp = () => {
 
     // Check if the cleaned phone number is exactly 10 digits
     if (cleanedPhoneNumber.length !== 10) {
-      return false;
+      // return false;
     }
 
     // Check if the first digit is 9
@@ -57,7 +57,7 @@ const SignUp = () => {
       return false;
     }
 
-    return true;
+    // return true;
   };
 
   const handleSignUp = async () => {
@@ -85,71 +85,71 @@ const SignUp = () => {
     }
 
     // Check if email format is valid
-    if (!emailRegex.test(email)) {
-      Toast.show({
-        type: "error",
-        position: "top",
-        text1: "Error",
-        text2: "Enter a valid email address❗",
-        visibilityTime: 5000,
-      });
-      return;
-    }
+    // if (!emailRegex.test(email)) {
+    //   Toast.show({
+    //     type: "error",
+    //     position: "top",
+    //     text1: "Error",
+    //     text2: "Enter a valid email address❗",
+    //     visibilityTime: 5000,
+    //   });
+    //   return;
+    // }
 
-    const auth = getAuth();
+    // const auth = getAuth();
 
-    try {
-      const db = getFirestore();
-      const querySnapshot = await getDocs(collection(db, "providerProfiles"));
-      let duplicatePhone = false;
-      let duplicateEmail = false;
+    // try {
+    //   const db = getFirestore();
+    //   const querySnapshot = await getDocs(collection(db, "providerProfiles"));
+    //   let duplicatePhone = false;
+    //   let duplicateEmail = false;
 
-      // querySnapshot.forEach((doc) => {
-      //   const data = doc.data();
-      //   if (data.phone === `+63${phone}`) {
-      //     duplicatePhone = true;
-      //   }
-      // });
+    //   // querySnapshot.forEach((doc) => {
+    //   //   const data = doc.data();
+    //   //   if (data.phone === `+63${phone}`) {
+    //   //     duplicatePhone = true;
+    //   //   }
+    //   // });
 
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.email === email) {
-          duplicateEmail = true;
-        }
-      });
+    //   querySnapshot.forEach((doc) => {
+    //     const data = doc.data();
+    //     if (data.email === email) {
+    //       duplicateEmail = true;
+    //     }
+    //   });
 
-      if (duplicateEmail) {
-        Toast.show({
-          type: "error",
-          position: "top",
-          text1: "Error",
-          text2: "A provider with this Email already exists❗",
-          visibilityTime: 5000,
-        });
-        return;
-      }
+    //   // if (duplicateEmail) {
+    //   //   Toast.show({
+    //   //     type: "error",
+    //   //     position: "top",
+    //   //     text1: "Error",
+    //   //     text2: "A provider with this Email already exists❗",
+    //   //     visibilityTime: 5000,
+    //   //   });
+    //   //   return;
+    //   // }
 
-      if (duplicatePhone) {
-        Toast.show({
-          type: "error",
-          position: "top",
-          text1: "Error",
-          text2: "A provider with this phone number already exists❗",
-          visibilityTime: 5000,
-        });
-        return;
-      }
-    } catch (error) {
+    //   // if (duplicatePhone) {
+    //   //   Toast.show({
+    //   //     type: "error",
+    //   //     position: "top",
+    //   //     text1: "Error",
+    //   //     text2: "A provider with this phone number already exists❗",
+    //   //     visibilityTime: 5000,
+    //   //   });
+    //   //   return;
+    //   // }
+    // } catch (error) {
 
-      // console.log("Eror Sign Up:", error);
-    }
+    //   // console.log("Eror Sign Up:", error);
+    // }
 
-    navigation.navigate("Authentication", {
-      name: name,
-      phone: `+63${phone}`,
-      email: email,
-      password: password,
-    });
+    // navigation.navigate("Authentication", {
+    //   name: name,
+    //   phone: `+63${phone}`,
+    //   email: email,
+    //   password: password,
+    // });
 
     // Check if email already exists
 
@@ -470,7 +470,7 @@ const SignUp = () => {
                   >{`By signing up, you agree to our
 `}</Text>
                   <View style={styles.termsOfServiceContainer}>
-                    <Pressable onPress={() => navigation.navigate("TermsAndConditions")}>
+                    <Pressable testID="terms-button" onPress={() => navigation.navigate("TermsAndConditions")}>
                       <Text
                         style={[styles.termsOfServiceTypo]}
                       >
@@ -478,7 +478,7 @@ const SignUp = () => {
                       </Text>
                     </Pressable>
                     <Text style={styles.bySigningUp}>{`, and `}</Text>
-                    <Pressable onPress={() => navigation.navigate("PrivacyPolicy")}>
+                    <Pressable testID="privacy-button" onPress={() => navigation.navigate("PrivacyPolicy")}>
                       <Text
                         style={[styles.termsOfServiceTypo]}
                       >

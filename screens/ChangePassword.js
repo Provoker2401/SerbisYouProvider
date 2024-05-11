@@ -42,98 +42,98 @@ const ChangePassword = () => {
   const currentPassword = textInputCurrentPass;
 
   //for password change
-  const handleLengthPass = (text) => {
-    setTextInputNewPass(text); // Update the state when the text input changes
-  };
+  // const handleLengthPass = (text) => {
+  //   setTextInputNewPass(text); // Update the state when the text input changes
+  // };
 
-  const handleCurrentPass = (text) => {
-    settextInputCurrentPass(text); // Update the state when the text input changes
-  };
+  // const handleCurrentPass = (text) => {
+  //   settextInputCurrentPass(text); // Update the state when the text input changes
+  // };
 
-  const saveChangesHandle = async () => {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    const providerUID = auth.currentUser.uid;
+  // const saveChangesHandle = async () => {
+  //   const auth = getAuth();
+  //   const user = auth.currentUser;
+  //   const providerUID = auth.currentUser.uid;
 
-    if (textInputNewPass.length < 8) {
-      console.log("Password not strong enough");
-      return;
-    }
+  //   if (textInputNewPass.length < 8) {
+  //     console.log("Password not strong enough");
+  //     return;
+  //   }
 
-    // Check if the new password matches the confirmation password
-    if (newPassword !== confirmPassword) {
-      console.log("Passwords do not match");
-      return;
-    }
+  //   // Check if the new password matches the confirmation password
+  //   if (newPassword !== confirmPassword) {
+  //     console.log("Passwords do not match");
+  //     return;
+  //   }
 
-    const credential = EmailAuthProvider.credential(
-      user.email,
-      currentPassword
-    );
+  //   const credential = EmailAuthProvider.credential(
+  //     user.email,
+  //     currentPassword
+  //   );
 
-    try {
-      // Reauthenticate the user with their current password
-      await reauthenticateWithCredential(user, credential);
+  //   try {
+  //     // Reauthenticate the user with their current password
+  //     await reauthenticateWithCredential(user, credential);
 
-      // If reauthentication is successful, proceed with the password update
-      await updatePassword(user, newPassword);
+  //     // If reauthentication is successful, proceed with the password update
+  //     await updatePassword(user, newPassword);
 
-      const db = getFirestore();
-      const notifDocRef = doc(db, "providerProfiles", providerUID);
-      const notifCollection = collection(notifDocRef, "notifications");
+  //     const db = getFirestore();
+  //     const notifDocRef = doc(db, "providerProfiles", providerUID);
+  //     const notifCollection = collection(notifDocRef, "notifications");
 
-      const today = new Date();
-      const options = {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      };
-      const formattedDate = today.toLocaleDateString("en-US", options); // Adjust locale as needed
+  //     const today = new Date();
+  //     const options = {
+  //       year: "numeric",
+  //       month: "long",
+  //       day: "numeric",
+  //     };
+  //     const formattedDate = today.toLocaleDateString("en-US", options); // Adjust locale as needed
 
-      const bookingDataNotif = {
-        [generateRandomBookingIDWithNumbers()]: {
-          subTitle: `Your password has been updated`,
-          title: "Password Changed Successfully",
-          createdAt: serverTimestamp(),
-        },
-        date: serverTimestamp(),
-      };
+  //     const bookingDataNotif = {
+  //       [generateRandomBookingIDWithNumbers()]: {
+  //         subTitle: `Your password has been updated`,
+  //         title: "Password Changed Successfully",
+  //         createdAt: serverTimestamp(),
+  //       },
+  //       date: serverTimestamp(),
+  //     };
 
-      const notificationDocRef = doc(notifCollection, formattedDate);
+  //     const notificationDocRef = doc(notifCollection, formattedDate);
 
-      try {
-        const notificationDoc = await getDoc(notificationDocRef);
-        if (notificationDoc.exists()) {
-          // Document exists, update it
-          await setDoc(notificationDocRef, bookingDataNotif, {
-            merge: true,
-          });
-          console.log("Notification updated successfully!");
-        } else {
-          // Document doesn't exist, create it
-          await setDoc(notificationDocRef, bookingDataNotif);
-          console.log("New notification document created!");
-        }
-      } catch (error) {
-        console.error("Error updating notification:", error);
-      }
-      console.log("Password updated successfully");
-      navigation.navigate("ChangePasswordUpdated");
-    } catch (error) {
-      console.error("Error:", error);
-      setErrorMessageVisible(true);
-    }
-  };
+  //     try {
+  //       const notificationDoc = await getDoc(notificationDocRef);
+  //       if (notificationDoc.exists()) {
+  //         // Document exists, update it
+  //         await setDoc(notificationDocRef, bookingDataNotif, {
+  //           merge: true,
+  //         });
+  //         console.log("Notification updated successfully!");
+  //       } else {
+  //         // Document doesn't exist, create it
+  //         await setDoc(notificationDocRef, bookingDataNotif);
+  //         console.log("New notification document created!");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error updating notification:", error);
+  //     }
+  //     console.log("Password updated successfully");
+  //     navigation.navigate("ChangePasswordUpdated");
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //     setErrorMessageVisible(true);
+  //   }
+  // };
 
-  function generateRandomBookingIDWithNumbers(length = 8) {
-    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let bookingID = "";
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      bookingID += characters.charAt(randomIndex);
-    }
-    return bookingID;
-  }
+  // function generateRandomBookingIDWithNumbers(length = 8) {
+  //   const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  //   let bookingID = "";
+  //   for (let i = 0; i < length; i++) {
+  //     const randomIndex = Math.floor(Math.random() * characters.length);
+  //     bookingID += characters.charAt(randomIndex);
+  //   }
+  //   return bookingID;
+  // }
 
   return (
     <View style={styles.changePassword}>
@@ -170,7 +170,7 @@ const ChangePassword = () => {
                   placeholder="Current Password"
                   placeholderTextColor="#d0d0d0"
                   value={textInputCurrentPass}
-                  onChangeText={handleCurrentPass}
+                  // onChangeText={handleCurrentPass}
                 />
                 <View style={styles.eyeOffWrapper}>
                   <Image
@@ -197,7 +197,7 @@ const ChangePassword = () => {
                   placeholder="Enter Your New Password"
                   placeholderTextColor="#d0d0d0"
                   value={textInputNewPass}
-                  onChangeText={handleLengthPass}
+                  // onChangeText={handleLengthPass}
                 />
                 <View style={styles.eyeOffWrapper}>
                   <Image
@@ -305,7 +305,7 @@ const ChangePassword = () => {
             <Pressable
               style={styles.frameParent}
               // onPress={() => navigation.navigate("ChangePasswordUpdated")}
-              onPress={saveChangesHandle}
+              // onPress={saveChangesHandle}
             >
               <View style={[styles.button, styles.buttonFlexBox]}>
                 <Text style={[styles.button1, styles.button1Typo]}>Change</Text>

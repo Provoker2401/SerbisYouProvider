@@ -27,16 +27,16 @@ const NotificationsSettings = () => {
   const [isChatEnabled, setIsChatEnabled] = useState(false);
 
   const toggleEmailSwitch = () => {
-    setIsEmailEnabled((previousState) => !previousState);
+    // setIsEmailEnabled((previousState) => !previousState);
   };
   const toggleSMSSwitch = () => {
-    setIsSMSEnabled((previousState) => !previousState);
+    // setIsSMSEnabled((previousState) => !previousState);
   };
   const toggleOrderSwitch = () => {
-    setIsOrderEnabled((previousState) => !previousState);
+    // setIsOrderEnabled((previousState) => !previousState);
   };
   const toggleChatSwitch = () => {
-    setIsChatEnabled((previousState) => !previousState);
+    // setIsChatEnabled((previousState) => !previousState);
   };
 
   // const requestUserPermission = async () => {

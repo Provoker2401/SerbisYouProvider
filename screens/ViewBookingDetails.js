@@ -48,336 +48,336 @@ const ViewBookingDetails = ({ route }) => {
   const [providerCurrentCoordinates, setProviderCurrentCoordinates] = useState("");
   const [phoneUser, setphoneUser] = useState("");
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const db = getFirestore(); // Use getFirestore() to initialize Firestore
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     try {
+  //       const db = getFirestore(); // Use getFirestore() to initialize Firestore
 
-        // Get the provider's UID
-        const auth = getAuth();
-        const providerUID = auth.currentUser.uid;
-        console.log("Provider UID: " ,providerUID);
-        console.log("Item Id: ", itemID);
+  //       // Get the provider's UID
+  //       const auth = getAuth();
+  //       const providerUID = auth.currentUser.uid;
+  //       console.log("Provider UID: " ,providerUID);
+  //       console.log("Item Id: ", itemID);
 
-        const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
-        const docSnapshot = await getDoc(userBookingDocRef);
+  //       const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
+  //       const docSnapshot = await getDoc(userBookingDocRef);
 
-        if (docSnapshot.exists()) {
-          const booking = docSnapshot.data();
-          console.log("Booking Data: ", booking);
+  //       if (docSnapshot.exists()) {
+  //         const booking = docSnapshot.data();
+  //         console.log("Booking Data: ", booking);
   
-          setBookingName(booking.name);
-          setBookingDate(booking.date);
-          setBookingTime(booking.time);
-          setBookingAddress(booking.address);
-          setBookingCoordinates({
-            latitude: booking.coordinates.latitude,
-            longitude: booking.coordinates.longitude,
-          });
-          // setBookingAddressInstruction(booking.totalPrice);
+  //         setBookingName(booking.name);
+  //         setBookingDate(booking.date);
+  //         setBookingTime(booking.time);
+  //         setBookingAddress(booking.address);
+  //         setBookingCoordinates({
+  //           latitude: booking.coordinates.latitude,
+  //           longitude: booking.coordinates.longitude,
+  //         });
+  //         // setBookingAddressInstruction(booking.totalPrice);
 
-          console.log("Name: " ,bookingName);
-          console.log("Date: " ,bookingDate);
-          console.log("Time: " ,bookingTime);
-          console.log("Address: " ,bookingAddress);
-          console.log("Coordinates: " , bookingCoordinates);
-          // console.log("Address: " , bookingAddress);
-        } else {
-          console.log("No such document!");
-        }
-      } catch (error) {
-        console.error("Error retrieving data:", error);
-      }
-    }
+  //         console.log("Name: " ,bookingName);
+  //         console.log("Date: " ,bookingDate);
+  //         console.log("Time: " ,bookingTime);
+  //         console.log("Address: " ,bookingAddress);
+  //         console.log("Coordinates: " , bookingCoordinates);
+  //         // console.log("Address: " , bookingAddress);
+  //       } else {
+  //         console.log("No such document!");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error retrieving data:", error);
+  //     }
+  //   }
   
-    fetchData(); // Call the fetchData function immediately
-  }, []); 
+  //   fetchData(); // Call the fetchData function immediately
+  // }, []); 
 
-  useEffect(() => {
-    async function fetchNewBooking() {
-      try {
-        const db = getFirestore(); // Use getFirestore() to initialize Firestore
+  // useEffect(() => {
+  //   async function fetchNewBooking() {
+  //     try {
+  //       const db = getFirestore(); // Use getFirestore() to initialize Firestore
   
-        // Get the provider's UID 
-        const auth = getAuth();
-        const providerUID = auth.currentUser.uid;
-        console.log("Provider UID: " ,providerUID);
+  //       // Get the provider's UID 
+  //       const auth = getAuth();
+  //       const providerUID = auth.currentUser.uid;
+  //       console.log("Provider UID: " ,providerUID);
 
-        const userBookingDocRef = doc(
-          db,
-          "providerProfiles",
-          providerUID,
-          "activeBookings",
-          newDocumentID
-        );
-        const docSnapshot = await getDoc(userBookingDocRef);
+  //       const userBookingDocRef = doc(
+  //         db,
+  //         "providerProfiles",
+  //         providerUID,
+  //         "activeBookings",
+  //         newDocumentID
+  //       );
+  //       const docSnapshot = await getDoc(userBookingDocRef);
 
-        if (docSnapshot.exists()) {
-          const booking = docSnapshot.data();
+  //       if (docSnapshot.exists()) {
+  //         const booking = docSnapshot.data();
 
-          const materials = booking.materials;
-          console.log("Fetching data for booking:", booking);
-          console.log("Services: ", booking.service);
-          const servicesData = booking.service.map((doc) => doc);
-          console.log("Data Services: ", servicesData);
-          if (materials == "useProviderMaterials") {
-            setBookingMaterials("Supplied by Provider");
-          } else {
-            setBookingMaterials("Customer-Provided");
-          }
-          setBookingName(booking.name);
-          setBookingEmail(booking.email);
-          setBookingRadius(booking.distanceRadius);
-          setBookingDate(booking.date);
-          setBookingTime(booking.time);
-          setBookingAddress(booking.address);
-          setBookingProperty(booking.propertyType);
-          setBookingCategory(booking.category);
-          setBookingTitle(booking.title);
-          setBookingServices(booking.service);
-          setBookingSubtotal(booking.subTotal);
-          setBookingDistanceFee(booking.feeDistance);
-          setBookingPaymentMethod(booking.paymentMethod);
-          setBookingTotal(booking.totalPrice);
-          setBookingAddressDetails(booking.addressDetails);
-          setBookingCoordinates({
-            latitude: booking.coordinates.latitude,
-            longitude: booking.coordinates.longitude,
-          });
-          setphoneUser(booking.phone);
+  //         const materials = booking.materials;
+  //         console.log("Fetching data for booking:", booking);
+  //         console.log("Services: ", booking.service);
+  //         const servicesData = booking.service.map((doc) => doc);
+  //         console.log("Data Services: ", servicesData);
+  //         if (materials == "useProviderMaterials") {
+  //           setBookingMaterials("Supplied by Provider");
+  //         } else {
+  //           setBookingMaterials("Customer-Provided");
+  //         }
+  //         setBookingName(booking.name);
+  //         setBookingEmail(booking.email);
+  //         setBookingRadius(booking.distanceRadius);
+  //         setBookingDate(booking.date);
+  //         setBookingTime(booking.time);
+  //         setBookingAddress(booking.address);
+  //         setBookingProperty(booking.propertyType);
+  //         setBookingCategory(booking.category);
+  //         setBookingTitle(booking.title);
+  //         setBookingServices(booking.service);
+  //         setBookingSubtotal(booking.subTotal);
+  //         setBookingDistanceFee(booking.feeDistance);
+  //         setBookingPaymentMethod(booking.paymentMethod);
+  //         setBookingTotal(booking.totalPrice);
+  //         setBookingAddressDetails(booking.addressDetails);
+  //         setBookingCoordinates({
+  //           latitude: booking.coordinates.latitude,
+  //           longitude: booking.coordinates.longitude,
+  //         });
+  //         setphoneUser(booking.phone);
 
-          console.log("Date: " ,bookingDate);
-          console.log("Time: " ,bookingTime);
-          console.log("Address: " ,bookingAddress);
-          console.log("Materials: " ,bookingMaterials);
-          console.log("Category: " ,bookingCategory);
-          console.log("Services: " ,bookingServices);
-          console.log("Total Price: " ,bookingTotal);
+  //         console.log("Date: " ,bookingDate);
+  //         console.log("Time: " ,bookingTime);
+  //         console.log("Address: " ,bookingAddress);
+  //         console.log("Materials: " ,bookingMaterials);
+  //         console.log("Category: " ,bookingCategory);
+  //         console.log("Services: " ,bookingServices);
+  //         console.log("Total Price: " ,bookingTotal);
 
-          console.log("Date: ", bookingDate);
-          console.log("Time: ", bookingTime);
-          console.log("Address: ", bookingAddress);
-          console.log("Materials: ", bookingMaterials);
-          console.log("Category: ", bookingCategory);
-          console.log("Services: ", bookingServices);
-          console.log("Total Price: ", bookingTotal);
-          console.log("Coordinates: ", bookingCoordinates);
-        } else {
-          console.log("No such document!");
-        }
-      } catch (error) {
-        console.error("Error retrieving data:", error);
-      }
-    }
+  //         console.log("Date: ", bookingDate);
+  //         console.log("Time: ", bookingTime);
+  //         console.log("Address: ", bookingAddress);
+  //         console.log("Materials: ", bookingMaterials);
+  //         console.log("Category: ", bookingCategory);
+  //         console.log("Services: ", bookingServices);
+  //         console.log("Total Price: ", bookingTotal);
+  //         console.log("Coordinates: ", bookingCoordinates);
+  //       } else {
+  //         console.log("No such document!");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error retrieving data:", error);
+  //     }
+  //   }
 
-    async function fetchActiveBookings() {
-      try {
-        const db = getFirestore(); // Use getFirestore() to initialize Firestore
+  //   async function fetchActiveBookings() {
+  //     try {
+  //       const db = getFirestore(); // Use getFirestore() to initialize Firestore
   
-        // Get the user's UID 
-        const auth = getAuth();
-        const providerUID = auth.currentUser.uid;
-        console.log("Provider UID: " ,providerUID);
-        console.log("Item Id: ", itemID);
+  //       // Get the user's UID 
+  //       const auth = getAuth();
+  //       const providerUID = auth.currentUser.uid;
+  //       console.log("Provider UID: " ,providerUID);
+  //       console.log("Item Id: ", itemID);
 
-        const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
-        const docSnapshot = await getDoc(userBookingDocRef);
+  //       const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
+  //       const docSnapshot = await getDoc(userBookingDocRef);
 
-        const providerProfilesCollection = doc(db, "providerProfiles", providerUID);
+  //       const providerProfilesCollection = doc(db, "providerProfiles", providerUID);
 
-        getDoc(providerProfilesCollection)
-        .then(async (docSnapshot) => {
-          if (docSnapshot.exists()) {
-            const providerData = docSnapshot.data();
-            const coordinates = providerData.coordinates;
+  //       getDoc(providerProfilesCollection)
+  //       .then(async (docSnapshot) => {
+  //         if (docSnapshot.exists()) {
+  //           const providerData = docSnapshot.data();
+  //           const coordinates = providerData.coordinates;
 
-            console.log("Provider data: ", providerData);
-            console.log("Provider Coordinates: ", coordinates);
-            console.log("Provider Coordinates Latitude: ", coordinates.latitude);
-            console.log("Provider Coordinates Latitude: ", coordinates.longitude);
+  //           console.log("Provider data: ", providerData);
+  //           console.log("Provider Coordinates: ", coordinates);
+  //           console.log("Provider Coordinates Latitude: ", coordinates.latitude);
+  //           console.log("Provider Coordinates Latitude: ", coordinates.longitude);
 
-            if (providerData) {
-              const latitude = parseFloat(coordinates.latitude);
-              const longitude = parseFloat(coordinates.longitude);
-              setProviderCurrentCoordinates({latitude: latitude, longitude: longitude});
-            } else {
-              console.log("Provider Data is empty!");
-            }
-          } else {
-            console.log("No such document!");
-          }
-        })
-        .catch((error) => {
-          console.error("Error getting document:", error);
-        })
+  //           if (providerData) {
+  //             const latitude = parseFloat(coordinates.latitude);
+  //             const longitude = parseFloat(coordinates.longitude);
+  //             setProviderCurrentCoordinates({latitude: latitude, longitude: longitude});
+  //           } else {
+  //             console.log("Provider Data is empty!");
+  //           }
+  //         } else {
+  //           console.log("No such document!");
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error getting document:", error);
+  //       })
 
-        if (docSnapshot.exists()) {
-          const booking = docSnapshot.data();
-          const materials = booking.materials;
-          console.log("Fetching data for booking:", booking);
-          console.log("Services: " , booking.service);
-          const servicesData = booking.service.map((doc) => doc);
-          console.log("Data Services: " ,servicesData);
-          if(materials == "useProviderMaterials"){
-            setBookingMaterials("Supplied by Provider");
-          }else{
-            setBookingMaterials("Customer-Provided");
-          }
-          setBookingName(booking.name);
-          setBookingEmail(booking.email);
-          setBookingRadius(booking.distanceRadius);
-          setBookingDate(booking.date);
-          setBookingTime(booking.time);
-          setBookingAddress(booking.address);
-          setBookingProperty(booking.propertyType);
-          setBookingCategory(booking.category);
-          setBookingTitle(booking.title);
-          setBookingServices(booking.service);
-          setBookingSubtotal(booking.subTotal);
-          setBookingDistanceFee(booking.feeDistance);
-          setBookingPaymentMethod(booking.paymentMethod);
-          setBookingTotal(booking.totalPrice);
-          setBookingAddressDetails(booking.addressDetails);
-          setBookingCoordinates({
-            latitude: booking.coordinates.latitude,
-            longitude: booking.coordinates.longitude,
-          });
-          setphoneUser(booking.phone);
+  //       if (docSnapshot.exists()) {
+  //         const booking = docSnapshot.data();
+  //         const materials = booking.materials;
+  //         console.log("Fetching data for booking:", booking);
+  //         console.log("Services: " , booking.service);
+  //         const servicesData = booking.service.map((doc) => doc);
+  //         console.log("Data Services: " ,servicesData);
+  //         if(materials == "useProviderMaterials"){
+  //           setBookingMaterials("Supplied by Provider");
+  //         }else{
+  //           setBookingMaterials("Customer-Provided");
+  //         }
+  //         setBookingName(booking.name);
+  //         setBookingEmail(booking.email);
+  //         setBookingRadius(booking.distanceRadius);
+  //         setBookingDate(booking.date);
+  //         setBookingTime(booking.time);
+  //         setBookingAddress(booking.address);
+  //         setBookingProperty(booking.propertyType);
+  //         setBookingCategory(booking.category);
+  //         setBookingTitle(booking.title);
+  //         setBookingServices(booking.service);
+  //         setBookingSubtotal(booking.subTotal);
+  //         setBookingDistanceFee(booking.feeDistance);
+  //         setBookingPaymentMethod(booking.paymentMethod);
+  //         setBookingTotal(booking.totalPrice);
+  //         setBookingAddressDetails(booking.addressDetails);
+  //         setBookingCoordinates({
+  //           latitude: booking.coordinates.latitude,
+  //           longitude: booking.coordinates.longitude,
+  //         });
+  //         setphoneUser(booking.phone);
 
-          console.log("Date: " ,bookingDate);
-          console.log("Time: " ,bookingTime);
-          console.log("Address: " ,bookingAddress);
-          console.log("Materials: " ,bookingMaterials);
-          console.log("Category: " ,bookingCategory);
-          console.log("Services: " ,bookingServices);
-          console.log("Total Price: " ,bookingTotal);
-          // console.log("Address: " , bookingAddress);
+  //         console.log("Date: " ,bookingDate);
+  //         console.log("Time: " ,bookingTime);
+  //         console.log("Address: " ,bookingAddress);
+  //         console.log("Materials: " ,bookingMaterials);
+  //         console.log("Category: " ,bookingCategory);
+  //         console.log("Services: " ,bookingServices);
+  //         console.log("Total Price: " ,bookingTotal);
+  //         // console.log("Address: " , bookingAddress);
 
-        } else {
-          console.log("No such document!");
-        }
-      } catch (error) {
-        console.error("Error retrieving data:", error);
-      }
-    }
+  //       } else {
+  //         console.log("No such document!");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error retrieving data:", error);
+  //     }
+  //   }
   
-    if(matchedBookingID && providerLocation){
-      fetchNewBooking();
-    }else if(itemID){
-      fetchActiveBookings();
-    }
-  }, [matchedBookingID, providerLocation, itemID]); // Dependency Array
+  //   if(matchedBookingID && providerLocation){
+  //     fetchNewBooking();
+  //   }else if(itemID){
+  //     fetchActiveBookings();
+  //   }
+  // }, [matchedBookingID, providerLocation, itemID]); // Dependency Array
 
-  const getFormattedServiceName = () => {
-    if (!bookingTitle || !bookingCategory) {
-      return 'Service'; // Default text or handle as needed
-    }
+  // const getFormattedServiceName = () => {
+  //   if (!bookingTitle || !bookingCategory) {
+  //     return 'Service'; // Default text or handle as needed
+  //   }
 
-    // Check if the title is "Pet Care" or "Gardening"
-    if (bookingTitle === "Pet Care" || bookingTitle === "Gardening" || bookingTitle === "Cleaning") {
-      return bookingCategory;
-    } else {
-      // If not, concatenate the title and category
-      return `${bookingTitle} ${bookingCategory}`;
-    }
-  };
+  //   // Check if the title is "Pet Care" or "Gardening"
+  //   if (bookingTitle === "Pet Care" || bookingTitle === "Gardening" || bookingTitle === "Cleaning") {
+  //     return bookingCategory;
+  //   } else {
+  //     // If not, concatenate the title and category
+  //     return `${bookingTitle} ${bookingCategory}`;
+  //   }
+  // };
 
-  const getServiceImageSource = (category, service) => {
-    if(category === "Plumbing") {
-      switch (service) {
-        case "Installation":
-          return require("../assets/plumbing-installation.png");
-        case "Repairs/Replacement":
-          return require("../assets/plumbing-repair.png");
-        default:
-          return require("../assets/plumbing-installation.png");
-      }
-    }else if(category === "Electrical") {
-      switch (service) {
-        case "Installation":
-          return require("../assets/electrical-installation.png");
-        case "Repairs/Replacement":
-          return require("../assets/electrical-repair.png");
-        default:
-          return require("../assets/electrical-installation.png");
-      }
-    }else if(category === "Carpentry") {
-      switch (service) {
-        case "Installation":
-          return require("../assets/carpentry-installation.png");
-        case "Repairs/Replacement":
-          return require("../assets/carpentry-repair.png");
-        case "Furniture Assembly And Disassembly":
-          return require("../assets/furniture-assembly-and-disassembly.png");
-        default:
-          return require("../assets/carpentry-installation.png");
-      }
-    }else if(category === "Cleaning" || category === "Pet Care" || category === "Gardening"){
-      switch (service) {
-        case "Standard Cleaning":
-          return require("../assets/standard-cleaning.png");
-        case "Deep Cleaning":
-          return require("../assets/deep-cleaning.png");
-        case "Electronic Appliance Cleaning":
-          return require("../assets/electronic-appliance-cleaning.png");
-        case "Pest Control":
-          return require("../assets/pest-control.png");
-        case "Dog Training":
-          return require("../assets/dog-training.png");
-        case "Dog Pet Grooming":
-          return require("../assets/pet-grooming.png");
-        case "Cat Pet Grooming":
-          return require("../assets/pet-grooming.png");
-        case "Bird Pet Grooming":
-          return require("../assets/pet-grooming.png");
-        case "Rabbit Pet Grooming":
-          return require("../assets/pet-grooming.png");
-        case "Dog Pet Sitting":
-          return require("../assets/pet-sitting.png");
-        case "Cat Pet Sitting":
-          return require("../assets/pet-sitting.png");
-        case "Bird Pet Sitting":
-          return require("../assets/pet-sitting.png");
-        case "Rabbit Pet Sitting":
-          return require("../assets/pet-sitting.png");
-        case "Garden Maintenance":
-          return require("../assets/garden-maintenance.png");
-        case "Landscape Design and Planning":
-          return require("../assets/landscape-design-and-planning.png");
-        case "Irrigation System Installation/Repairs":
-          return require("../assets/irrigation-system.png");
-        case "Pest and Disease Management":
-          return require("../assets/pest-and-disease-management.png");
-        default:
-          return require("../assets/standard-cleaning.png");
-      }
-    }
-  };
+  // const getServiceImageSource = (category, service) => {
+  //   if(category === "Plumbing") {
+  //     switch (service) {
+  //       case "Installation":
+  //         return require("../assets/plumbing-installation.png");
+  //       case "Repairs/Replacement":
+  //         return require("../assets/plumbing-repair.png");
+  //       default:
+  //         return require("../assets/plumbing-installation.png");
+  //     }
+  //   }else if(category === "Electrical") {
+  //     switch (service) {
+  //       case "Installation":
+  //         return require("../assets/electrical-installation.png");
+  //       case "Repairs/Replacement":
+  //         return require("../assets/electrical-repair.png");
+  //       default:
+  //         return require("../assets/electrical-installation.png");
+  //     }
+  //   }else if(category === "Carpentry") {
+  //     switch (service) {
+  //       case "Installation":
+  //         return require("../assets/carpentry-installation.png");
+  //       case "Repairs/Replacement":
+  //         return require("../assets/carpentry-repair.png");
+  //       case "Furniture Assembly And Disassembly":
+  //         return require("../assets/furniture-assembly-and-disassembly.png");
+  //       default:
+  //         return require("../assets/carpentry-installation.png");
+  //     }
+  //   }else if(category === "Cleaning" || category === "Pet Care" || category === "Gardening"){
+  //     switch (service) {
+  //       case "Standard Cleaning":
+  //         return require("../assets/standard-cleaning.png");
+  //       case "Deep Cleaning":
+  //         return require("../assets/deep-cleaning.png");
+  //       case "Electronic Appliance Cleaning":
+  //         return require("../assets/electronic-appliance-cleaning.png");
+  //       case "Pest Control":
+  //         return require("../assets/pest-control.png");
+  //       case "Dog Training":
+  //         return require("../assets/dog-training.png");
+  //       case "Dog Pet Grooming":
+  //         return require("../assets/pet-grooming.png");
+  //       case "Cat Pet Grooming":
+  //         return require("../assets/pet-grooming.png");
+  //       case "Bird Pet Grooming":
+  //         return require("../assets/pet-grooming.png");
+  //       case "Rabbit Pet Grooming":
+  //         return require("../assets/pet-grooming.png");
+  //       case "Dog Pet Sitting":
+  //         return require("../assets/pet-sitting.png");
+  //       case "Cat Pet Sitting":
+  //         return require("../assets/pet-sitting.png");
+  //       case "Bird Pet Sitting":
+  //         return require("../assets/pet-sitting.png");
+  //       case "Rabbit Pet Sitting":
+  //         return require("../assets/pet-sitting.png");
+  //       case "Garden Maintenance":
+  //         return require("../assets/garden-maintenance.png");
+  //       case "Landscape Design and Planning":
+  //         return require("../assets/landscape-design-and-planning.png");
+  //       case "Irrigation System Installation/Repairs":
+  //         return require("../assets/irrigation-system.png");
+  //       case "Pest and Disease Management":
+  //         return require("../assets/pest-and-disease-management.png");
+  //       default:
+  //         return require("../assets/standard-cleaning.png");
+  //     }
+  //   }
+  // };
 
-  const handleGetDirections = () => {
-    const customerLocation = bookingCoordinates;
+  // const handleGetDirections = () => {
+  //   const customerLocation = bookingCoordinates;
 
-    console.log("Customer Location: " , customerLocation);
-    console.log("Provider Location: " , providerLocation);
+  //   console.log("Customer Location: " , customerLocation);
+  //   console.log("Provider Location: " , providerLocation);
 
-    const data = {
-      source: providerLocation || providerCurrentCoordinates,
-      destination: customerLocation,
-      params: [
-        {
-          key: "travelmode",
-          value: "driving",
-        },
-        {
-          key: "dir_action",
-          value: "navigate",
-        },
-      ],
-    };
+  //   const data = {
+  //     source: providerLocation || providerCurrentCoordinates,
+  //     destination: customerLocation,
+  //     params: [
+  //       {
+  //         key: "travelmode",
+  //         value: "driving",
+  //       },
+  //       {
+  //         key: "dir_action",
+  //         value: "navigate",
+  //       },
+  //     ],
+  //   };
 
-    const url = `https://www.google.com/maps/dir/?api=1&origin=${data.source.latitude},${data.source.longitude}&destination=${data.destination.latitude},${data.destination.longitude}&travelmode=${data.params[0].value}`;
-    Linking.openURL(url);
-  };
+  //   const url = `https://www.google.com/maps/dir/?api=1&origin=${data.source.latitude},${data.source.longitude}&destination=${data.destination.latitude},${data.destination.longitude}&travelmode=${data.params[0].value}`;
+  //   Linking.openURL(url);
+  // };
 
   return (
     <View style={[styles.viewBookingDetails, styles.frameItemLayout]}>
@@ -424,7 +424,7 @@ const ViewBookingDetails = ({ route }) => {
               style={[styles.messageBtn, styles.btnLayout]}
               onPress={() => {
                 // Use Linking to open the messaging app with the specified number
-                Linking.openURL(`sms:${phoneUser}`);
+                // Linking.openURL(`sms:${phoneUser}`);
               }}
             >
               <Image
@@ -608,7 +608,7 @@ const ViewBookingDetails = ({ route }) => {
                       <Image
                         style={styles.plumbingInstallationPic}
                         contentFit="cover"
-                        source={getServiceImageSource(bookingTitle, bookingCategory)}
+                        // source={getServiceImageSource(bookingTitle, bookingCategory)}
                       />
                     </View>
                   </View>
@@ -622,7 +622,7 @@ const ViewBookingDetails = ({ route }) => {
                   <View style={styles.frameWrapper6}>
                     <View style={styles.frame2}>
                       <Text style={[styles.august112023, styles.amFlexBox]}>
-                        {getFormattedServiceName()}
+                        {/* {getFormattedServiceName()} */}
                       </Text>
                     </View>
                   </View>
@@ -634,7 +634,7 @@ const ViewBookingDetails = ({ route }) => {
                     styles.componentsbutton,
                     styles.componentsbuttonFlexBox,
                   ]}
-                  onPress={handleGetDirections}
+                  // onPress={handleGetDirections}
                 >
                   <Text style={styles.viewAllServices}>VIEW LOCATION</Text>
                 </Pressable>

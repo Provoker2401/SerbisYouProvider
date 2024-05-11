@@ -35,61 +35,61 @@ const Notifications = () => {
 
   const providerAuth = auth.currentUser.uid;
 
-  const getNotifications = async () => {
-    try {
-      const userDocRef = doc(db, "providerProfiles", providerAuth);
+  // const getNotifications = async () => {
+  //   try {
+  //     const userDocRef = doc(db, "providerProfiles", providerAuth);
 
-      // Reference to the notifications collection within the user's document
-      const notificationsCollectionRef = collection(
-        userDocRef,
-        "notifications"
-      );
+  //     // Reference to the notifications collection within the user's document
+  //     const notificationsCollectionRef = collection(
+  //       userDocRef,
+  //       "notifications"
+  //     );
 
-      // Set up a real-time listener for the notifications collection
-      const unsubscribe = onSnapshot(query(notificationsCollectionRef, orderBy("date", "desc")), (snapshot) => {
-        if (snapshot.empty) {
-          // Handle case when notifications collection is empty
-          setNotifications([]); // Set notifications to empty array
-          loadingData = false;
-        } else {
-          const notificationsData = [];
+  //     // Set up a real-time listener for the notifications collection
+  //     const unsubscribe = onSnapshot(query(notificationsCollectionRef, orderBy("date", "desc")), (snapshot) => {
+  //       if (snapshot.empty) {
+  //         // Handle case when notifications collection is empty
+  //         setNotifications([]); // Set notifications to empty array
+  //         loadingData = false;
+  //       } else {
+  //         const notificationsData = [];
 
-          // Iterate over each document in the notifications collection
-          snapshot.forEach((doc) => {
-            const { date, ...dataWithoutDate } = doc.data();
+  //         // Iterate over each document in the notifications collection
+  //         snapshot.forEach((doc) => {
+  //           const { date, ...dataWithoutDate } = doc.data();
 
-            // Sort the data within the document by createdAt field in descending order
-            const sortedData = Object.entries(dataWithoutDate)
-            .sort(([, a], [, b]) => b.createdAt - a.createdAt)
-            .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
+  //           // Sort the data within the document by createdAt field in descending order
+  //           const sortedData = Object.entries(dataWithoutDate)
+  //           .sort(([, a], [, b]) => b.createdAt - a.createdAt)
+  //           .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
 
-            notificationsData.push({
-              id: doc.id,
-              data: sortedData,
-            });
-          });
+  //           notificationsData.push({
+  //             id: doc.id,
+  //             data: sortedData,
+  //           });
+  //         });
 
-          // Update the state with the new notifications data
-          setNotifications(notificationsData);
-          loadingData = true;
-        }
-      });
+  //         // Update the state with the new notifications data
+  //         setNotifications(notificationsData);
+  //         loadingData = true;
+  //       }
+  //     });
 
-      // Return a cleanup function to unsubscribe from the listener when component unmounts
-      return () => unsubscribe();
-    } catch (error) {
-      console.log("Error fetching notifications:", error);
-    }
-  };
+  //     // Return a cleanup function to unsubscribe from the listener when component unmounts
+  //     return () => unsubscribe();
+  //   } catch (error) {
+  //     console.log("Error fetching notifications:", error);
+  //   }
+  // };
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      getNotifications();
-      setLoading(false);
-    }, 1000);
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     getNotifications();
+  //     setLoading(false);
+  //   }, 1000);
 
-    return () => clearInterval(intervalId);
-  }, []);
+  //   return () => clearInterval(intervalId);
+  // }, []);
 
   return (
     <View style={styles.notifications}>
@@ -137,7 +137,7 @@ const Notifications = () => {
                   <View
                     style={[styles.viewAllServicesBtnWrapper, styles.viewParentFlexBox]}
                   >
-                    <Pressable style={styles.viewAllServicesBtn} onPress={() =>navigation.navigate("BottomTabsRoot", { screen: "Homepage" })}>
+                    <Pressable style={styles.viewAllServicesBtn} >
                       <Text style={[styles.viewAllServices, styles.youDontHaveLayout]}>
                         View all services
                       </Text>

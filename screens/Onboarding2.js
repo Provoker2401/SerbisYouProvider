@@ -28,6 +28,7 @@ const Onboarding2 = () => {
             <Pressable
               style={styles.skipBtn}
               onPress={() => navigation.navigate("Onboarding3")}
+              testID="skip-button"
             >
               <Text style={[styles.skip, styles.skipTypo]}>Skip</Text>
             </Pressable>

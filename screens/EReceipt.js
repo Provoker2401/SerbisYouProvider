@@ -41,9 +41,9 @@ const EReceipt = ({ route }) => {
       toValue: showContent ? 0 : 1,
       useNativeDriver: true,
     };
-    Animated.timing(animationController, config).start();
-    LayoutAnimation.configureNext(toggleAnimation);
-    setShowContent(!showContent);
+    // Animated.timing(animationController, config).start();
+    // LayoutAnimation.configureNext(toggleAnimation);
+    // setShowContent(!showContent);
   };
 
   const arrowTransform = animationController.interpolate({
@@ -82,25 +82,25 @@ const EReceipt = ({ route }) => {
 
         const docSnapshot = await getDoc(userBookingDocRef);
 
-        if (docSnapshot.exists()) {
-          const booking = docSnapshot.data();
-          console.log("Booking Data:", booking);
+        // if (docSnapshot.exists()) {
+        //   const booking = docSnapshot.data();
+        //   console.log("Booking Data:", booking);
 
-          setDate(booking.date);
-          setTime(booking.time);
-          setAddress(booking.address);
-          setCustomerName(booking.name);
-          setServiceTitle(booking.title);
-          setSubTotal(booking.subTotal);
-          setDistanceFee(booking.feeDistance);
-          setTotalPrice(booking.totalPrice);
-          setPayment(booking.paymentMethod);
-          setBookingID(booking.bookingID);
-          setBookingServices(booking.service);
-          setCategory(booking.category);
-        } else {
-          console.log("No such document");
-        }
+        //   setDate(booking.date);
+        //   setTime(booking.time);
+        //   setAddress(booking.address);
+        //   setCustomerName(booking.name);
+        //   setServiceTitle(booking.title);
+        //   setSubTotal(booking.subTotal);
+        //   setDistanceFee(booking.feeDistance);
+        //   setTotalPrice(booking.totalPrice);
+        //   setPayment(booking.paymentMethod);
+        //   setBookingID(booking.bookingID);
+        //   setBookingServices(booking.service);
+        //   setCategory(booking.category);
+        // } else {
+        //   console.log("No such document");
+        // }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -117,19 +117,19 @@ const EReceipt = ({ route }) => {
     );
   }, [bookingID]);
 
-  const getFormattedServiceName = () => {
-    if (!serviceTitle || !category) {
-      return 'Service'; // Default text or handle as needed
-    }
+  // const getFormattedServiceName = () => {
+  //   if (!serviceTitle || !category) {
+  //     return 'Service'; // Default text or handle as needed
+  //   }
 
-    // Check if the title is "Pet Care" or "Gardening"
-    if (serviceTitle === "Pet Care" || serviceTitle === "Gardening" || serviceTitle === "Cleaning") {
-      return category;
-    } else {
-      // If not, concatenate the title and category
-      return `${serviceTitle} ${category}`;
-    }
-  };
+  //   // Check if the title is "Pet Care" or "Gardening"
+  //   if (serviceTitle === "Pet Care" || serviceTitle === "Gardening" || serviceTitle === "Cleaning") {
+  //     return category;
+  //   } else {
+  //     // If not, concatenate the title and category
+  //     return `${serviceTitle} ${category}`;
+  //   }
+  // };
 
   return (
     <View style={styles.eReceipt}>

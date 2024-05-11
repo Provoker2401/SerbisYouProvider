@@ -104,238 +104,238 @@ const NewBooking = ({ route }) => {
   const [countdown, setCountdown] = useState(60); // Initial countdown value in seconds
   const intervalRef = useRef(null);
 
-  useEffect(() => {
-    const countdownInterval = setInterval(() => {
-      setCountdown((prevCount) => prevCount - 1);
-    }, 1000);
+  // useEffect(() => {
+  //   const countdownInterval = setInterval(() => {
+  //     setCountdown((prevCount) => prevCount - 1);
+  //   }, 1000);
 
-    // Cleanup interval on component unmount
-    return () => clearInterval(countdownInterval);
-  }, []);
+  //   // Cleanup interval on component unmount
+  //   return () => clearInterval(countdownInterval);
+  // }, []);
 
-  useEffect(() => {
-    if (countdown === 15 && CountDownBookingFlag) {
-      setCountDownBookingVisible(true);
-    } else if (countdown === 0) {
-      declineBooking();
-      setCountDownBookingVisible(false);
-    }
-  }, [countdown]);
+  // useEffect(() => {
+  //   if (countdown === 15 && CountDownBookingFlag) {
+  //     setCountDownBookingVisible(true);
+  //   } else if (countdown === 0) {
+  //     declineBooking();
+  //     setCountDownBookingVisible(false);
+  //   }
+  // }, [countdown]);
 
-  const closeCountDownModal = () => {
-    setCountDownBookingVisible(false);
-    console.log("closeCountDownModal");
-  };
-  const openCancelModal = () => {
-    setCancelModalVisible(true);
-  };
+  // const closeCountDownModal = () => {
+  //   setCountDownBookingVisible(false);
+  //   console.log("closeCountDownModal");
+  // };
+  // const openCancelModal = () => {
+  //   setCancelModalVisible(true);
+  // };
 
-  const closeCancelModal = () => {
-    setCancelModalVisible(false);
-  };
+  // const closeCancelModal = () => {
+  //   setCancelModalVisible(false);
+  // };
 
   // Function to handle directions
-  const handleGetDirections = () => {
-    const data = {
-      source: providerLocation,
-      destination: customerLocation,
-      params: [
-        {
-          key: "travelmode",
-          value: "driving", // could be "walking", "bicycling" or "transit" as well
-        },
-        {
-          key: "dir_action",
-          value: "navigate", // this launches navigation directly
-        },
-      ],
-    };
+  // const handleGetDirections = () => {
+  //   const data = {
+  //     source: providerLocation,
+  //     destination: customerLocation,
+  //     params: [
+  //       {
+  //         key: "travelmode",
+  //         value: "driving", // could be "walking", "bicycling" or "transit" as well
+  //       },
+  //       {
+  //         key: "dir_action",
+  //         value: "navigate", // this launches navigation directly
+  //       },
+  //     ],
+  //   };
 
-    const url = `https://www.google.com/maps/dir/?api=1&origin=${data.source.latitude},${data.source.longitude}&destination=${data.destination.latitude},${data.destination.longitude}&travelmode=${data.params[0].value}`;
-    Linking.openURL(url);
-  };
+  //   const url = `https://www.google.com/maps/dir/?api=1&origin=${data.source.latitude},${data.source.longitude}&destination=${data.destination.latitude},${data.destination.longitude}&travelmode=${data.params[0].value}`;
+  //   Linking.openURL(url);
+  // };
 
-  const acceptBooking = async () => {
-    // Create a reference to the Firestore database using your app instance
-    const db = getFirestore();
-    // Get the user's UID
-    const auth = getAuth();
-    const providerUID = auth.currentUser.uid;
+  // const acceptBooking = async () => {
+  //   // Create a reference to the Firestore database using your app instance
+  //   const db = getFirestore();
+  //   // Get the user's UID
+  //   const auth = getAuth();
+  //   const providerUID = auth.currentUser.uid;
 
-    // Create references to the user's document and the appForm2 subcollection
-    const providerDocRef = doc(db, "providerProfiles", providerUID);
+  //   // Create references to the user's document and the appForm2 subcollection
+  //   const providerDocRef = doc(db, "providerProfiles", providerUID);
 
-    // Get the document snapshot
-    const providerSnapshot = await getDoc(providerDocRef);
-    const providerBookingID = providerSnapshot.data().bookingID;
+  //   // Get the document snapshot
+  //   const providerSnapshot = await getDoc(providerDocRef);
+  //   const providerBookingID = providerSnapshot.data().bookingID;
 
-    if(providerBookingID) {
-      console.log("BookingID is not blank");
-      try {
-        const activeBookings = collection(providerDocRef, "activeBookings");
-        const serviceBookingsCollection = collection(db, "serviceBookings");
+  //   if(providerBookingID) {
+  //     console.log("BookingID is not blank");
+  //     try {
+  //       const activeBookings = collection(providerDocRef, "activeBookings");
+  //       const serviceBookingsCollection = collection(db, "serviceBookings");
   
-        // Get the service booking document using userBookingID
-        const serviceBookingDocRef = doc(
-          serviceBookingsCollection,
-          userBookingID
-        );
+  //       // Get the service booking document using userBookingID
+  //       const serviceBookingDocRef = doc(
+  //         serviceBookingsCollection,
+  //         userBookingID
+  //       );
   
-        // Get the document snapshot
-        const serviceBookingSnapshot = await getDoc(serviceBookingDocRef);
+  //       // Get the document snapshot
+  //       const serviceBookingSnapshot = await getDoc(serviceBookingDocRef);
   
-        if (serviceBookingSnapshot.exists()) {
-          // Update the acceptedBy field within the service booking document
-          const updatedBookings = [...serviceBookingSnapshot.data().bookings];
-          updatedBookings[bookingIndex].acceptedBy = providerUID;
-          updatedBookings[bookingIndex].bookingAccepted = true;
+  //       if (serviceBookingSnapshot.exists()) {
+  //         // Update the acceptedBy field within the service booking document
+  //         const updatedBookings = [...serviceBookingSnapshot.data().bookings];
+  //         updatedBookings[bookingIndex].acceptedBy = providerUID;
+  //         updatedBookings[bookingIndex].bookingAccepted = true;
   
-          // Update the service booking document
-          await updateDoc(serviceBookingDocRef, {
-            bookings: updatedBookings,
-          });
-          console.log("acceptedBy field updated in serviceBookings document.");
-        } else {
-          // console.error("Service Booking document does not exist");
-        }
+  //         // Update the service booking document
+  //         await updateDoc(serviceBookingDocRef, {
+  //           bookings: updatedBookings,
+  //         });
+  //         console.log("acceptedBy field updated in serviceBookings document.");
+  //       } else {
+  //         // console.error("Service Booking document does not exist");
+  //       }
   
-        if (providerSnapshot.exists()) {
-          // Update the availability field within the provider document
-          await updateDoc(providerDocRef, {
-            availability: "busy",
-          });
-          console.log("Provider Status is now occupied");
-          const docRef = await addDoc(activeBookings, {
-            address: bookingAddress,
-            addressDetails: bookingAddressDetails,
-            customerUID: bookingCustomerUID,
-            bookingAccepted: bookingAccepted,
-            bookingAssigned: bookingAssigned,
-            bookingID: bookingID,
-            category: bookingCategory,
-            city: bookingCity,
-            coordinates: {
-              latitude: coordinates.latitude,
-              longitude: coordinates.longitude,
-            },
-            date: bookingDate,
-            distanceRadius: bookingDistanceRadius,
-            email: bookingEmail,
-            feeDistance: bookingFeeDistance,
-            materials: bookingMaterials,
-            name: bookingName,
-            paymentMethod: bookingPaymentMethod,
-            phone: bookingPhone,
-            propertyType: bookingPropertyType,
-            service: bookingServices,
-            subTotal: bookingSubTotal,
-            time: bookingTime,
-            title: bookingTitle,
-            totalPrice: bookingTotal,
-            status: "Upcoming",
-          });
-          setCountDownBookingVisible(false);
-          setCountDownBookingFlag(false);
-          // Get the unique ID of the newly added document
-          const newDocumentID = docRef.id;
-          console.log("Document added to 'activeBookings' successfully.");
-          navigation.navigate("ViewBookingDetails", {
-            newDocumentID: newDocumentID,
-            matchedBookingID: matchedBookingID,
-            providerLocation: providerLocation, // Include providerLocation in the route parameters
-          })
-        } else {
-          // console.error("Provider Profile does not exists");
-        }
-      } catch (error) {
-        // console.error("Error updating user data:", error);   // Handle the error, e.g., display an error message to the user
-      }
-    }else{
-      console.log("BookingID is blank");
-      setBookingNotFoundVisible(true);    // set visible for error booking has been canceled/already booked
-    }
+  //       if (providerSnapshot.exists()) {
+  //         // Update the availability field within the provider document
+  //         await updateDoc(providerDocRef, {
+  //           availability: "busy",
+  //         });
+  //         console.log("Provider Status is now occupied");
+  //         const docRef = await addDoc(activeBookings, {
+  //           address: bookingAddress,
+  //           addressDetails: bookingAddressDetails,
+  //           customerUID: bookingCustomerUID,
+  //           bookingAccepted: bookingAccepted,
+  //           bookingAssigned: bookingAssigned,
+  //           bookingID: bookingID,
+  //           category: bookingCategory,
+  //           city: bookingCity,
+  //           coordinates: {
+  //             latitude: coordinates.latitude,
+  //             longitude: coordinates.longitude,
+  //           },
+  //           date: bookingDate,
+  //           distanceRadius: bookingDistanceRadius,
+  //           email: bookingEmail,
+  //           feeDistance: bookingFeeDistance,
+  //           materials: bookingMaterials,
+  //           name: bookingName,
+  //           paymentMethod: bookingPaymentMethod,
+  //           phone: bookingPhone,
+  //           propertyType: bookingPropertyType,
+  //           service: bookingServices,
+  //           subTotal: bookingSubTotal,
+  //           time: bookingTime,
+  //           title: bookingTitle,
+  //           totalPrice: bookingTotal,
+  //           status: "Upcoming",
+  //         });
+  //         setCountDownBookingVisible(false);
+  //         setCountDownBookingFlag(false);
+  //         // Get the unique ID of the newly added document
+  //         const newDocumentID = docRef.id;
+  //         console.log("Document added to 'activeBookings' successfully.");
+  //         navigation.navigate("ViewBookingDetails", {
+  //           newDocumentID: newDocumentID,
+  //           matchedBookingID: matchedBookingID,
+  //           providerLocation: providerLocation, // Include providerLocation in the route parameters
+  //         })
+  //       } else {
+  //         // console.error("Provider Profile does not exists");
+  //       }
+  //     } catch (error) {
+  //       // console.error("Error updating user data:", error);   // Handle the error, e.g., display an error message to the user
+  //     }
+  //   }else{
+  //     console.log("BookingID is blank");
+  //     setBookingNotFoundVisible(true);    // set visible for error booking has been canceled/already booked
+  //   }
 
-  };
+  // };
 
-  const declineBooking = async () => {
-    console.log("Decline Booking");
+  // const declineBooking = async () => {
+  //   console.log("Decline Booking");
 
-    console.log(bookingID);
+  //   console.log(bookingID);
 
-    // Create a reference to the Firestore database using your app instance
-    const db = getFirestore();
+  //   // Create a reference to the Firestore database using your app instance
+  //   const db = getFirestore();
 
-    // Get the user's UID
-    const auth = getAuth();
-    const providerUID = auth.currentUser.uid;
+  //   // Get the user's UID
+  //   const auth = getAuth();
+  //   const providerUID = auth.currentUser.uid;
 
-    // Create a reference to the user's document
-    const providerDocRef = doc(db, "providerProfiles", providerUID);
+  //   // Create a reference to the user's document
+  //   const providerDocRef = doc(db, "providerProfiles", providerUID);
 
-    const serviceBookingsCollection = collection(db, "serviceBookings");
+  //   const serviceBookingsCollection = collection(db, "serviceBookings");
 
-    // Get the service booking document using userBookingID
-    const serviceBookingDocRef = doc(serviceBookingsCollection, userBookingID);
+  //   // Get the service booking document using userBookingID
+  //   const serviceBookingDocRef = doc(serviceBookingsCollection, userBookingID);
 
-    // Get the document snapshot
-    const serviceBookingSnapshot = await getDoc(serviceBookingDocRef);
+  //   // Get the document snapshot
+  //   const serviceBookingSnapshot = await getDoc(serviceBookingDocRef);
 
-    if (serviceBookingSnapshot.exists()) {
-      // Update the acceptedBy field within the service booking document
-      const updatedBookings = [...serviceBookingSnapshot.data().bookings];
-      updatedBookings[bookingIndex].blackListed = bookingID;
+  //   if (serviceBookingSnapshot.exists()) {
+  //     // Update the acceptedBy field within the service booking document
+  //     const updatedBookings = [...serviceBookingSnapshot.data().bookings];
+  //     updatedBookings[bookingIndex].blackListed = bookingID;
 
-      // Get the existing blackListed array
-      const existingBlackListed =
-        serviceBookingSnapshot.data().blackListed || [];
+  //     // Get the existing blackListed array
+  //     const existingBlackListed =
+  //       serviceBookingSnapshot.data().blackListed || [];
 
-      // Update the service booking document
-      await updateDoc(serviceBookingDocRef, {
-        bookings: updatedBookings,
-        blackListed: [...existingBlackListed, bookingID],
-      });
+  //     // Update the service booking document
+  //     await updateDoc(serviceBookingDocRef, {
+  //       bookings: updatedBookings,
+  //       blackListed: [...existingBlackListed, bookingID],
+  //     });
 
-      console.log("blackListed field updated in serviceBookings document.");
-    } else {
-      // console.error("Service Booking document does not exist");
-    }
+  //     console.log("blackListed field updated in serviceBookings document.");
+  //   } else {
+  //     // console.error("Service Booking document does not exist");
+  //   }
 
-    try {
-      // Get the provider document
-      const providerDocSnapshot = await getDoc(providerDocRef);
+  //   try {
+  //     // Get the provider document
+  //     const providerDocSnapshot = await getDoc(providerDocRef);
 
-      if (providerDocSnapshot.exists()) {
-        const blackListedArray = providerDocSnapshot.data().blackListed;
+  //     if (providerDocSnapshot.exists()) {
+  //       const blackListedArray = providerDocSnapshot.data().blackListed;
 
-        console.log(blackListedArray);
+  //       console.log(blackListedArray);
 
-        // Update the provider document
-        await updateDoc(providerDocRef, {
-          availability: "available",
-          bookingID: "",
-          bookingIndex: null,
-          bookingMatched: false,
-          blackListed: arrayUnion(bookingID),
-        });
-        setCountDownBookingVisible(false);
-        setCountDownBookingFlag(false);
+  //       // Update the provider document
+  //       await updateDoc(providerDocRef, {
+  //         availability: "available",
+  //         bookingID: "",
+  //         bookingIndex: null,
+  //         bookingMatched: false,
+  //         blackListed: arrayUnion(bookingID),
+  //       });
+  //       setCountDownBookingVisible(false);
+  //       setCountDownBookingFlag(false);
 
-        navigation.navigate("BottomTabsRoot", {
-          screen: "Homepage",
-          bookingAccepted: false,
-          bookingAssigned: false,
-        });
-      } else {
-        console.log("Provider document does not exist.");
-      }
-    } catch (error) {
-      // console.error("Error updating provider document:", error);
-    }
-  };
+  //       navigation.navigate("BottomTabsRoot", {
+  //         screen: "Homepage",
+  //         bookingAccepted: false,
+  //         bookingAssigned: false,
+  //       });
+  //     } else {
+  //       console.log("Provider document does not exist.");
+  //     }
+  //   } catch (error) {
+  //     // console.error("Error updating provider document:", error);
+  //   }
+  // };
 
-  const onMapLayout = () => {
-    setIsMapReady(true);
-  };
+  // const onMapLayout = () => {
+  //   setIsMapReady(true);
+  // };
 
   const [initialMapRegion, setInitialMapRegion] = useState({
     latitude: providerCoordinates.latitude,
@@ -354,232 +354,232 @@ const NewBooking = ({ route }) => {
   const [reverseGeocodedAddress, setReverseGeocodedAddress] = useState(null);
   const [cityAddress, setcityAddress] = useState(null);
 
-  const handleMapPress = (event) => {
-    const { latitude, longitude } = event.nativeEvent.coordinate;
-    setMarkerPosition({ latitude, longitude });
-    // fetchReverseGeolocation(
-    //   markerPosition.latitude,
-    //   markerPosition.longitude
-    // );
-  };
+  // const handleMapPress = (event) => {
+  //   const { latitude, longitude } = event.nativeEvent.coordinate;
+  //   setMarkerPosition({ latitude, longitude });
+  //   // fetchReverseGeolocation(
+  //   //   markerPosition.latitude,
+  //   //   markerPosition.longitude
+  //   // );
+  // };
 
-  const handleMarkerDragEnd = (event) => {
-    const { latitude, longitude } = event.nativeEvent.coordinate;
-    setMarkerPosition({ latitude, longitude });
-    // fetchReverseGeolocation(
-    //   markerPosition.latitude,
-    //   markerPosition.longitude
-    // );
-  };
+  // const handleMarkerDragEnd = (event) => {
+  //   const { latitude, longitude } = event.nativeEvent.coordinate;
+  //   setMarkerPosition({ latitude, longitude });
+  //   // fetchReverseGeolocation(
+  //   //   markerPosition.latitude,
+  //   //   markerPosition.longitude
+  //   // );
+  // };
 
-  const getFormattedServiceName = () => {
-    if (!bookingTitle || !bookingCategory) {
-      return 'Service'; // Default text or handle as needed
-    }
+  // const getFormattedServiceName = () => {
+  //   if (!bookingTitle || !bookingCategory) {
+  //     return 'Service'; // Default text or handle as needed
+  //   }
 
-    // Check if the title is "Pet Care" or "Gardening"
-    if (bookingTitle === "Pet Care" || bookingTitle === "Gardening" || bookingTitle === "Cleaning") {
-      return bookingCategory;
-    } else {
-      // If not, concatenate the title and category
-      return `${bookingTitle} ${bookingCategory}`;
-    }
-  };
+  //   // Check if the title is "Pet Care" or "Gardening"
+  //   if (bookingTitle === "Pet Care" || bookingTitle === "Gardening" || bookingTitle === "Cleaning") {
+  //     return bookingCategory;
+  //   } else {
+  //     // If not, concatenate the title and category
+  //     return `${bookingTitle} ${bookingCategory}`;
+  //   }
+  // };
 
-  const getServiceImageSource = (category, service) => {
-    if(category === "Plumbing") {
-      switch (service) {
-        case "Installation":
-          return require("../assets/plumbing-installation.png");
-        case "Repairs/Replacement":
-          return require("../assets/plumbing-repair.png");
-        default:
-          return require("../assets/plumbing-installation.png");
-      }
-    }else if(category === "Electrical") {
-      switch (service) {
-        case "Installation":
-          return require("../assets/electrical-installation.png");
-        case "Repairs/Replacement":
-          return require("../assets/electrical-repair.png");
-        default:
-          return require("../assets/electrical-installation.png");
-      }
-    }else if(category === "Carpentry") {
-      switch (service) {
-        case "Installation":
-          return require("../assets/carpentry-installation.png");
-        case "Repairs/Replacement":
-          return require("../assets/carpentry-repair.png");
-        case "Furniture Assembly And Disassembly":
-          return require("../assets/furniture-assembly-and-disassembly.png");
-        default:
-          return require("../assets/carpentry-installation.png");
-      }
-    }else if(category === "Cleaning" || category === "Pet Care" || category === "Gardening"){
-      switch (service) {
-        case "Standard Cleaning":
-          return require("../assets/standard-cleaning.png");
-        case "Deep Cleaning":
-          return require("../assets/deep-cleaning.png");
-        case "Electronic Appliance Cleaning":
-          return require("../assets/electronic-appliance-cleaning.png");
-        case "Pest Control":
-          return require("../assets/pest-control.png");
-        case "Dog Training":
-          return require("../assets/dog-training.png");
-        case "Dog Pet Grooming":
-          return require("../assets/pet-grooming.png");
-        case "Cat Pet Grooming":
-          return require("../assets/pet-grooming.png");
-        case "Bird Pet Grooming":
-          return require("../assets/pet-grooming.png");
-        case "Rabbit Pet Grooming":
-          return require("../assets/pet-grooming.png");
-        case "Dog Pet Sitting":
-          return require("../assets/pet-sitting.png");
-        case "Cat Pet Sitting":
-          return require("../assets/pet-sitting.png");
-        case "Bird Pet Sitting":
-          return require("../assets/pet-sitting.png");
-        case "Rabbit Pet Sitting":
-          return require("../assets/pet-sitting.png");
-        case "Garden Maintenance":
-          return require("../assets/garden-maintenance.png");
-        case "Landscape Design and Planning":
-          return require("../assets/landscape-design-and-planning.png");
-        case "Irrigation System Installation/Repairs":
-          return require("../assets/irrigation-system.png");
-        case "Pest and Disease Management":
-          return require("../assets/pest-and-disease-management.png");
-        default:
-          return require("../assets/standard-cleaning.png");
-      }
-    }
-  };
+  // const getServiceImageSource = (category, service) => {
+  //   if(category === "Plumbing") {
+  //     switch (service) {
+  //       case "Installation":
+  //         return require("../assets/plumbing-installation.png");
+  //       case "Repairs/Replacement":
+  //         return require("../assets/plumbing-repair.png");
+  //       default:
+  //         return require("../assets/plumbing-installation.png");
+  //     }
+  //   }else if(category === "Electrical") {
+  //     switch (service) {
+  //       case "Installation":
+  //         return require("../assets/electrical-installation.png");
+  //       case "Repairs/Replacement":
+  //         return require("../assets/electrical-repair.png");
+  //       default:
+  //         return require("../assets/electrical-installation.png");
+  //     }
+  //   }else if(category === "Carpentry") {
+  //     switch (service) {
+  //       case "Installation":
+  //         return require("../assets/carpentry-installation.png");
+  //       case "Repairs/Replacement":
+  //         return require("../assets/carpentry-repair.png");
+  //       case "Furniture Assembly And Disassembly":
+  //         return require("../assets/furniture-assembly-and-disassembly.png");
+  //       default:
+  //         return require("../assets/carpentry-installation.png");
+  //     }
+  //   }else if(category === "Cleaning" || category === "Pet Care" || category === "Gardening"){
+  //     switch (service) {
+  //       case "Standard Cleaning":
+  //         return require("../assets/standard-cleaning.png");
+  //       case "Deep Cleaning":
+  //         return require("../assets/deep-cleaning.png");
+  //       case "Electronic Appliance Cleaning":
+  //         return require("../assets/electronic-appliance-cleaning.png");
+  //       case "Pest Control":
+  //         return require("../assets/pest-control.png");
+  //       case "Dog Training":
+  //         return require("../assets/dog-training.png");
+  //       case "Dog Pet Grooming":
+  //         return require("../assets/pet-grooming.png");
+  //       case "Cat Pet Grooming":
+  //         return require("../assets/pet-grooming.png");
+  //       case "Bird Pet Grooming":
+  //         return require("../assets/pet-grooming.png");
+  //       case "Rabbit Pet Grooming":
+  //         return require("../assets/pet-grooming.png");
+  //       case "Dog Pet Sitting":
+  //         return require("../assets/pet-sitting.png");
+  //       case "Cat Pet Sitting":
+  //         return require("../assets/pet-sitting.png");
+  //       case "Bird Pet Sitting":
+  //         return require("../assets/pet-sitting.png");
+  //       case "Rabbit Pet Sitting":
+  //         return require("../assets/pet-sitting.png");
+  //       case "Garden Maintenance":
+  //         return require("../assets/garden-maintenance.png");
+  //       case "Landscape Design and Planning":
+  //         return require("../assets/landscape-design-and-planning.png");
+  //       case "Irrigation System Installation/Repairs":
+  //         return require("../assets/irrigation-system.png");
+  //       case "Pest and Disease Management":
+  //         return require("../assets/pest-and-disease-management.png");
+  //       default:
+  //         return require("../assets/standard-cleaning.png");
+  //     }
+  //   }
+  // };
 
-  const fetchReverseGeolocation = async (latitude, longitude) => {
-    try {
-      enableLatestRenderer();
-      console.log("Fetched Latitude: ", latitude);
-      console.log("Fetched Longitude: ", longitude);
+  // const fetchReverseGeolocation = async (latitude, longitude) => {
+  //   try {
+  //     enableLatestRenderer();
+  //     console.log("Fetched Latitude: ", latitude);
+  //     console.log("Fetched Longitude: ", longitude);
 
-      const apiKey = "AIzaSyAuaR8dxr95SLUTU-cidS7I-3uB6mEoJmA"; // Replace with your Google Maps API key
-      const response = await axios.get(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&result_type=street_address&key=${apiKey}`
-      );
+  //     const apiKey = "AIzaSyAuaR8dxr95SLUTU-cidS7I-3uB6mEoJmA"; // Replace with your Google Maps API key
+  //     const response = await axios.get(
+  //       `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&result_type=street_address&key=${apiKey}`
+  //     );
 
-      if (response.data.results && response.data.results.length > 0) {
-        const data = response.data.results;
-        const firstResult = response.data.results[0];
-        const formattedAddress = firstResult.formatted_address;
+  //     if (response.data.results && response.data.results.length > 0) {
+  //       const data = response.data.results;
+  //       const firstResult = response.data.results[0];
+  //       const formattedAddress = firstResult.formatted_address;
 
-        // Modify the address components to exclude the region, zip code, and country
-        const addressComponents1 = firstResult.address_components.filter(
-          (component) => {
-            return ![
-              "administrative_area_level_1",
-              "postal_code",
-              "country",
-            ].includes(component.types[0]);
-          }
-        );
-        console.log("Address Components: ", addressComponents1);
+  //       // Modify the address components to exclude the region, zip code, and country
+  //       const addressComponents1 = firstResult.address_components.filter(
+  //         (component) => {
+  //           return ![
+  //             "administrative_area_level_1",
+  //             "postal_code",
+  //             "country",
+  //           ].includes(component.types[0]);
+  //         }
+  //       );
+  //       console.log("Address Components: ", addressComponents1);
 
-        const formattedAddress1 = addressComponents1
-          .map((component) => component.long_name)
-          .join(", ");
-        console.log("Newly Formatted Address 1: ", formattedAddress1);
-        const cityParts = formattedAddress1.split(", ");
-        const cityAddress = cityParts[cityParts.length - 1];
-        console.log("City Address:", cityAddress);
+  //       const formattedAddress1 = addressComponents1
+  //         .map((component) => component.long_name)
+  //         .join(", ");
+  //       console.log("Newly Formatted Address 1: ", formattedAddress1);
+  //       const cityParts = formattedAddress1.split(", ");
+  //       const cityAddress = cityParts[cityParts.length - 1];
+  //       console.log("City Address:", cityAddress);
 
-        // Extracting the city from the formatted address
-        const addressComponents = firstResult.address_components;
-        let city = "";
-        for (const component of addressComponents) {
-          console.log("Address Types: ", component.types);
-          if (component.types.includes("locality")) {
-            city = component.long_name;
-            break;
-          }
-        }
+  //       // Extracting the city from the formatted address
+  //       const addressComponents = firstResult.address_components;
+  //       let city = "";
+  //       for (const component of addressComponents) {
+  //         console.log("Address Types: ", component.types);
+  //         if (component.types.includes("locality")) {
+  //           city = component.long_name;
+  //           break;
+  //         }
+  //       }
 
-        console.log("City Name 1: ", city);
+  //       console.log("City Name 1: ", city);
 
-        // Check if the city is not one of the specified city names
-        if (["Home", "Apartment", "Condo", "others", "Others"].includes(city)) {
-          console.log("City: ", city);
-          return;
-        } else if (
-          ![
-            "Cebu",
-            "Cebu City",
-            "Mandaue",
-            "Mandaue City",
-            "Lapu-Lapu",
-            "Lapu-Lapu City",
-          ].includes(city)
-        ) {
-          // Store administrative_area_level_2 in the city variable
-          for (const component of firstResult.address_components) {
-            if (component.types.includes("administrative_area_level_2")) {
-              city = component.long_name;
-              break;
-            }
-          }
-        }
+  //       // Check if the city is not one of the specified city names
+  //       if (["Home", "Apartment", "Condo", "others", "Others"].includes(city)) {
+  //         console.log("City: ", city);
+  //         return;
+  //       } else if (
+  //         ![
+  //           "Cebu",
+  //           "Cebu City",
+  //           "Mandaue",
+  //           "Mandaue City",
+  //           "Lapu-Lapu",
+  //           "Lapu-Lapu City",
+  //         ].includes(city)
+  //       ) {
+  //         // Store administrative_area_level_2 in the city variable
+  //         for (const component of firstResult.address_components) {
+  //           if (component.types.includes("administrative_area_level_2")) {
+  //             city = component.long_name;
+  //             break;
+  //           }
+  //         }
+  //       }
 
-        console.log("City Name 2: ", city);
+  //       console.log("City Name 2: ", city);
 
-        setReverseGeocodedAddress(formattedAddress1);
-        setcityAddress(city);
-        console.log("City:", city);
-      } else {
-        // If Google Geocoding API doesn't return results, try OpenStreetMap Nominatim API
-        try {
-          const osmResponse = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-          );
-          const osmData = await osmResponse.json();
-          if (osmData.display_name) {
-            const addressParts = osmData.display_name.split(", ");
+  //       setReverseGeocodedAddress(formattedAddress1);
+  //       setcityAddress(city);
+  //       console.log("City:", city);
+  //     } else {
+  //       // If Google Geocoding API doesn't return results, try OpenStreetMap Nominatim API
+  //       try {
+  //         const osmResponse = await fetch(
+  //           `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+  //         );
+  //         const osmData = await osmResponse.json();
+  //         if (osmData.display_name) {
+  //           const addressParts = osmData.display_name.split(", ");
 
-            for (const parts of addressParts) {
-              console.log("Parts: ", parts);
-              if (parts == "Cebu" || parts == "Cebu City") {
-                setcityAddress("Cebu City");
-                console.log("City: Cebu City");
-              } else if (parts == "Mandaue" || parts == "Mandaue City") {
-                setcityAddress("Mandaue City");
-                console.log("City: Mandaue City");
-              } else if (parts == "Lapu-Lapu" || parts == "Lapu-Lapu City") {
-                setcityAddress("Lapu-Lapu City");
-                console.log("City: Lapu-Lapu City");
-              }
-            }
+  //           for (const parts of addressParts) {
+  //             console.log("Parts: ", parts);
+  //             if (parts == "Cebu" || parts == "Cebu City") {
+  //               setcityAddress("Cebu City");
+  //               console.log("City: Cebu City");
+  //             } else if (parts == "Mandaue" || parts == "Mandaue City") {
+  //               setcityAddress("Mandaue City");
+  //               console.log("City: Mandaue City");
+  //             } else if (parts == "Lapu-Lapu" || parts == "Lapu-Lapu City") {
+  //               setcityAddress("Lapu-Lapu City");
+  //               console.log("City: Lapu-Lapu City");
+  //             }
+  //           }
 
-            // Remove the last 3 parts (region, zip code, and country)
-            const modifiedAddress = addressParts.slice(0, -3).join(", ");
-            console.log("Modified Address:", modifiedAddress);
+  //           // Remove the last 3 parts (region, zip code, and country)
+  //           const modifiedAddress = addressParts.slice(0, -3).join(", ");
+  //           console.log("Modified Address:", modifiedAddress);
 
-            setReverseGeocodedAddress(modifiedAddress);
-            console.log("OpenStreetMap Location:", osmData.display_name);
-          } else {
-            setReverseGeocodedAddress("Location not found");
-            console.log("Location not found with OpenStreetMap");
-          }
-        } catch (osmError) {
-          // console.error(
-          //   "Error fetching location with OpenStreetMap:",
-          //   osmError
-          // );
-        }
-      }
-    } catch (error) {
-      // console.error("Error fetching reverse geolocation:", error);
-    }
-  };
+  //           setReverseGeocodedAddress(modifiedAddress);
+  //           console.log("OpenStreetMap Location:", osmData.display_name);
+  //         } else {
+  //           setReverseGeocodedAddress("Location not found");
+  //           console.log("Location not found with OpenStreetMap");
+  //         }
+  //       } catch (osmError) {
+  //         // console.error(
+  //         //   "Error fetching location with OpenStreetMap:",
+  //         //   osmError
+  //         // );
+  //       }
+  //     }
+  //   } catch (error) {
+  //     // console.error("Error fetching reverse geolocation:", error);
+  //   }
+  // };
 
   useEffect(() => {
     if (isMapReady) {
@@ -599,170 +599,170 @@ const NewBooking = ({ route }) => {
   //   }
   // }, [markerPosition]);
 
-  useEffect(() => {
-    if (markerPosition) {
-      fetchReverseGeolocation(
-        markerPosition.latitude,
-        markerPosition.longitude
-      );
-    }
-    console.log("Is TextInput focused:", isInputFocused);
-  }, [markerPosition, isInputFocused]);
+  // useEffect(() => {
+  //   if (markerPosition) {
+  //     fetchReverseGeolocation(
+  //       markerPosition.latitude,
+  //       markerPosition.longitude
+  //     );
+  //   }
+  //   console.log("Is TextInput focused:", isInputFocused);
+  // }, [markerPosition, isInputFocused]);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        setIsLoading(true); // Set loading to true before fetching data
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     try {
+  //       setIsLoading(true); // Set loading to true before fetching data
 
-        const db = getFirestore(); // Use getFirestore() to initialize Firestore
+  //       const db = getFirestore(); // Use getFirestore() to initialize Firestore
 
-        // Get the user's UID
-        const auth = getAuth();
-        const user = auth.currentUser.uid;
-        console.log(user);
-        console.log("Selected Id: ", userBookingID);
+  //       // Get the user's UID
+  //       const auth = getAuth();
+  //       const user = auth.currentUser.uid;
+  //       console.log(user);
+  //       console.log("Selected Id: ", userBookingID);
 
-        // Reference to the "manageAddress" collection for the specified userUID
-        // const userBookingDocRef = collection(
-        //   db,
-        //   "serviceBookings",
-        //   userID
-        // );
+  //       // Reference to the "manageAddress" collection for the specified userUID
+  //       // const userBookingDocRef = collection(
+  //       //   db,
+  //       //   "serviceBookings",
+  //       //   userID
+  //       // );
 
-        const userBookingDocRef = doc(db, "serviceBookings", userBookingID);
+  //       const userBookingDocRef = doc(db, "serviceBookings", userBookingID);
 
-        const bookingsQuery = query(userBookingDocRef);
+  //       const bookingsQuery = query(userBookingDocRef);
 
-        const docSnapshot = await getDoc(bookingsQuery);
+  //       const docSnapshot = await getDoc(bookingsQuery);
 
-        if (docSnapshot.exists()) {
-          const bookingData = docSnapshot.data();
-          console.log("Booking Data: ", bookingData);
+  //       if (docSnapshot.exists()) {
+  //         const bookingData = docSnapshot.data();
+  //         console.log("Booking Data: ", bookingData);
 
-          if (
-            Array.isArray(bookingData.bookings) &&
-            bookingData.bookings.length > 0
-          ) {
-            const indexToFetch = bookingIndex; // Set the desired index here
-            const matchingBooking = bookingData.bookings[indexToFetch];
-            if (matchingBooking) {
-              // Fetch data and display through console.log
-              const materials = matchingBooking.materials;
-              console.log("Fetching data for booking:", matchingBooking);
-              console.log("Services: ", matchingBooking.service);
-              const servicesData = matchingBooking.service.map((doc) => doc);
-              console.log("Data Services: ", servicesData);
-              if (materials == "useProviderMaterials") {
-                setBookingMaterials("Supplied by Provider");
-              } else {
-                setBookingMaterials("Customer-Provided");
-              }
-              setBookingAccepted(matchingBooking.bookingAccepted);
-              setBookingAssigned(matchingBooking.bookingAssigned);
-              setBookingID(matchingBooking.bookingID);
-              setBookingCity(matchingBooking.city);
-              setBookingDate(matchingBooking.date);
-              setBookingDistanceRadius(matchingBooking.distanceRadius);
-              setBookingEmail(matchingBooking.email);
-              setBookingFeeDistance(matchingBooking.feeDistance);
-              setBookingName(matchingBooking.name);
-              setBookingPaymentMethod(matchingBooking.paymentMethod);
-              setBookingPhone(matchingBooking.phone);
-              setBookingPropertyTime(matchingBooking.propertyType);
-              setBookingSubTotal(matchingBooking.subTotal);
-              setBookingTotal(matchingBooking.totalPrice);
-              setBookingTime(matchingBooking.time);
-              setBookingTitle(matchingBooking.title);
-              setBookingAddress(matchingBooking.address);
-              setBookingAddressDetails(matchingBooking.addressDetails);
-              setBookingCustomerUID(matchingBooking.customerUID);
-              setBookingCategory(matchingBooking.category);
-              setBookingServices(matchingBooking.service);
-              setCoordinates({
-                latitude: matchingBooking.coordinates.latitude,
-                longitude: matchingBooking.coordinates.longitude,
-              });
+  //         if (
+  //           Array.isArray(bookingData.bookings) &&
+  //           bookingData.bookings.length > 0
+  //         ) {
+  //           const indexToFetch = bookingIndex; // Set the desired index here
+  //           const matchingBooking = bookingData.bookings[indexToFetch];
+  //           if (matchingBooking) {
+  //             // Fetch data and display through console.log
+  //             const materials = matchingBooking.materials;
+  //             console.log("Fetching data for booking:", matchingBooking);
+  //             console.log("Services: ", matchingBooking.service);
+  //             const servicesData = matchingBooking.service.map((doc) => doc);
+  //             console.log("Data Services: ", servicesData);
+  //             if (materials == "useProviderMaterials") {
+  //               setBookingMaterials("Supplied by Provider");
+  //             } else {
+  //               setBookingMaterials("Customer-Provided");
+  //             }
+  //             setBookingAccepted(matchingBooking.bookingAccepted);
+  //             setBookingAssigned(matchingBooking.bookingAssigned);
+  //             setBookingID(matchingBooking.bookingID);
+  //             setBookingCity(matchingBooking.city);
+  //             setBookingDate(matchingBooking.date);
+  //             setBookingDistanceRadius(matchingBooking.distanceRadius);
+  //             setBookingEmail(matchingBooking.email);
+  //             setBookingFeeDistance(matchingBooking.feeDistance);
+  //             setBookingName(matchingBooking.name);
+  //             setBookingPaymentMethod(matchingBooking.paymentMethod);
+  //             setBookingPhone(matchingBooking.phone);
+  //             setBookingPropertyTime(matchingBooking.propertyType);
+  //             setBookingSubTotal(matchingBooking.subTotal);
+  //             setBookingTotal(matchingBooking.totalPrice);
+  //             setBookingTime(matchingBooking.time);
+  //             setBookingTitle(matchingBooking.title);
+  //             setBookingAddress(matchingBooking.address);
+  //             setBookingAddressDetails(matchingBooking.addressDetails);
+  //             setBookingCustomerUID(matchingBooking.customerUID);
+  //             setBookingCategory(matchingBooking.category);
+  //             setBookingServices(matchingBooking.service);
+  //             setCoordinates({
+  //               latitude: matchingBooking.coordinates.latitude,
+  //               longitude: matchingBooking.coordinates.longitude,
+  //             });
 
-              console.log("Date: ", bookingDate);
-              console.log("Time: ", bookingTime);
-              console.log("Address: ", bookingAddress);
-              console.log("Materials: ", bookingMaterials);
-              console.log("Category: ", bookingCategory);
-              console.log("Services: ", bookingServices);
-              console.log("Total Price: ", bookingTotal);
-              console.log("Coordinates: ", coordinates);
-            } else {
-              console.log(`Booking at index ${indexToFetch} not found.`);
-            }
-          } else {
-            console.log("No savedOptions found in the document.");
-          }
-          setIsLoading(false); // Set loading to false once data is fetched
-        } else {
-          console.log("No such document!");
-        }
-        // if (!querySnapshot.empty) {
-        //   querySnapshot.forEach((doc) => {
-        //     const bookingData = doc.data();
-        //     console.log("Booking Data: ", bookingData);
+  //             console.log("Date: ", bookingDate);
+  //             console.log("Time: ", bookingTime);
+  //             console.log("Address: ", bookingAddress);
+  //             console.log("Materials: ", bookingMaterials);
+  //             console.log("Category: ", bookingCategory);
+  //             console.log("Services: ", bookingServices);
+  //             console.log("Total Price: ", bookingTotal);
+  //             console.log("Coordinates: ", coordinates);
+  //           } else {
+  //             console.log(`Booking at index ${indexToFetch} not found.`);
+  //           }
+  //         } else {
+  //           console.log("No savedOptions found in the document.");
+  //         }
+  //         setIsLoading(false); // Set loading to false once data is fetched
+  //       } else {
+  //         console.log("No such document!");
+  //       }
+  //       // if (!querySnapshot.empty) {
+  //       //   querySnapshot.forEach((doc) => {
+  //       //     const bookingData = doc.data();
+  //       //     console.log("Booking Data: ", bookingData);
 
-        //     if (
-        //       Array.isArray(bookingData.bookings) &&
-        //       bookingData.bookings.length > 0
-        //     ) {
-        //       // Handle the case where there are savedOptions
-        //     } else {
-        //       console.log("No savedOptions found in the document.");
-        //     }
-        //   });
-        // } else {
-        //   console.log("No documents found with the specified criteria.");
-        // }
+  //       //     if (
+  //       //       Array.isArray(bookingData.bookings) &&
+  //       //       bookingData.bookings.length > 0
+  //       //     ) {
+  //       //       // Handle the case where there are savedOptions
+  //       //     } else {
+  //       //       console.log("No savedOptions found in the document.");
+  //       //     }
+  //       //   });
+  //       // } else {
+  //       //   console.log("No documents found with the specified criteria.");
+  //       // }
 
-        // if (isAcceptOrdersEnabled && !bookingAccepted ) { // Check if the switch is turned on
-        //   const db = getFirestore();
-        //   const serviceBookingsCollection = collection(db, "serviceBookings");
+  //       // if (isAcceptOrdersEnabled && !bookingAccepted ) { // Check if the switch is turned on
+  //       //   const db = getFirestore();
+  //       //   const serviceBookingsCollection = collection(db, "serviceBookings");
 
-        //   const q = query(serviceBookingsCollection ,where("bookingAssigned", "==", false));
+  //       //   const q = query(serviceBookingsCollection ,where("bookingAssigned", "==", false));
 
-        //   const querySnapshot = await getDocs(q);
+  //       //   const querySnapshot = await getDocs(q);
 
-        //   if (!querySnapshot.empty) {
-        //     // doc.data() is never undefined for query doc snapshots
-        //     // console.log(doc.id, " => ", doc.data());
-        //     querySnapshot.forEach((doc) => {
-        //       // Access data of the document using .data()
-        //       const bookingData = doc.data();
-        //       const id = doc.id;
+  //       //   if (!querySnapshot.empty) {
+  //       //     // doc.data() is never undefined for query doc snapshots
+  //       //     // console.log(doc.id, " => ", doc.data());
+  //       //     querySnapshot.forEach((doc) => {
+  //       //       // Access data of the document using .data()
+  //       //       const bookingData = doc.data();
+  //       //       const id = doc.id;
 
-        //       // Access specific fields like "name"
-        //       const name = bookingData.name;
-        //       const accepted = bookingData.bookingAccepted;
-        //       const assigned = bookingData.bookingAssigned;
+  //       //       // Access specific fields like "name"
+  //       //       const name = bookingData.name;
+  //       //       const accepted = bookingData.bookingAccepted;
+  //       //       const assigned = bookingData.bookingAssigned;
 
-        //       if(!assigned){
-        //         console.log("ID: ", id);
-        //         console.log("Name: ", name);
-        //         navigation.navigate("NewBooking"), {
-        //           name: name,
-        //           userID: id,
-        //         };
-        //       }
-        //     });
+  //       //       if(!assigned){
+  //       //         console.log("ID: ", id);
+  //       //         console.log("Name: ", name);
+  //       //         navigation.navigate("NewBooking"), {
+  //       //           name: name,
+  //       //           userID: id,
+  //       //         };
+  //       //       }
+  //       //     });
 
-        //   } else {
-        //     console.log("The 'serviceBookings' collection is empty.");
-        //   }
-        // }else{
-        //   console.log("The 'bookingAssigned' collection is empty.");
-        // }
-      } catch (error) {
-        // console.error("Error retrieving data:", error);
-      }
-    }
+  //       //   } else {
+  //       //     console.log("The 'serviceBookings' collection is empty.");
+  //       //   }
+  //       // }else{
+  //       //   console.log("The 'bookingAssigned' collection is empty.");
+  //       // }
+  //     } catch (error) {
+  //       // console.error("Error retrieving data:", error);
+  //     }
+  //   }
 
-    fetchData(); // Call the fetchData function immediately
-  }, [userBookingID]); // Add userID as a dependency
+  //   fetchData(); // Call the fetchData function immediately
+  // }, [userBookingID]); // Add userID as a dependency
 
   const animationController = useRef(new Animated.Value(0)).current;
   const [showContent, setShowContent] = useState(false);
@@ -831,7 +831,7 @@ const NewBooking = ({ route }) => {
         </MapView>
         <TouchableOpacity
           style={styles.directionsButton}
-          onPress={handleGetDirections}
+          // onPress={handleGetDirections}
         >
           <Image
             source={require("../assets/navigation-1-1.png")}
@@ -1000,7 +1000,7 @@ const NewBooking = ({ route }) => {
                     <View style={styles.plumbingInstallationWrapper}>
                       <Text style={[styles.date, styles.dateTypo]}>
                         {/* Plumbing Installation */}
-                        {getFormattedServiceName()}
+                        {/* {getFormattedServiceName()} */}
                       </Text>
                     </View>
                   </View>
@@ -1098,7 +1098,7 @@ const NewBooking = ({ route }) => {
         <View style={styles.trackBookingBtnParent}>
           <Pressable
             style={[styles.trackBookingBtn, styles.btnFlexBox]}
-            onPress={declineBooking}
+            // onPress={declineBooking}
           >
             <Text style={[styles.viewAllServices, styles.newBooking1Typo]}>
               Decline
@@ -1106,7 +1106,7 @@ const NewBooking = ({ route }) => {
           </Pressable>
           <Pressable
             style={[styles.viewTimelineBtn, styles.btnFlexBox]}
-            onPress={acceptBooking}
+            // onPress={acceptBooking}
           >
             <Text style={[styles.viewAllServices, styles.newBooking1Typo]}>
               Accept
@@ -1119,11 +1119,11 @@ const NewBooking = ({ route }) => {
           <View style={styles.containerCancel}>
             <Pressable
               style={styles.logoutButtonBg}
-              onPress={closeCancelModal}
+              // onPress={closeCancelModal}
             />
             <CancelBookingPrompt
-              onClose={closeCancelModal}
-              onYesPress={declineBooking}
+              // onClose={closeCancelModal}
+              // onYesPress={declineBooking}
             />
           </View>
         </View>
@@ -1138,7 +1138,7 @@ const NewBooking = ({ route }) => {
               // onClose={closeCountDownModal}
             />
             <CountDownBooking
-              onClose={closeCountDownModal}
+              // onClose={closeCountDownModal}
               //onYesPress={declineBooking}
             />
           </View>

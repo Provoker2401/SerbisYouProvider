@@ -40,65 +40,65 @@ const PerformTheService = ({route}) => {
   const [serviceBtn, setServiceBtn] = useState(true);
 
   const openCancelModal = useCallback(() => {
-    setcancelModalVisible(true);
+    // setcancelModalVisible(true);
   }, []);
 
   const closeCancelModal = useCallback(() => {
-    setcancelModalVisible(false);
+    // setcancelModalVisible(false);
   }, []);
 
   const serviceInProgress = useCallback(() => {
-    setcancelModalVisible(false);
-    setServiceBtn(false);
+    // setcancelModalVisible(false);
+    // setServiceBtn(false);
   }, []);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const db = getFirestore(); // Use getFirestore() to initialize Firestore
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     try {
+  //       const db = getFirestore(); // Use getFirestore() to initialize Firestore
   
-        // Get the user's UID 
-        const auth = getAuth();
-        const providerUID = auth.currentUser.uid;
-        console.log("Provider UID: " ,providerUID);
-        console.log("Item Id: ", itemID);
+  //       // Get the user's UID 
+  //       const auth = getAuth();
+  //       const providerUID = auth.currentUser.uid;
+  //       console.log("Provider UID: " ,providerUID);
+  //       console.log("Item Id: ", itemID);
 
-        const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
-        const docSnapshot = await getDoc(userBookingDocRef);
+  //       const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
+  //       const docSnapshot = await getDoc(userBookingDocRef);
 
-        if (docSnapshot.exists()) {
-          const booking = docSnapshot.data();
-          console.log("Booking Data: ", booking);
-          const servicesData = booking.service.map((doc) => doc);
-          console.log("Data Services: " ,servicesData);
-          setBookingName(booking.name);
-          setBookingPropertyType(booking.propertyType);
-          setBookingTitle(booking.title);
-          setBookingCategory(booking.category);
-          setBookingServices(booking.service);
-          setBookingPaymentMethod(booking.paymentMethod);
-          setBookingTotal(booking.totalPrice);
-          setphoneUser(booking.phone);
+  //       if (docSnapshot.exists()) {
+  //         const booking = docSnapshot.data();
+  //         console.log("Booking Data: ", booking);
+  //         const servicesData = booking.service.map((doc) => doc);
+  //         console.log("Data Services: " ,servicesData);
+  //         setBookingName(booking.name);
+  //         setBookingPropertyType(booking.propertyType);
+  //         setBookingTitle(booking.title);
+  //         setBookingCategory(booking.category);
+  //         setBookingServices(booking.service);
+  //         setBookingPaymentMethod(booking.paymentMethod);
+  //         setBookingTotal(booking.totalPrice);
+  //         setphoneUser(booking.phone);
 
 
-          console.log("Name: " ,bookingName);
-          console.log("Property Type: " , bookingPropertyType);
-          console.log("Title: " , bookingTitle);
-          console.log("Category: " ,bookingCategory);
-          console.log("Services: " , bookingServices);
-          console.log("Payment Method: " , bookingPaymentMethod);
-          console.log("Total: " , bookingTotal);
+  //         console.log("Name: " ,bookingName);
+  //         console.log("Property Type: " , bookingPropertyType);
+  //         console.log("Title: " , bookingTitle);
+  //         console.log("Category: " ,bookingCategory);
+  //         console.log("Services: " , bookingServices);
+  //         console.log("Payment Method: " , bookingPaymentMethod);
+  //         console.log("Total: " , bookingTotal);
 
-        } else {
-          console.log("No such document!");
-        }
-      } catch (error) {
-        // console.error("Error retrieving data:", error);
-      }
-    }
+  //       } else {
+  //         console.log("No such document!");
+  //       }
+  //     } catch (error) {
+  //       // console.error("Error retrieving data:", error);
+  //     }
+  //   }
   
-    fetchData(); // Call the fetchData function immediately
-  }, []); 
+  //   fetchData(); // Call the fetchData function immediately
+  // }, []); 
 
   const getFormattedServiceName = () => {
     if (!bookingTitle || !bookingCategory) {
@@ -118,118 +118,118 @@ const PerformTheService = ({route}) => {
     return bookingPaymentMethod === "Cash" ? "Collect Cash" : `Paid via ${bookingPaymentMethod}`;
   };
 
-  const getServiceImageSource = (category, service) => {
-    if(category === "Plumbing") {
-      switch (service) {
-        case "Installation":
-          return require("../assets/plumbing-installation.png");
-        case "Repairs/Replacement":
-          return require("../assets/plumbing-repair.png");
-        default:
-          return require("../assets/plumbing-installation.png");
-      }
-    }else if(category === "Electrical") {
-      switch (service) {
-        case "Installation":
-          return require("../assets/electrical-installation.png");
-        case "Repairs/Replacement":
-          return require("../assets/electrical-repair.png");
-        default:
-          return require("../assets/electrical-installation.png");
-      }
-    }else if(category === "Carpentry") {
-      switch (service) {
-        case "Installation":
-          return require("../assets/carpentry-installation.png");
-        case "Repairs/Replacement":
-          return require("../assets/carpentry-repair.png");
-        case "Furniture Assembly And Disassembly":
-          return require("../assets/furniture-assembly-and-disassembly.png");
-        default:
-          return require("../assets/carpentry-installation.png");
-      }
-    }else if(category === "Cleaning" || category === "Pet Care" || category === "Gardening"){
-      switch (service) {
-        case "Standard Cleaning":
-          return require("../assets/standard-cleaning.png");
-        case "Deep Cleaning":
-          return require("../assets/deep-cleaning.png");
-        case "Electronic Appliance Cleaning":
-          return require("../assets/electronic-appliance-cleaning.png");
-        case "Pest Control":
-          return require("../assets/pest-control.png");
-        case "Dog Training":
-          return require("../assets/dog-training.png");
-        case "Dog Pet Grooming":
-          return require("../assets/pet-grooming.png");
-        case "Cat Pet Grooming":
-          return require("../assets/pet-grooming.png");
-        case "Bird Pet Grooming":
-          return require("../assets/pet-grooming.png");
-        case "Rabbit Pet Grooming":
-          return require("../assets/pet-grooming.png");
-        case "Dog Pet Sitting":
-          return require("../assets/pet-sitting.png");
-        case "Cat Pet Sitting":
-          return require("../assets/pet-sitting.png");
-        case "Bird Pet Sitting":
-          return require("../assets/pet-sitting.png");
-        case "Rabbit Pet Sitting":
-          return require("../assets/pet-sitting.png");
-        case "Garden Maintenance":
-          return require("../assets/garden-maintenance.png");
-        case "Landscape Design and Planning":
-          return require("../assets/landscape-design-and-planning.png");
-        case "Irrigation System Installation/Repairs":
-          return require("../assets/irrigation-system.png");
-        case "Pest and Disease Management":
-          return require("../assets/pest-and-disease-management.png");
-        default:
-          return require("../assets/standard-cleaning.png");
-      }
-    }
-  };
+  // const getServiceImageSource = (category, service) => {
+  //   if(category === "Plumbing") {
+  //     switch (service) {
+  //       case "Installation":
+  //         return require("../assets/plumbing-installation.png");
+  //       case "Repairs/Replacement":
+  //         return require("../assets/plumbing-repair.png");
+  //       default:
+  //         return require("../assets/plumbing-installation.png");
+  //     }
+  //   }else if(category === "Electrical") {
+  //     switch (service) {
+  //       case "Installation":
+  //         return require("../assets/electrical-installation.png");
+  //       case "Repairs/Replacement":
+  //         return require("../assets/electrical-repair.png");
+  //       default:
+  //         return require("../assets/electrical-installation.png");
+  //     }
+  //   }else if(category === "Carpentry") {
+  //     switch (service) {
+  //       case "Installation":
+  //         return require("../assets/carpentry-installation.png");
+  //       case "Repairs/Replacement":
+  //         return require("../assets/carpentry-repair.png");
+  //       case "Furniture Assembly And Disassembly":
+  //         return require("../assets/furniture-assembly-and-disassembly.png");
+  //       default:
+  //         return require("../assets/carpentry-installation.png");
+  //     }
+  //   }else if(category === "Cleaning" || category === "Pet Care" || category === "Gardening"){
+  //     switch (service) {
+  //       case "Standard Cleaning":
+  //         return require("../assets/standard-cleaning.png");
+  //       case "Deep Cleaning":
+  //         return require("../assets/deep-cleaning.png");
+  //       case "Electronic Appliance Cleaning":
+  //         return require("../assets/electronic-appliance-cleaning.png");
+  //       case "Pest Control":
+  //         return require("../assets/pest-control.png");
+  //       case "Dog Training":
+  //         return require("../assets/dog-training.png");
+  //       case "Dog Pet Grooming":
+  //         return require("../assets/pet-grooming.png");
+  //       case "Cat Pet Grooming":
+  //         return require("../assets/pet-grooming.png");
+  //       case "Bird Pet Grooming":
+  //         return require("../assets/pet-grooming.png");
+  //       case "Rabbit Pet Grooming":
+  //         return require("../assets/pet-grooming.png");
+  //       case "Dog Pet Sitting":
+  //         return require("../assets/pet-sitting.png");
+  //       case "Cat Pet Sitting":
+  //         return require("../assets/pet-sitting.png");
+  //       case "Bird Pet Sitting":
+  //         return require("../assets/pet-sitting.png");
+  //       case "Rabbit Pet Sitting":
+  //         return require("../assets/pet-sitting.png");
+  //       case "Garden Maintenance":
+  //         return require("../assets/garden-maintenance.png");
+  //       case "Landscape Design and Planning":
+  //         return require("../assets/landscape-design-and-planning.png");
+  //       case "Irrigation System Installation/Repairs":
+  //         return require("../assets/irrigation-system.png");
+  //       case "Pest and Disease Management":
+  //         return require("../assets/pest-and-disease-management.png");
+  //       default:
+  //         return require("../assets/standard-cleaning.png");
+  //     }
+  //   }
+  // };
 
   
-  const handlePerformService = () => {
-    try {
-      // const db = getFirestore();
-      // const auth = getAuth();
-      // const providerUID = auth.currentUser.uid;
-      // const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
+  // const handlePerformService = () => {
+  //   try {
+  //     // const db = getFirestore();
+  //     // const auth = getAuth();
+  //     // const providerUID = auth.currentUser.uid;
+  //     // const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
   
-      // Update the status in Firestore
-      // await updateDoc(userBookingDocRef, {
-      //   status: "In Transit"
-      // });
+  //     // Update the status in Firestore
+  //     // await updateDoc(userBookingDocRef, {
+  //     //   status: "In Transit"
+  //     // });
   
-      // console.log("Status updated to 'In Transit'");
+  //     // console.log("Status updated to 'In Transit'");
   
-      openCancelModal();
-    } catch (error) {
-      // console.error("Error updating status:", error);
-    }
-  };
-  const handleCompletedService = async (itemID) => {
-    try {
-      // const db = getFirestore();
-      // const auth = getAuth();
-      // const providerUID = auth.currentUser.uid;
-      // const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
+  //     // openCancelModal();
+  //   } catch (error) {
+  //     // console.error("Error updating status:", error);
+  //   }
+  // };
+  // const handleCompletedService = async (itemID) => {
+  //   try {
+  //     // const db = getFirestore();
+  //     // const auth = getAuth();
+  //     // const providerUID = auth.currentUser.uid;
+  //     // const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
   
-      // Update the status in Firestore
-      // await updateDoc(userBookingDocRef, {
-      //   status: "In Transit"
-      // });
+  //     // Update the status in Firestore
+  //     // await updateDoc(userBookingDocRef, {
+  //     //   status: "In Transit"
+  //     // });
   
-      // console.log("Status updated to 'In Transit'");
+  //     // console.log("Status updated to 'In Transit'");
   
-      // Navigate to PerformTheService screen with itemId
-      navigation.navigate("ConfirmService", { itemID: itemID, matchedBookingID: matchedBookingID, customerUID: customerUID });
-    } catch (error) {
-      // console.error("Error updating status:", error);
-    }
-  };
+  //     // Navigate to PerformTheService screen with itemId
+  //     // navigation.navigate("ConfirmService", { itemID: itemID, matchedBookingID: matchedBookingID, customerUID: customerUID });
+  //   } catch (error) {
+  //     // console.error("Error updating status:", error);
+  //   }
+  // };
 
   return (
     <View style={styles.performTheService}>
@@ -264,7 +264,7 @@ const PerformTheService = ({route}) => {
                 <Pressable style={styles.message}               
                   onPress={() => {
                   // Use Linking to open the messaging app with the specified number
-                  Linking.openURL(`sms:${phoneUser}`);
+                  // Linking.openURL(`sms:${phoneUser}`);
                 }}>
                   <Image
                     style={styles.vectorIcon}
@@ -279,7 +279,7 @@ const PerformTheService = ({route}) => {
                 </Pressable>
                 <Pressable 
                   style={styles.message}
-                  onPress={() => {Linking.openURL(`tel:${phoneUser}`);}}
+                  // onPress={() => {Linking.openURL(`tel:${phoneUser}`);}}
                 >
                   <Image
                     style={styles.vectorIcon}
@@ -327,7 +327,7 @@ const PerformTheService = ({route}) => {
                     <Image
                       style={styles.plumbingInstallationPic}
                       contentFit="cover"
-                      source={getServiceImageSource(bookingTitle, bookingCategory)}
+                      // source={getServiceImageSource(bookingTitle, bookingCategory)}
                     />
                   </View>
                 </View>
@@ -654,7 +654,7 @@ const PerformTheService = ({route}) => {
           {serviceBtn ? (
             <Pressable
               style={styles.viewTimelineBtn}
-              onPress={() => handlePerformService(itemID)}
+              // onPress={() => handlePerformService(itemID)}
             >
               <Text style={[styles.viewAllServices, styles.viewAllServicesTypo]}>
                 Perform Service 
@@ -663,7 +663,7 @@ const PerformTheService = ({route}) => {
           ) : (
             <Pressable
               style={styles.viewTimelineBtn}
-              onPress={() => handleCompletedService(itemID)}
+              // onPress={() => handleCompletedService(itemID)}
             >
               <Text style={[styles.viewAllServices, styles.viewAllServicesTypo]}>
                 Service Completed

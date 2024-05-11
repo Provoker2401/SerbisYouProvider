@@ -46,4 +46,6 @@ describe("Notifications component", () => {
     // Assert that the text is present in the component
     expect(test).toBeTruthy();
   });
+
+
 });

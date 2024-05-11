@@ -51,35 +51,35 @@ const BookingsActive = () => {
           <TopTab.Navigator
             style={styles.tabGroupToptabs}
             tabBar={({ state, descriptors, navigation, position }) => {
-              const [activeItems] = React.useState([<Tab11 />, <Tab21 />]);
-              const [normalItems] = React.useState([<Tab1 />, <Tab2 />]);
-              const activeIndex = state.index;
+              // const [activeItems] = React.useState([<Tab11 />, <Tab21 />]);
+              // const [normalItems] = React.useState([<Tab1 />, <Tab2 />]);
+              // const activeIndex = state.index;
 
               // Update the state based on tab navigator's activity
-              React.useEffect(() => {
-                setIsNavigatorActive(activeIndex === 1); // Assuming index 1 is where the tab navigator is active
-              }, [activeIndex]);
-              return (
-                <View style={styles.topTabBarStyle}>
-                  {normalItems.map((item, index) => {
-                    const isFocused = state.index === index;
-                    return (
-                      <TouchableOpacity
-                        key={index}
-                        style={{ flex: 1 }}
-                        onPress={() => {
-                          navigation.navigate({
-                            name: state.routes[index].name,
-                            merge: true,
-                          });
-                        }}
-                      >
-                        {activeIndex === index ? activeItems[index] : item}
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-              );
+              // React.useEffect(() => {
+              //   setIsNavigatorActive(activeIndex === 1); // Assuming index 1 is where the tab navigator is active
+              // }, [activeIndex]);
+              // return (
+              //   <View style={styles.topTabBarStyle}>
+              //     {normalItems.map((item, index) => {
+              //       const isFocused = state.index === index;
+              //       return (
+              //         <TouchableOpacity
+              //           key={index}
+              //           style={{ flex: 1 }}
+              //           onPress={() => {
+              //             navigation.navigate({
+              //               name: state.routes[index].name,
+              //               merge: true,
+              //             });
+              //           }}
+              //         >
+              //           {activeIndex === index ? activeItems[index] : item}
+              //         </TouchableOpacity>
+              //       );
+              //     })}
+              //   </View>
+              // );
             }}
           >
             <TopTab.Screen name="Active Bookings" component={ActiveBookings} />

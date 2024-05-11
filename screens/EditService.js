@@ -522,251 +522,251 @@ const EditService = () => {
     },
   ];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const db = getFirestore();
-        const auth = getAuth();
-        const user = auth.currentUser;
-        const userProfilesCollection = collection(db, "providerProfiles");
-        const userDocRef = doc(userProfilesCollection, user.uid);
-        const appForm3Collection = collection(userDocRef, "appForm3");
-        const appForm3Query = query(appForm3Collection);
-        const appForm3Docs = await getDocs(appForm3Query);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const db = getFirestore();
+  //       const auth = getAuth();
+  //       const user = auth.currentUser;
+  //       const userProfilesCollection = collection(db, "providerProfiles");
+  //       const userDocRef = doc(userProfilesCollection, user.uid);
+  //       const appForm3Collection = collection(userDocRef, "appForm3");
+  //       const appForm3Query = query(appForm3Collection);
+  //       const appForm3Docs = await getDocs(appForm3Query);
 
-        if (appForm3Docs.size === 1) {
-          const appForm3Doc = appForm3Docs.docs[0];
-          const appForm3Data = appForm3Doc.data().AppForm3;
+  //       if (appForm3Docs.size === 1) {
+  //         const appForm3Doc = appForm3Docs.docs[0];
+  //         const appForm3Data = appForm3Doc.data().AppForm3;
     
-          // Set the initial state with the extracted selected items
-          const extractedSelectedItems = extractSelectedItems(appForm3Data);
-          setPrevSelectedItems(extractedSelectedItems);
-          setSelectedItems(extractedSelectedItems);
-        }
-      } catch (error) {
-        // console.error("Error fetching data:", error);
-      }
-    };
+  //         // Set the initial state with the extracted selected items
+  //         const extractedSelectedItems = extractSelectedItems(appForm3Data);
+  //         setPrevSelectedItems(extractedSelectedItems);
+  //         setSelectedItems(extractedSelectedItems);
+  //       }
+  //     } catch (error) {
+  //       // console.error("Error fetching data:", error);
+  //     }
+  //   };
 
-    fetchData();
-  }, []); // Empty dependency array ensures this runs once when the component mounts
-  // ... (rest of the code)
+  //   fetchData();
+  // }, []); // Empty dependency array ensures this runs once when the component mounts
+  // // ... (rest of the code)
 
-  const onSelectedItemsChange = (selectedItems) => {
-    setSelectedItems(selectedItems);
+  // const onSelectedItemsChange = (selectedItems) => {
+  //   setSelectedItems(selectedItems);
     
-    // Create an array to store the selected item names
-    const selectedNames = selectedItems.map((selectedId) => {
-      const selectedItem = findItemById(items, selectedId);
-      return selectedItem ? selectedItem.name : "";
-    });
+  //   // Create an array to store the selected item names
+  //   const selectedNames = selectedItems.map((selectedId) => {
+  //     const selectedItem = findItemById(items, selectedId);
+  //     return selectedItem ? selectedItem.name : "";
+  //   });
   
-    updateSubCategoryItems(selectedItems);
-  };
-  const [initialSelectedItems, setInitialSelectedItems] = useState([]);
-  // Helper function to find an item by ID
-  const findItemById = (items, id) => {
-    for (const item of items) {
-      if (item.id === id) {
-        return item;
-      }
-      if (item.items) {
-        const foundItem = findItemById(item.items, id);
-        if (foundItem) {
-          return foundItem;
-        }
-      }
-    }
-    return null;
-  };
-  const handleSubmission = async () => {
-    // Create an object to hold main category names and their associated subcategories
-    const mainCategoryData = {};
+  //   updateSubCategoryItems(selectedItems);
+  // };
+  // const [initialSelectedItems, setInitialSelectedItems] = useState([]);
+  // // Helper function to find an item by ID
+  // const findItemById = (items, id) => {
+  //   for (const item of items) {
+  //     if (item.id === id) {
+  //       return item;
+  //     }
+  //     if (item.items) {
+  //       const foundItem = findItemById(item.items, id);
+  //       if (foundItem) {
+  //         return foundItem;
+  //       }
+  //     }
+  //   }
+  //   return null;
+  // };
+  // const handleSubmission = async () => {
+  //   // Create an object to hold main category names and their associated subcategories
+  //   const mainCategoryData = {};
 
-    selectedItems.forEach((selectedId) => {
-      for (const mainCategory of items) {
-        const subCategory = mainCategory.items.find(
-          (item) => item.id === selectedId
-        );
-        if (subCategory) {
-          if (!mainCategoryData[mainCategory.name]) {
-            mainCategoryData[mainCategory.name] = [];
-          }
-          mainCategoryData[mainCategory.name].push(subCategory.name);
-        }
-      }
-    });
+  //   selectedItems.forEach((selectedId) => {
+  //     for (const mainCategory of items) {
+  //       const subCategory = mainCategory.items.find(
+  //         (item) => item.id === selectedId
+  //       );
+  //       if (subCategory) {
+  //         if (!mainCategoryData[mainCategory.name]) {
+  //           mainCategoryData[mainCategory.name] = [];
+  //         }
+  //         mainCategoryData[mainCategory.name].push(subCategory.name);
+  //       }
+  //     }
+  //   });
 
-    const CategoriesName = [];
-    const ServicesName = [];
+  //   const CategoriesName = [];
+  //   const ServicesName = [];
 
-    // Log the main category names and their associated subcategories to the console
-    for (const mainCategoryName in mainCategoryData) {
-      console.log(
-        mainCategoryName + ": " + mainCategoryData[mainCategoryName].join(", ")
-      );
-      console.log("Categories" + ":" + mainCategoryName);
-      console.log("Services" + ":" + mainCategoryData[mainCategoryName]);
-      const categoryName = mainCategoryName;
-      const servicesName = mainCategoryData[mainCategoryName];
+  //   // Log the main category names and their associated subcategories to the console
+  //   for (const mainCategoryName in mainCategoryData) {
+  //     console.log(
+  //       mainCategoryName + ": " + mainCategoryData[mainCategoryName].join(", ")
+  //     );
+  //     console.log("Categories" + ":" + mainCategoryName);
+  //     console.log("Services" + ":" + mainCategoryData[mainCategoryName]);
+  //     const categoryName = mainCategoryName;
+  //     const servicesName = mainCategoryData[mainCategoryName];
 
-      CategoriesName.push(categoryName);
-      ServicesName.push(...servicesName);
-    }
+  //     CategoriesName.push(categoryName);
+  //     ServicesName.push(...servicesName);
+  //   }
 
-    const mainCategoryData2 = {};
+  //   const mainCategoryData2 = {};
 
-    selectedItems.forEach((selectedId) => {
-      for (const mainCategory of subCategoryItems) {
-        const subCategory = mainCategory.items.find(
-          (item) => item.id === selectedId
-        );
-        if (subCategory) {
-          if (!mainCategoryData2[mainCategory.name]) {
-            mainCategoryData2[mainCategory.name] = [];
-          }
-          mainCategoryData2[mainCategory.name].push(subCategory.name);
-        }
-      }
-    });
+  //   selectedItems.forEach((selectedId) => {
+  //     for (const mainCategory of subCategoryItems) {
+  //       const subCategory = mainCategory.items.find(
+  //         (item) => item.id === selectedId
+  //       );
+  //       if (subCategory) {
+  //         if (!mainCategoryData2[mainCategory.name]) {
+  //           mainCategoryData2[mainCategory.name] = [];
+  //         }
+  //         mainCategoryData2[mainCategory.name].push(subCategory.name);
+  //       }
+  //     }
+  //   });
 
-    // Log the main category names and their associated subcategories to the console
-    const SubCategories = [];
+  //   // Log the main category names and their associated subcategories to the console
+  //   const SubCategories = [];
 
-    for (const mainCategoryName in mainCategoryData2) {
-      const subCategoryValues = mainCategoryData2[mainCategoryName];
-      SubCategories.push(...subCategoryValues);
-    }
-
-
-    console.log("Category: " + CategoriesName);
-    console.log("Services: " + ServicesName);
-    console.log("Sub Category: " + SubCategories);
-    if (CategoriesName.length > 0) {
-      setShowServices(true);
-    }
-
-    try {
-      const db = getFirestore();
-      const auth = getAuth(); // Get the Firebase Authentication object
-
-      const user = auth.currentUser; // Get the currently authenticated user
-      const userProfilesCollection = collection(db, "providerProfiles");
-      const userDocRef = doc(userProfilesCollection, user.uid);
-
-      // Fetch data from the "appForm1" subcollection
-      const appForm3Collection = collection(userDocRef, "appForm3");
-      const appForm3Query = query(appForm3Collection);
-      const appForm3Docs = await getDocs(appForm3Query);
-
-      if (appForm3Docs.size === 1) {
-        const appForm3Doc = appForm3Docs.docs[0]; // Get the first document
-        const appForm3DocRef = doc(appForm3Collection, appForm3Doc.id); // Construct the reference using the document's ID
+  //   for (const mainCategoryName in mainCategoryData2) {
+  //     const subCategoryValues = mainCategoryData2[mainCategoryName];
+  //     SubCategories.push(...subCategoryValues);
+  //   }
 
 
-        const data = {
-          AppForm3: {
-            [CategoriesName]: {
-              [ServicesName]: {
-                SubCategories: SubCategories,
-              },
-            },
-          },
-        };
+  //   console.log("Category: " + CategoriesName);
+  //   console.log("Services: " + ServicesName);
+  //   console.log("Sub Category: " + SubCategories);
+  //   if (CategoriesName.length > 0) {
+  //     setShowServices(true);
+  //   }
 
-        await setDoc(appForm3DocRef, data);
+  //   try {
+  //     const db = getFirestore();
+  //     const auth = getAuth(); // Get the Firebase Authentication object
 
-        console.log("Data updated in Firestore.");
-      } else {
-        console.log("No or multiple documents found in appForm1.");
-      }
-    } catch (error) {
-      // console.error("Error updating Firestore data:", error);
-    }
-  };
+  //     const user = auth.currentUser; // Get the currently authenticated user
+  //     const userProfilesCollection = collection(db, "providerProfiles");
+  //     const userDocRef = doc(userProfilesCollection, user.uid);
 
-  const updateSubCategoryItems = (selectedItems) => {
-    let subCategories = [];
+  //     // Fetch data from the "appForm1" subcollection
+  //     const appForm3Collection = collection(userDocRef, "appForm3");
+  //     const appForm3Query = query(appForm3Collection);
+  //     const appForm3Docs = await getDocs(appForm3Query);
 
-    selectedItems.forEach((item) => {
-      switch (item) {
-        case 10:
-          subCategories = subCategories.concat(installationPlumbingItems);
-          break;
-        case 11:
-          subCategories = subCategories.concat(repairsPlumbingItems);
-          break;
-        case 20:
-          subCategories = subCategories.concat(installationElectricalItems);
-          break;
-        case 21:
-          subCategories = subCategories.concat(repairsElectricItems);
-          break;
-        case 30:
-          subCategories = subCategories.concat(standardCleaningItems);
-          break;
-        case 31:
-          subCategories = subCategories.concat(deepCleaningItems);
-          break;
-        case 32:
-          subCategories = subCategories.concat(electronicApplianceItems);
-          break;
-        case 33:
-          subCategories = subCategories.concat(pestControlCleaningItems);
-          break;
-        case 40:
-          subCategories = subCategories.concat(dogTrainingItems);
-          break;
-        case 41:
-          subCategories = subCategories.concat(dogpetGroomingItems);
-          break;
-        case 42:
-          subCategories = subCategories.concat(catpetGroomingItems);
-          break;
-        case 43:
-          subCategories = subCategories.concat(birdpetGroomingItems);
-          break;
-        case 44:
-          subCategories = subCategories.concat(rabbitpetGroomingItems);
-          break;
-        case 45:
-          subCategories = subCategories.concat(dogpetSittingItems);
-          break;
-        case 46:
-          subCategories = subCategories.concat(catpetSittingItems);
-          break;
-        case 47:
-          subCategories = subCategories.concat(birdpetSittingItems);
-          break;
-        case 48:
-          subCategories = subCategories.concat(rabbitpetSittingItems);
-          break;
-        case 50:
-          subCategories = subCategories.concat(gardenMaintenanceItems);
-          break;
-        case 51:
-          subCategories = subCategories.concat(landscapeDesignItems);
-          break;
-        case 52:
-          subCategories = subCategories.concat(irrigationSystemItems);
-          break;
-        case 53:
-          subCategories = subCategories.concat(pestManagementItems);
-          break;
-        case 60:
-          subCategories = subCategories.concat(carpentryInstallationItems);
-          break;
-        case 61:
-          subCategories = subCategories.concat(carpentryRepairItems);
-          break;
-        case 62:
-          subCategories = subCategories.concat(carpentryFurnitureItems);
-          break;
-      }
-    });
+  //     if (appForm3Docs.size === 1) {
+  //       const appForm3Doc = appForm3Docs.docs[0]; // Get the first document
+  //       const appForm3DocRef = doc(appForm3Collection, appForm3Doc.id); // Construct the reference using the document's ID
 
-    setSubCategoryItems(subCategories);
-  };
+
+  //       const data = {
+  //         AppForm3: {
+  //           [CategoriesName]: {
+  //             [ServicesName]: {
+  //               SubCategories: SubCategories,
+  //             },
+  //           },
+  //         },
+  //       };
+
+  //       await setDoc(appForm3DocRef, data);
+
+  //       console.log("Data updated in Firestore.");
+  //     } else {
+  //       console.log("No or multiple documents found in appForm1.");
+  //     }
+  //   } catch (error) {
+  //     // console.error("Error updating Firestore data:", error);
+  //   }
+  // };
+
+  // const updateSubCategoryItems = (selectedItems) => {
+  //   let subCategories = [];
+
+  //   selectedItems.forEach((item) => {
+  //     switch (item) {
+  //       case 10:
+  //         subCategories = subCategories.concat(installationPlumbingItems);
+  //         break;
+  //       case 11:
+  //         subCategories = subCategories.concat(repairsPlumbingItems);
+  //         break;
+  //       case 20:
+  //         subCategories = subCategories.concat(installationElectricalItems);
+  //         break;
+  //       case 21:
+  //         subCategories = subCategories.concat(repairsElectricItems);
+  //         break;
+  //       case 30:
+  //         subCategories = subCategories.concat(standardCleaningItems);
+  //         break;
+  //       case 31:
+  //         subCategories = subCategories.concat(deepCleaningItems);
+  //         break;
+  //       case 32:
+  //         subCategories = subCategories.concat(electronicApplianceItems);
+  //         break;
+  //       case 33:
+  //         subCategories = subCategories.concat(pestControlCleaningItems);
+  //         break;
+  //       case 40:
+  //         subCategories = subCategories.concat(dogTrainingItems);
+  //         break;
+  //       case 41:
+  //         subCategories = subCategories.concat(dogpetGroomingItems);
+  //         break;
+  //       case 42:
+  //         subCategories = subCategories.concat(catpetGroomingItems);
+  //         break;
+  //       case 43:
+  //         subCategories = subCategories.concat(birdpetGroomingItems);
+  //         break;
+  //       case 44:
+  //         subCategories = subCategories.concat(rabbitpetGroomingItems);
+  //         break;
+  //       case 45:
+  //         subCategories = subCategories.concat(dogpetSittingItems);
+  //         break;
+  //       case 46:
+  //         subCategories = subCategories.concat(catpetSittingItems);
+  //         break;
+  //       case 47:
+  //         subCategories = subCategories.concat(birdpetSittingItems);
+  //         break;
+  //       case 48:
+  //         subCategories = subCategories.concat(rabbitpetSittingItems);
+  //         break;
+  //       case 50:
+  //         subCategories = subCategories.concat(gardenMaintenanceItems);
+  //         break;
+  //       case 51:
+  //         subCategories = subCategories.concat(landscapeDesignItems);
+  //         break;
+  //       case 52:
+  //         subCategories = subCategories.concat(irrigationSystemItems);
+  //         break;
+  //       case 53:
+  //         subCategories = subCategories.concat(pestManagementItems);
+  //         break;
+  //       case 60:
+  //         subCategories = subCategories.concat(carpentryInstallationItems);
+  //         break;
+  //       case 61:
+  //         subCategories = subCategories.concat(carpentryRepairItems);
+  //         break;
+  //       case 62:
+  //         subCategories = subCategories.concat(carpentryFurnitureItems);
+  //         break;
+  //     }
+  //   });
+
+  //   setSubCategoryItems(subCategories);
+  // };
 
   return (
     <View style={styles.applicationForm3}>
@@ -841,7 +841,7 @@ const EditService = () => {
                     selectText="Select Items"
                     showDropDowns={true}
                     readOnlyHeadings={true}
-                    onSelectedItemsChange={onSelectedItemsChange}
+                    // onSelectedItemsChange={onSelectedItemsChange}
                     selectedItems={selectedItems}
                   />
 
@@ -931,7 +931,7 @@ const EditService = () => {
                 styles.componentsbutton3,
                 styles.componentsbuttonSpaceBlock,
               ]}
-              onPress={handleSubmission}
+              // onPress={handleSubmission}
             >
               <Text style={[styles.viewAllServices3, styles.viewTypo]}>
                 Update and Save

@@ -14,6 +14,12 @@ import {
   where,
 } from "firebase/firestore";
 import Toast from "react-native-toast-message";
+import { useNavigation } from "@react-navigation/native";
+
+jest.mock("@react-navigation/native", () => ({
+  useNavigation: jest.fn(),
+}));
+
 
 jest.mock("firebase/auth", () => ({
   getAuth: jest.fn(),
@@ -89,6 +95,44 @@ describe("<SignUp />", () => {
       });
     });
   });
+
+  test("Pressing the button navigates to next screen", () => {
+    // Mock navigation
+    const mockNavigate = jest.fn();
+    useNavigation.mockReturnValue({ navigate: mockNavigate });
+
+    // Render HomePage component
+    const { getByTestId } =  render(<SignUp/>);
+
+    // Find the Pressable element by its text content
+    const button = getByTestId("terms-button");
+
+    // Simulate a press event on the Pressable element
+    fireEvent.press(button);
+
+    // Assert that navigation function is called with expected screen name
+    expect(mockNavigate).toHaveBeenCalledWith("TermsAndConditions");
+  });
+
+  test("Pressing the button navigates to next screen", () => {
+    // Mock navigation
+    const mockNavigate = jest.fn();
+    useNavigation.mockReturnValue({ navigate: mockNavigate });
+
+    // Render HomePage component
+    const { getByTestId } =  render(<SignUp/>);
+
+    // Find the Pressable element by its text content
+    const button = getByTestId("privacy-button");
+
+    // Simulate a press event on the Pressable element
+    fireEvent.press(button);
+
+    // Assert that navigation function is called with expected screen name
+    expect(mockNavigate).toHaveBeenCalledWith("PrivacyPolicy");
+  });
+
+
   test("Invalid Phone Number Format", async () => {
     const mockToastShow = jest.spyOn(Toast, "show").mockImplementation(); // Mock the Toast.show function
 

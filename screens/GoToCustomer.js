@@ -60,87 +60,78 @@ const GoToCustomer = ( {route} ) => {
   const userUID = auth.currentUser.uid;
   const providerProfilesCollection = doc(db, "providerProfiles", userUID);
 
-  TaskManager.defineTask(getCurrentLocationTask, async ({ data, error }) => {
-    if (error) {
-      // console.error("Background location task error:", error);
-      return;
-    }
+  // TaskManager.defineTask(getCurrentLocationTask, async ({ data, error }) => {
+  //   if (error) {
+  //     // console.error("Background location task error:", error);
+  //     return;
+  //   }
 
-    if (data) {
-      try {
-        if (data.locations && data.locations.length > 0) {
-          const { coords } = data.locations[0];
-          const { latitude, longitude } = coords;
-          console.log(
-            "Received new location data from TaskManager - Latitude:",
-            latitude,
-            "Longitude:",
-            longitude
-          );
+  //   if (data) {
+  //     try {
+  //       if (data.locations && data.locations.length > 0) {
+  //         const { coords } = data.locations[0];
+  //         const { latitude, longitude } = coords;
+  //         console.log(
+  //           "Received new location data from TaskManager - Latitude:",
+  //           latitude,
+  //           "Longitude:",
+  //           longitude
+  //         );
 
-          const docSnapshot = await getDoc(providerProfilesCollection);
-          if (docSnapshot.exists()) {
-            const coordinates = docSnapshot.data().realTimeCoordinates;
-            console.log("Coordinates ", coordinates);
+  //         const docSnapshot = await getDoc(providerProfilesCollection);
+  //         if (docSnapshot.exists()) {
+  //           const coordinates = docSnapshot.data().realTimeCoordinates;
+  //           console.log("Coordinates ", coordinates);
 
-            // Update the real-time coordinates field in Firestore
-            await updateDoc(providerProfilesCollection, {
-              realTimeCoordinates: {
-                latitude: latitude,
-                longitude: longitude,
-              },
-            });
-
-
-          }
-        }
-      } catch (error) {
-        // console.error("Error updating Firestore document:", error);
-      }
-    }
-  });
-
-  useEffect(() => {
-    updateLocation(); // Call the updateLocation function when component mounts
-  }, []); // Empty dependency array ensures the effect is only run once after the initial render
+  //           // Update the real-time coordinates field in Firestore
+  //           await updateDoc(providerProfilesCollection, {
+  //             realTimeCoordinates: {
+  //               latitude: latitude,
+  //               longitude: longitude,
+  //             },
+  //           });
 
 
+  //         }
+  //       }
+  //     } catch (error) {
+  //       // console.error("Error updating Firestore document:", error);
+  //     }
+  //   }
+  // });
 
+  // useEffect(() => {
+  //   updateLocation(); // Call the updateLocation function when component mounts
+  // }, []); // Empty dependency array ensures the effect is only run once after the initial render
 
+  // const updateLocation = async () => {
+  //   try {
+  //     const { status } = await Location.requestBackgroundPermissionsAsync();
+  //     if (status !== "granted") {
+  //       // console.error("Permission to access background location was denied");
+  //       return;
+  //     }
 
+  //     // Get the current location every 5 seconds
 
-
-
-
-
-  const updateLocation = async () => {
-    try {
-      const { status } = await Location.requestBackgroundPermissionsAsync();
-      if (status !== "granted") {
-        // console.error("Permission to access background location was denied");
-        return;
-      }
-
-      // Get the current location every 5 seconds
-
-      await Location.startLocationUpdatesAsync(
-        getCurrentLocationTask,
-        {
-          accuracy: Location.Accuracy.BestForNavigation,
-          timeInterval: 1000, // Change the time interval according to your requirement
-          // distanceInterval: 100,
-        },
-        async ({ locations }) => {
-          if (locations && locations.length > 0) {
-            const { coords } = locations[0];
-            console.log("Received new location data:", coords);
-          }
-        }
-      );
-    } catch (error) {
-      // console.error("Error updating location:", error);
-    }
-  };
+  //     await Location.startLocationUpdatesAsync(
+  //       getCurrentLocationTask,
+  //       {
+  //         accuracy: Location.Accuracy.BestForNavigation,
+  //         timeInterval: 1000, // Change the time interval according to your requirement
+  //         // distanceInterval: 100,
+  //       },
+  //       async ({ locations }) => {
+  //         if (locations && locations.length > 0) {
+  //           const { coords } = locations[0];
+  //           console.log("Received new location data:", coords);
+  //         }
+  //       }
+  //     );
+  //   } catch (error) {
+  //     // console.error("Error updating location:", error);
+  //   }
+  // };
 
   // const [inTransit, setInTransit] = useState(true);
 
@@ -216,30 +207,30 @@ const GoToCustomer = ( {route} ) => {
   };
 
   // Function to handle directions
-  const handleGetDirections = () => {
-    // const { latitude, longitude } = bookingCoordinates;
-    const data = {
-      source: providerLocation,
-      destination: customerLocation,
-      params: [
-        {
-          key: "travelmode",
-          value: "driving", // could be "walking", "bicycling" or "transit" as well
-        },
-        {
-          key: "dir_action",
-          value: "navigate", // this launches navigation directly
-        },
-      ],
-    };
+  // const handleGetDirections = () => {
+  //   // const { latitude, longitude } = bookingCoordinates;
+  //   const data = {
+  //     source: providerLocation,
+  //     destination: customerLocation,
+  //     params: [
+  //       {
+  //         key: "travelmode",
+  //         value: "driving", // could be "walking", "bicycling" or "transit" as well
+  //       },
+  //       {
+  //         key: "dir_action",
+  //         value: "navigate", // this launches navigation directly
+  //       },
+  //     ],
+  //   };
 
-    const url = `https://www.google.com/maps/dir/?api=1&origin=${data.source.latitude},${data.source.longitude}&destination=${data.destination.latitude},${data.destination.longitude}&travelmode=${data.params[0].value}`;
-    Linking.openURL(url);
-  };
+  //   const url = `https://www.google.com/maps/dir/?api=1&origin=${data.source.latitude},${data.source.longitude}&destination=${data.destination.latitude},${data.destination.longitude}&travelmode=${data.params[0].value}`;
+  //   Linking.openURL(url);
+  // };
 
-  const onMapLayout = () => {
-    setIsMapReady(true);
-  };
+  // const onMapLayout = () => {
+  //   setIsMapReady(true);
+  // };
 
   const [initialMapRegion, setInitialMapRegion] = useState({
     latitude: providerCoordinates.latitude,
@@ -255,142 +246,142 @@ const GoToCustomer = ( {route} ) => {
 
   const [markerPosition, setMarkerPosition] = useState(initialMarkerPosition);
 
-  useEffect(() => {
-    if (isMapReady) {
-      // Perform map operations here
-    }
-  }, [isMapReady]);
+  // useEffect(() => {
+  //   if (isMapReady) {
+  //     // Perform map operations here
+  //   }
+  // }, [isMapReady]);
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true); // Set loading to true before fetching data
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       setIsLoading(true); // Set loading to true before fetching data
 
-        const db = getFirestore(); // Use getFirestore() to initialize Firestore
+  //       const db = getFirestore(); // Use getFirestore() to initialize Firestore
   
-        // Get the user's UID 
-        const auth = getAuth();
-        const providerUID = auth.currentUser.uid;
-        console.log("Provider UID: " , providerUID);
-        console.log("Item Id: ", itemID);
+  //       // Get the user's UID 
+  //       const auth = getAuth();
+  //       const providerUID = auth.currentUser.uid;
+  //       console.log("Provider UID: " , providerUID);
+  //       console.log("Item Id: ", itemID);
 
-        const providerProfilesCollection = doc(db, "providerProfiles", providerUID);
-        const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
-        const [providerDocSnapshot, docSnapshot] = await Promise.all([
-          getDoc(providerProfilesCollection),
-          getDoc(userBookingDocRef)
-        ]);
+  //       const providerProfilesCollection = doc(db, "providerProfiles", providerUID);
+  //       const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
+  //       const [providerDocSnapshot, docSnapshot] = await Promise.all([
+  //         getDoc(providerProfilesCollection),
+  //         getDoc(userBookingDocRef)
+  //       ]);
 
-        let fetchedProviderCoordinates = null;
+  //       let fetchedProviderCoordinates = null;
 
-        if (docSnapshot.exists()) {
-          const booking = docSnapshot.data();
-          console.log("Booking Data: ", booking);
+  //       if (docSnapshot.exists()) {
+  //         const booking = docSnapshot.data();
+  //         console.log("Booking Data: ", booking);
   
-          setBookingName(booking.name);
-          setBookingDate(booking.date);
-          setBookingTime(booking.time);
-          setBookingAddress(booking.address);
-          setBookingAddressDetails(booking.addressDetails);
-          setphoneUser(booking.phone);
-          setBookingCoordinates({
-            latitude: booking.coordinates.latitude,
-            longitude: booking.coordinates.longitude,
-          });
-          // Validate coordinates before setting them
-          // const bookingLat = booking.coordinates.latitude;
-          // const bookingLong = booking.coordinates.longitude;
-          // if (typeof bookingLat === 'number' && typeof bookingLong === 'number') {
+  //         setBookingName(booking.name);
+  //         setBookingDate(booking.date);
+  //         setBookingTime(booking.time);
+  //         setBookingAddress(booking.address);
+  //         setBookingAddressDetails(booking.addressDetails);
+  //         setphoneUser(booking.phone);
+  //         setBookingCoordinates({
+  //           latitude: booking.coordinates.latitude,
+  //           longitude: booking.coordinates.longitude,
+  //         });
+  //         // Validate coordinates before setting them
+  //         // const bookingLat = booking.coordinates.latitude;
+  //         // const bookingLong = booking.coordinates.longitude;
+  //         // if (typeof bookingLat === 'number' && typeof bookingLong === 'number') {
  
-          // } else {
-          //   console.error('Invalid booking coordinates:', bookingLat, bookingLong);
-          // }
-          // setBookingAddressInstruction(booking.totalPrice);
+  //         // } else {
+  //         //   console.error('Invalid booking coordinates:', bookingLat, bookingLong);
+  //         // }
+  //         // setBookingAddressInstruction(booking.totalPrice);
 
-          console.log("Booking Address Details: " ,bookingAddressDetails);
-          console.log("Name: " ,bookingName);
-          console.log("Date: " ,bookingDate);
-          console.log("Time: " ,bookingTime);
-          console.log("Address: " ,bookingAddress);
-          console.log("Coordinates: " , bookingCoordinates);
-          // console.log("Address: " , bookingAddress);
+  //         console.log("Booking Address Details: " ,bookingAddressDetails);
+  //         console.log("Name: " ,bookingName);
+  //         console.log("Date: " ,bookingDate);
+  //         console.log("Time: " ,bookingTime);
+  //         console.log("Address: " ,bookingAddress);
+  //         console.log("Coordinates: " , bookingCoordinates);
+  //         // console.log("Address: " , bookingAddress);
 
-        } else {
-          console.log("No such document!");
-        }
+  //       } else {
+  //         console.log("No such document!");
+  //       }
         
-        if (providerDocSnapshot.exists()) {
-          const providerData = providerDocSnapshot.data();
-          const coordinates = providerData.coordinates;
+  //       if (providerDocSnapshot.exists()) {
+  //         const providerData = providerDocSnapshot.data();
+  //         const coordinates = providerData.coordinates;
   
-          const providerLat = parseFloat(coordinates.latitude);
-          const providerLong = parseFloat(coordinates.longitude);
-          if (!isNaN(providerLat) && !isNaN(providerLong)) {
-            fetchedProviderCoordinates = { latitude: providerLat, longitude: providerLong };
-            setProviderCoordinates(fetchedProviderCoordinates);
-          } else {
-            // console.error('Invalid provider coordinates:', providerLat, providerLong);
-          }
+  //         const providerLat = parseFloat(coordinates.latitude);
+  //         const providerLong = parseFloat(coordinates.longitude);
+  //         if (!isNaN(providerLat) && !isNaN(providerLong)) {
+  //           fetchedProviderCoordinates = { latitude: providerLat, longitude: providerLong };
+  //           setProviderCoordinates(fetchedProviderCoordinates);
+  //         } else {
+  //           // console.error('Invalid provider coordinates:', providerLat, providerLong);
+  //         }
   
-          console.log("Provider Coordinates from Firestore: ", fetchedProviderCoordinates);
+  //         console.log("Provider Coordinates from Firestore: ", fetchedProviderCoordinates);
   
-        } else {
-          console.log("No such document!");
-        }
+  //       } else {
+  //         console.log("No such document!");
+  //       }
   
-        // Now, fetch and update real-time location
-        // await Location.startLocationUpdatesAsync(getCurrentLocationTask, {
-        //   accuracy: Location.Accuracy.High,
-        //   timeInterval: 5000, // Fetch location every 5 seconds
-        //   //distanceInterval: 100, // Or every 100 meters distance covered
-        // }, async ({ locations }) => {
-        //   if (locations && locations.length > 0) {
-        //     const { latitude1, longitude1 } = locations[0].coords;
+  //       // Now, fetch and update real-time location
+  //       // await Location.startLocationUpdatesAsync(getCurrentLocationTask, {
+  //       //   accuracy: Location.Accuracy.High,
+  //       //   timeInterval: 5000, // Fetch location every 5 seconds
+  //       //   //distanceInterval: 100, // Or every 100 meters distance covered
+  //       // }, async ({ locations }) => {
+  //       //   if (locations && locations.length > 0) {
+  //       //     const { latitude1, longitude1 } = locations[0].coords;
   
-        //     console.log("Provider Coordinates from Location Updates: ", { latitude1, longitude1 });
+  //       //     console.log("Provider Coordinates from Location Updates: ", { latitude1, longitude1 });
   
-        //     // Update provider coordinates in Firestore
-        //     const db = getFirestore();
-        //     const auth = getAuth();
-        //     const providerUID = auth.currentUser.uid;
-        //     const providerProfilesCollection = doc(db, "providerProfiles", providerUID);
-        //     // updateDoc(providerProfilesCollection, {
-        //     //   realTimeCoordinates: { latitude1, longitude1 }
-        //     // });
+  //       //     // Update provider coordinates in Firestore
+  //       //     const db = getFirestore();
+  //       //     const auth = getAuth();
+  //       //     const providerUID = auth.currentUser.uid;
+  //       //     const providerProfilesCollection = doc(db, "providerProfiles", providerUID);
+  //       //     // updateDoc(providerProfilesCollection, {
+  //       //     //   realTimeCoordinates: { latitude1, longitude1 }
+  //       //     // });
   
-        //     if (fetchedProviderCoordinates &&
-        //       fetchedProviderCoordinates.latitude === latitude1 &&
-        //       fetchedProviderCoordinates.longitude === longitude1) {
-        //       setProviderCoordinates(fetchedProviderCoordinates);
-        //     } else {
-        //       setProviderCoordinates({ latitude1, longitude1 });
-        //     }
-        //   }
-        // });
+  //       //     if (fetchedProviderCoordinates &&
+  //       //       fetchedProviderCoordinates.latitude === latitude1 &&
+  //       //       fetchedProviderCoordinates.longitude === longitude1) {
+  //       //       setProviderCoordinates(fetchedProviderCoordinates);
+  //       //     } else {
+  //       //       setProviderCoordinates({ latitude1, longitude1 });
+  //       //     }
+  //       //   }
+  //       // });
   
-        setIsLoading(false); // Set loading to false once data is fetched
-      } catch (error) {
-        // console.error("Error retrieving data:", error);
-      }
+  //       setIsLoading(false); // Set loading to false once data is fetched
+  //     } catch (error) {
+  //       // console.error("Error retrieving data:", error);
+  //     }
 
-    }
+  //   }
   
-    fetchData(); // Call the fetchData function immediately
+  //   fetchData(); // Call the fetchData function immediately
 
-    // Cleanup function to stop location updates when component unmounts
+  //   // Cleanup function to stop location updates when component unmounts
 
-  }, []); 
+  // }, []); 
 
 
 
-  const handleArrival = async (itemID) => {
-    try {
-      navigation.navigate("PerformTheService", { itemID: itemID, matchedBookingID: matchedBookingID, customerUID: customerUID});
-    } catch (error) {
-      // console.error("Error updating status:", error);
-    }
-  };
+  // const handleArrival = async (itemID) => {
+  //   try {
+  //     navigation.navigate("PerformTheService", { itemID: itemID, matchedBookingID: matchedBookingID, customerUID: customerUID});
+  //   } catch (error) {
+  //     // console.error("Error updating status:", error);
+  //   }
+  // };
 
   // useEffect(() => {
   //   console.log("Booking Coordinates: ", bookingCoordinates);
@@ -400,25 +391,25 @@ const GoToCustomer = ( {route} ) => {
   //   console.log("Provider Coordinates: ", providerCoordinates);
   // }, [providerCoordinates]);
   
-  useEffect(() => {
-    if (providerCoordinates.latitude && providerCoordinates.longitude &&
-        bookingCoordinates.latitude && bookingCoordinates.longitude) {
-      // Calculate the midpoint of the two locations
-      const midLat = (providerCoordinates.latitude + bookingCoordinates.latitude) / 2;
-      const midLong = (providerCoordinates.longitude + bookingCoordinates.longitude) / 2;
+  // useEffect(() => {
+  //   if (providerCoordinates.latitude && providerCoordinates.longitude &&
+  //       bookingCoordinates.latitude && bookingCoordinates.longitude) {
+  //     // Calculate the midpoint of the two locations
+  //     const midLat = (providerCoordinates.latitude + bookingCoordinates.latitude) / 2;
+  //     const midLong = (providerCoordinates.longitude + bookingCoordinates.longitude) / 2;
 
-      // Calculate the deltas
-      const deltaLat = Math.abs(providerCoordinates.latitude - bookingCoordinates.latitude) * 2;
-      const deltaLong = Math.abs(providerCoordinates.longitude - bookingCoordinates.longitude) * 2;
+  //     // Calculate the deltas
+  //     const deltaLat = Math.abs(providerCoordinates.latitude - bookingCoordinates.latitude) * 2;
+  //     const deltaLong = Math.abs(providerCoordinates.longitude - bookingCoordinates.longitude) * 2;
 
-      setInitialMapRegion({
-        latitude: midLat,
-        longitude: midLong,
-        latitudeDelta: deltaLat,
-        longitudeDelta: deltaLong,
-      });
-    }
-  }, [providerCoordinates, bookingCoordinates]);
+  //     setInitialMapRegion({
+  //       latitude: midLat,
+  //       longitude: midLong,
+  //       latitudeDelta: deltaLat,
+  //       longitudeDelta: deltaLong,
+  //     });
+  //   }
+  // }, [providerCoordinates, bookingCoordinates]);
 
   // useEffect(() => {
   //   updateLocation();
@@ -798,7 +789,7 @@ const GoToCustomer = ( {route} ) => {
               </MapView>
               <TouchableOpacity
                 style={styles.directionsButton}
-                onPress={handleGetDirections}
+                // onPress={handleGetDirections}
               >
                 <Image
                   source={require("../assets/navigation-1-1.png")}
@@ -810,7 +801,7 @@ const GoToCustomer = ( {route} ) => {
       <View style={styles.bookingDetailsLabel}>
         <Pressable
           style={[styles.viewTimelineBtn, styles.viewTimelineBtnFlexBox]}
-          onPress={() => handleArrival(itemID)}
+          // onPress={() => handleArrival(itemID)}
         >
           <Text style={[styles.viewAllServices1, styles.viewTypo]}>
             Arrived at the Customer

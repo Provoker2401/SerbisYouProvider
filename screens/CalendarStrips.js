@@ -52,24 +52,24 @@ const CalendarStrips = ({style}) => {
   }, []);
 
   const datesBlacklistFunc = date => {
-    return date.isoWeekday() === 6; // disable Saturdays
+    // return date.isoWeekday() === 6; // disable Saturdays
   };
 
   const onDateSelected = date => {
-    setSelectedDate(date);
-    setFormattedDate(date.format('YYYY-MM-DD'));
+    // setSelectedDate(date);
+    // setFormattedDate(date.format('YYYY-MM-DD'));
   };
 
   const setSelectedDateNextWeek = () => {
     const newSelectedDate = moment(selectedDate).add(1, 'week');
-    setSelectedDate(newSelectedDate);
-    setFormattedDate(newSelectedDate.format('YYYY-MM-DD'));
+    // setSelectedDate(newSelectedDate);
+    // setFormattedDate(newSelectedDate.format('YYYY-MM-DD'));
   };
 
   const setSelectedDatePrevWeek = () => {
     const newSelectedDate = moment(selectedDate).subtract(1, 'week');
-    setSelectedDate(newSelectedDate);
-    setFormattedDate(newSelectedDate.format('YYYY-MM-DD'));
+    // setSelectedDate(newSelectedDate);
+    // setFormattedDate(newSelectedDate.format('YYYY-MM-DD'));
   };
 
   // Custom Selector for Previous Week

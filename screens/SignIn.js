@@ -36,7 +36,7 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+    // setShowPassword(!showPassword);
   };
 
   const eyeIconSource = showPassword
@@ -77,21 +77,21 @@ const SignIn = () => {
               authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
               authStatus === messaging.AuthorizationStatus.PROVISIONAL;
           
-            if (enabled) {
-              console.log('Authorization status:', authStatus);
-              const fcmToken = await messaging().getToken();
-              if(providerProfileData.fcmToken !== fcmToken) {
-                await updateDoc(providerProfilesRef, {
-                  fcmToken: fcmToken,
-                });
-                console.log("Updated fcmToken for this user: ", fcmToken);
-              }else{
-                console.log("fcmToken is still the same");
-              }
-            }
+            // if (enabled) {
+            //   console.log('Authorization status:', authStatus);
+            //   const fcmToken = await messaging().getToken();
+            //   if(providerProfileData.fcmToken !== fcmToken) {
+            //     await updateDoc(providerProfilesRef, {
+            //       fcmToken: fcmToken,
+            //     });
+            //     console.log("Updated fcmToken for this user: ", fcmToken);
+            //   }else{
+            //     console.log("fcmToken is still the same");
+            //   }
+            // }
 
             // Continue with navigation
-            navigation.navigate("BottomTabsRoot", { screen: "Homepage" });
+            // navigation.navigate("BottomTabsRoot", { screen: "Homepage" });
             // navigation.navigate("ApplicationForm1")
           } else {
             // User's UID not found in providerProfiles

@@ -94,6 +94,24 @@ describe("User Profile component", () => {
     expect(mockNavigate).toHaveBeenCalledWith("NotificationsSettings");
   });
 
+  test("Pressing the Notifiations navigates to Wallet", () => {
+    // Mock navigation
+    const mockNavigate = jest.fn();
+    useNavigation.mockReturnValue({ navigate: mockNavigate });
+
+    // Render HomePage component
+    const { getByTestId } = render(<UserProfile />);
+
+    // Find the Pressable element by its text content
+    const changePressable = getByTestId("wallet-button");
+
+    // Simulate a press event on the Pressable element
+    fireEvent.press(changePressable);
+
+    // Assert that navigation function is called with expected screen name
+    expect(mockNavigate).toHaveBeenCalledWith("Wallet");
+  });
+
   test("Pressing the Help Center navigates to Help Center", () => {
     // Mock navigation
     const mockNavigate = jest.fn();

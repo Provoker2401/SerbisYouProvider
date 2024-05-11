@@ -35,56 +35,56 @@ const ForgotPasswordConfirmation1 = () => {
   const [resendTimer, setResendTimer] = React.useState(0);
   const [showResendButton, setShowResendButton] = React.useState(false); // Add state variable
 
-  const handleSend = () => {
-    const auth = getAuth();
+  // const handleSend = () => {
+  //   const auth = getAuth();
 
-    if (!isSending) {
-      setIsSending(true);
-      sendPasswordResetEmail(auth, email)
-        .then(() => {
-          // Password reset email sent!
-          Toast.show({
-            type: "success",
-            position: "top",
-            text1: `Password reset has been sent to ${email}❗`,
-            visibilityTime: 5000,
-          });
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          console.error("Authentication error:", errorCode, errorMessage);
-          Toast.show({
-            type: "error",
-            position: "top",
-            text1: errorMessage,
-            text2: "Wrong email❗",
-            visibilityTime: 5000,
-          });
-        })
-        .finally(() => {
-          // Re-enable the button after sending or when an error occurs
-          setIsSending(false);
-          // Start the resend timer countdown (30 seconds)
-          setResendTimer(30);
+  //   if (!isSending) {
+  //     setIsSending(true);
+  //     sendPasswordResetEmail(auth, email)
+  //       .then(() => {
+  //         // Password reset email sent!
+  //         Toast.show({
+  //           type: "success",
+  //           position: "top",
+  //           text1: `Password reset has been sent to ${email}❗`,
+  //           visibilityTime: 5000,
+  //         });
+  //       })
+  //       .catch((error) => {
+  //         const errorCode = error.code;
+  //         const errorMessage = error.message;
+  //         console.error("Authentication error:", errorCode, errorMessage);
+  //         Toast.show({
+  //           type: "error",
+  //           position: "top",
+  //           text1: errorMessage,
+  //           text2: "Wrong email❗",
+  //           visibilityTime: 5000,
+  //         });
+  //       })
+  //       .finally(() => {
+  //         // Re-enable the button after sending or when an error occurs
+  //         setIsSending(false);
+  //         // Start the resend timer countdown (30 seconds)
+  //         setResendTimer(30);
 
-          setShowResendButton(true);
+  //         setShowResendButton(true);
 
-        });
-    }
-  };
+  //       });
+  //   }
+  // };
 
   // This effect will decrement the resend timer every second
-  React.useEffect(() => {
-    if (resendTimer > 0) {
-      const timerInterval = setInterval(() => {
-        setResendTimer((prevTimer) => prevTimer - 1);
-      }, 1000);
+  // React.useEffect(() => {
+  //   if (resendTimer > 0) {
+  //     const timerInterval = setInterval(() => {
+  //       setResendTimer((prevTimer) => prevTimer - 1);
+  //     }, 1000);
 
-      // Clear the interval when component unmounts or when resendTimer reaches 0
-      return () => clearInterval(timerInterval);
-    }
-  }, [resendTimer]);
+  //     // Clear the interval when component unmounts or when resendTimer reaches 0
+  //     return () => clearInterval(timerInterval);
+  //   }
+  // }, [resendTimer]);
 
   return (
     <View style={styles.forgotPasswordConfirmation}>
@@ -184,7 +184,7 @@ const ForgotPasswordConfirmation1 = () => {
                   styles.wrapperFlexBox,
                   styles.buttonFlexBox,
                 ]}
-                onPress={handleSend}
+                // onPress={handleSend}
               >
                 <View
                   style={[

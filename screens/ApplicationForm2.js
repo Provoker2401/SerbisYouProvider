@@ -34,293 +34,293 @@ const ApplicationForm2 = () => {
 
   const [selectedDocumentType, setSelectedDocumentType] = useState(null);
 
-  useEffect(() => {
-    const auth = getAuth();
+  // useEffect(() => {
+  //   const auth = getAuth();
 
-    (async () => {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        alert("Permission to access the camera roll is required!");
-      }
-    })();
+  //   (async () => {
+  //     const { status } =
+  //       await ImagePicker.requestMediaLibraryPermissionsAsync();
+  //     if (status !== "granted") {
+  //       alert("Permission to access the camera roll is required!");
+  //     }
+  //   })();
 
-    const unsubscribe = onAuthStateChanged(auth, async (currentProvider) => {
-      if (!currentProvider) {
-        setLoading(false);
-        return;
-      }
+  //   const unsubscribe = onAuthStateChanged(auth, async (currentProvider) => {
+  //     if (!currentProvider) {
+  //       setLoading(false);
+  //       return;
+  //     }
 
-      setProvider(currentProvider);
+  //     setProvider(currentProvider);
 
-      try {
-        const email = currentProvider.email;
-        //setEmail(email);
+  //     try {
+  //       const email = currentProvider.email;
+  //       //setEmail(email);
 
-        // Fetch the user's profile image based on their UID
-       // fetchProfileImage(currentUser.uid);
+  //       // Fetch the user's profile image based on their UID
+  //      // fetchProfileImage(currentUser.uid);
 
-        const db = getFirestore();
-        const providerProfilesCollection = collection(db, "providerProfiles");
-        const providerDocRef = doc(providerProfilesCollection, currentProvider.uid);
-        const providerDocSnapshot = await getDoc(providerDocRef);
+  //       const db = getFirestore();
+  //       const providerProfilesCollection = collection(db, "providerProfiles");
+  //       const providerDocRef = doc(providerProfilesCollection, currentProvider.uid);
+  //       const providerDocSnapshot = await getDoc(providerDocRef);
 
-        if (providerDocSnapshot.exists()) {
-          const providerData = providerDocSnapshot.data();
-          const appForm2Ref = collection(providerDocRef, 'appForm2');
-          const appForm2Snapshot = await getDocs(appForm2Ref);
+  //       if (providerDocSnapshot.exists()) {
+  //         const providerData = providerDocSnapshot.data();
+  //         const appForm2Ref = collection(providerDocRef, 'appForm2');
+  //         const appForm2Snapshot = await getDocs(appForm2Ref);
 
-          if (!appForm2Snapshot.empty) {
-            // Assuming that there's only one document in 'appForm2'
-            const appForm2Data = appForm2Snapshot.docs[0].data();
-            const appForm2Id = appForm2Snapshot.docs[0].id;
-            setIdType(appForm2Data.idType);
-            setIdProofimgFront(appForm2Data.idProofimgFront);
-            setIdProofimgBack(appForm2Data.idProofimgBack);
+  //         if (!appForm2Snapshot.empty) {
+  //           // Assuming that there's only one document in 'appForm2'
+  //           const appForm2Data = appForm2Snapshot.docs[0].data();
+  //           const appForm2Id = appForm2Snapshot.docs[0].id;
+  //           setIdType(appForm2Data.idType);
+  //           setIdProofimgFront(appForm2Data.idProofimgFront);
+  //           setIdProofimgBack(appForm2Data.idProofimgBack);
 
-          }
-          setLoading(false);
-          // console.log("User UID:", currentUser.uid);
-        } else {
-          console.log("No user data found for the given UID.");
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error("Error retrieving user data:", error);
-        setLoading(false);
-      }
-    });
+  //         }
+  //         setLoading(false);
+  //         // console.log("User UID:", currentUser.uid);
+  //       } else {
+  //         console.log("No user data found for the given UID.");
+  //         setLoading(false);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error retrieving user data:", error);
+  //       setLoading(false);
+  //     }
+  //   });
 
-    return unsubscribe;
+  //   return unsubscribe;
 
-  }, []);
+  // }, []);
 
 
-  const handleDocumentTypeSelect = (documentType) => {
-    setIdType(documentType);
+  // const handleDocumentTypeSelect = (documentType) => {
+  //   setIdType(documentType);
     
-    //console.log(selectedDocumentType);
-  };
+  //   //console.log(selectedDocumentType);
+  // };
   
   console.log(idType); // Log the selected document type
   
   
   //setIdType(id);
-  const fetchProviderData = async () => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, async (currentProvider) => {
-      if (!currentProvider) {
-        setLoading(false);
-        return;
-      }
+  // const fetchProviderData = async () => {
+  //   const auth = getAuth();
+  //   const unsubscribe = onAuthStateChanged(auth, async (currentProvider) => {
+  //     if (!currentProvider) {
+  //       setLoading(false);
+  //       return;
+  //     }
 
-      setProvider(currentProvider);
+  //     setProvider(currentProvider);
 
-      try {
-        const email = currentProvider.email;
-        //setEmail(email);
+  //     try {
+  //       const email = currentProvider.email;
+  //       //setEmail(email);
 
-        // Fetch the user's profile image based on their UID
-       // fetchProfileImage(currentUser.uid);
+  //       // Fetch the user's profile image based on their UID
+  //      // fetchProfileImage(currentUser.uid);
 
-        const db = getFirestore();
-        const providerProfilesCollection = collection(db, "providerProfiles");
-        const providerDocRef = doc(providerProfilesCollection, currentProvider.uid);
-        const providerDocSnapshot = await getDoc(providerDocRef);
+  //       const db = getFirestore();
+  //       const providerProfilesCollection = collection(db, "providerProfiles");
+  //       const providerDocRef = doc(providerProfilesCollection, currentProvider.uid);
+  //       const providerDocSnapshot = await getDoc(providerDocRef);
 
-        if (providerDocSnapshot.exists()) {
-          const providerData = providerDocSnapshot.data();
-          const appForm2Ref = collection(providerDocRef, 'appForm2');
-          const appForm2Snapshot = await getDocs(appForm2Ref);
+  //       if (providerDocSnapshot.exists()) {
+  //         const providerData = providerDocSnapshot.data();
+  //         const appForm2Ref = collection(providerDocRef, 'appForm2');
+  //         const appForm2Snapshot = await getDocs(appForm2Ref);
 
-          if (!appForm2Snapshot.empty) {
-            // Assuming that there's only one document in 'appForm2'
-            const appForm2Data = appForm2Snapshot.docs[0].data();
-            const appForm2Id = appForm2Snapshot.docs[0].id;
-            setIdType(appForm2Data.idType);
-            setIdProofimgFront(appForm2Data.idProofimgFront);
-            setIdProofimgBack(appForm2Data.idProofimgBack);
+  //         if (!appForm2Snapshot.empty) {
+  //           // Assuming that there's only one document in 'appForm2'
+  //           const appForm2Data = appForm2Snapshot.docs[0].data();
+  //           const appForm2Id = appForm2Snapshot.docs[0].id;
+  //           setIdType(appForm2Data.idType);
+  //           setIdProofimgFront(appForm2Data.idProofimgFront);
+  //           setIdProofimgBack(appForm2Data.idProofimgBack);
 
-          }
-          setLoading(false);
-          // console.log("User UID:", currentUser.uid);
-        } else {
-          console.log("No user data found for the given UID.");
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error("Error retrieving user data:", error);
-        setLoading(false);
-      }
-    });
+  //         }
+  //         setLoading(false);
+  //         // console.log("User UID:", currentUser.uid);
+  //       } else {
+  //         console.log("No user data found for the given UID.");
+  //         setLoading(false);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error retrieving user data:", error);
+  //       setLoading(false);
+  //     }
+  //   });
 
-    return unsubscribe;
-  };
+  //   return unsubscribe;
+  // };
 
-  const saveChangesHandle = async () => {
-    try {
-      // Create a reference to the Firestore database using your app instance
-      const db = getFirestore();
+  // const saveChangesHandle = async () => {
+  //   try {
+  //     // Create a reference to the Firestore database using your app instance
+  //     const db = getFirestore();
 
-      // Create references to the user's document and the appForm2 subcollection
-      const userDocRef = doc(db, 'providerProfiles', provider.uid);
-      const appForm2Ref = collection(userDocRef, 'appForm2');
+  //     // Create references to the user's document and the appForm2 subcollection
+  //     const userDocRef = doc(db, 'providerProfiles', provider.uid);
+  //     const appForm2Ref = collection(userDocRef, 'appForm2');
 
-      // Query the appForm2 subcollection to get the first document
-      const appForm2Snapshot = await getDocs(appForm2Ref);
-      const appForm2Doc = appForm2Snapshot.docs[0];
+  //     // Query the appForm2 subcollection to get the first document
+  //     const appForm2Snapshot = await getDocs(appForm2Ref);
+  //     const appForm2Doc = appForm2Snapshot.docs[0];
 
-      if (appForm2Doc) {
-        // Update the idType field within the appForm2 document
-        await updateDoc(appForm2Doc.ref, {
-          idType: idType,
-        });
+  //     if (appForm2Doc) {
+  //       // Update the idType field within the appForm2 document
+  //       await updateDoc(appForm2Doc.ref, {
+  //         idType: idType,
+  //       });
 
-        console.log('idType updated successfully:', idType);
-      } else {
-        console.error('No appForm2 document found for the current user.');
-      }
-      navigation.navigate("ApplicationForm3");
-    } catch (error) {
-      console.error('Error updating user data:', error);
-      // Handle the error, e.g., display an error message to the user
-    }
-  };
-  const pickImageFront = async () => {
+  //       console.log('idType updated successfully:', idType);
+  //     } else {
+  //       console.error('No appForm2 document found for the current user.');
+  //     }
+  //     navigation.navigate("ApplicationForm3");
+  //   } catch (error) {
+  //     console.error('Error updating user data:', error);
+  //     // Handle the error, e.g., display an error message to the user
+  //   }
+  // };
+  // const pickImageFront = async () => {
     
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
+  //   let result = await ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  //     allowsEditing: true,
       
-      quality: 1,
-    });
+  //     quality: 1,
+  //   });
 
-    if (result.canceled) {
-      return;
-    }
+  //   if (result.canceled) {
+  //     return;
+  //   }
 
-    if (result.assets && result.assets.length > 0) {
-      const selectedAsset = result.assets[0];
-      const selectedImageURI = selectedAsset.uri;
+  //   if (result.assets && result.assets.length > 0) {
+  //     const selectedAsset = result.assets[0];
+  //     const selectedImageURI = selectedAsset.uri;
 
-      // Create a reference to the storage location using the imported app
-      const storage = getStorage(app);
+  //     // Create a reference to the storage location using the imported app
+  //     const storage = getStorage(app);
 
-      // Create a reference to the profile picture in the "ProfilePictures" folder
-      const storageRef = ref(storage, `ProviderIDPicsFront/${provider.uid}`);
+  //     // Create a reference to the profile picture in the "ProfilePictures" folder
+  //     const storageRef = ref(storage, `ProviderIDPicsFront/${provider.uid}`);
 
-      try {
-        // Read the image file as a blob
-        const response = await fetch(selectedImageURI);
-        const blob = await response.blob();
+  //     try {
+  //       // Read the image file as a blob
+  //       const response = await fetch(selectedImageURI);
+  //       const blob = await response.blob();
 
-        // Upload the image blob to Firebase Storage
-        const snapshot = await uploadBytes(storageRef, blob);
+  //       // Upload the image blob to Firebase Storage
+  //       const snapshot = await uploadBytes(storageRef, blob);
 
-        // Get the download URL of the uploaded image
-        const downloadURL = await getDownloadURL(snapshot.ref);
+  //       // Get the download URL of the uploaded image
+  //       const downloadURL = await getDownloadURL(snapshot.ref);
 
-          // Now you can use `downloadURL` to update the Firestore document in appForm2
-        const db = getFirestore();
+  //         // Now you can use `downloadURL` to update the Firestore document in appForm2
+  //       const db = getFirestore();
 
-        // Create references to the user's document and the appForm2 subcollection
-        const userDocRef = doc(db, 'providerProfiles', provider.uid);
-        const appForm2Ref = collection(userDocRef, 'appForm2');
+  //       // Create references to the user's document and the appForm2 subcollection
+  //       const userDocRef = doc(db, 'providerProfiles', provider.uid);
+  //       const appForm2Ref = collection(userDocRef, 'appForm2');
 
-        // Query the appForm2 subcollection to get the first document
-        const appForm2Snapshot = await getDocs(appForm2Ref);
-        const appForm2Doc = appForm2Snapshot.docs[0];
+  //       // Query the appForm2 subcollection to get the first document
+  //       const appForm2Snapshot = await getDocs(appForm2Ref);
+  //       const appForm2Doc = appForm2Snapshot.docs[0];
 
-        if (appForm2Doc) {
-          // Update the idProofimgFront field within the appForm2 document
-          await updateDoc(appForm2Doc.ref, {
-            idProofimgFront: downloadURL,
-          });
+  //       if (appForm2Doc) {
+  //         // Update the idProofimgFront field within the appForm2 document
+  //         await updateDoc(appForm2Doc.ref, {
+  //           idProofimgFront: downloadURL,
+  //         });
 
-          console.log("FRONT uploaded successfully:", downloadURL);
-          Toast.show({
-            type: "success",
-            position: "top",
-            text1: "Front Page uploaded successfully✅",
-            visibilityTime: 3000,
-          });
-        } else {
-          console.error("No appForm2 document found for the current user.");
-        }
-      } catch (error) {
-        console.error("Error uploading image to Firebase Storage:", error);
-      }
-    }
-  };
+  //         console.log("FRONT uploaded successfully:", downloadURL);
+  //         Toast.show({
+  //           type: "success",
+  //           position: "top",
+  //           text1: "Front Page uploaded successfully✅",
+  //           visibilityTime: 3000,
+  //         });
+  //       } else {
+  //         console.error("No appForm2 document found for the current user.");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error uploading image to Firebase Storage:", error);
+  //     }
+  //   }
+  // };
 
-  const pickImageBack = async () => {
+  // const pickImageBack = async () => {
      
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
+  //   let result = await ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  //     allowsEditing: true,
       
-      quality: 1,
-    });
+  //     quality: 1,
+  //   });
 
-    if (result.canceled) {
-      return;
-    }
+  //   if (result.canceled) {
+  //     return;
+  //   }
 
-    if (result.assets && result.assets.length > 0) {
-      const selectedAsset = result.assets[0];
-      const selectedImageURI = selectedAsset.uri;
+  //   if (result.assets && result.assets.length > 0) {
+  //     const selectedAsset = result.assets[0];
+  //     const selectedImageURI = selectedAsset.uri;
 
-      // Create a reference to the storage location using the imported app
-      const storage = getStorage(app);
+  //     // Create a reference to the storage location using the imported app
+  //     const storage = getStorage(app);
 
-      // Create a reference to the profile picture in the "ProfilePictures" folder
-      const storageRef = ref(storage, `ProviderIDPicsBack/${provider.uid}`);
+  //     // Create a reference to the profile picture in the "ProfilePictures" folder
+  //     const storageRef = ref(storage, `ProviderIDPicsBack/${provider.uid}`);
 
-      try {
+  //     try {
 
         
-        // Read the image file as a blob
-        const response = await fetch(selectedImageURI);
-        const blob = await response.blob();
+  //       // Read the image file as a blob
+  //       const response = await fetch(selectedImageURI);
+  //       const blob = await response.blob();
 
-        // Upload the image blob to Firebase Storage
-        const snapshot = await uploadBytes(storageRef, blob);
+  //       // Upload the image blob to Firebase Storage
+  //       const snapshot = await uploadBytes(storageRef, blob);
 
-        // Get the download URL of the uploaded image
-        const downloadURL = await getDownloadURL(snapshot.ref);
+  //       // Get the download URL of the uploaded image
+  //       const downloadURL = await getDownloadURL(snapshot.ref);
 
-          // Now you can use `downloadURL` to update the Firestore document in appForm2
-        const db = getFirestore();
+  //         // Now you can use `downloadURL` to update the Firestore document in appForm2
+  //       const db = getFirestore();
 
-        // Create references to the user's document and the appForm2 subcollection
-        const userDocRef = doc(db, 'providerProfiles', provider.uid);
-        const appForm2Ref = collection(userDocRef, 'appForm2');
+  //       // Create references to the user's document and the appForm2 subcollection
+  //       const userDocRef = doc(db, 'providerProfiles', provider.uid);
+  //       const appForm2Ref = collection(userDocRef, 'appForm2');
 
-        // Query the appForm2 subcollection to get the first document
-        const appForm2Snapshot = await getDocs(appForm2Ref);
-        const appForm2Doc = appForm2Snapshot.docs[0];
+  //       // Query the appForm2 subcollection to get the first document
+  //       const appForm2Snapshot = await getDocs(appForm2Ref);
+  //       const appForm2Doc = appForm2Snapshot.docs[0];
 
-        if (appForm2Doc) {
-          // Update the idProofimgFront field within the appForm2 document
-          await updateDoc(appForm2Doc.ref, {
-            idProofimgBack: downloadURL,
-          });
+  //       if (appForm2Doc) {
+  //         // Update the idProofimgFront field within the appForm2 document
+  //         await updateDoc(appForm2Doc.ref, {
+  //           idProofimgBack: downloadURL,
+  //         });
 
-          console.log("FRONT uploaded successfully:", downloadURL);
-          Toast.show({
-            type: "success",
-            position: "top",
-            text1: "Back Page uploaded successfully✅",
-            visibilityTime: 3000,
-          });
-        } else {
-          console.error("No appForm2 document found for the current user.");
-        }
-      } catch (error) {
-        console.error("Error uploading image to Firebase Storage:", error);
-      }
-    }
-  };
+  //         console.log("FRONT uploaded successfully:", downloadURL);
+  //         Toast.show({
+  //           type: "success",
+  //           position: "top",
+  //           text1: "Back Page uploaded successfully✅",
+  //           visibilityTime: 3000,
+  //         });
+  //       } else {
+  //         console.error("No appForm2 document found for the current user.");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error uploading image to Firebase Storage:", error);
+  //     }
+  //   }
+  // };
 
   return (
     <View style={[styles.applicationForm2, styles.applicationForm2Bg]}>
@@ -395,7 +395,7 @@ const ApplicationForm2 = () => {
                   ? styles.componentsbutton4
                   : null
               ]}
-              onPress={() => handleDocumentTypeSelect("Driver's License")}
+              // onPress={() => handleDocumentTypeSelect("Driver's License")}
             >
               <Text style={[styles.viewAllServices3, styles.viewTypo]}>
                 Driver’s License
@@ -459,7 +459,7 @@ const ApplicationForm2 = () => {
               <View style={styles.componentsbuttonWrapper}>
                 <Pressable
                   style={[styles.componentsbutton7, styles.componentsbuttonBg]}
-                  onPress={pickImageFront} // Open image picker for the front
+                  // onPress={pickImageFront} // Open image picker for the front
                 >
                   <View style={styles.componentsbuttonWrapper}>
                     <Image
@@ -476,7 +476,7 @@ const ApplicationForm2 = () => {
               <View style={styles.componentsbuttonContainer}>
                 <Pressable
                   style={[styles.componentsbutton7, styles.componentsbuttonBg]}
-                  onPress={pickImageBack} // Open image picker for the back
+                  // onPress={pickImageBack} // Open image picker for the back
                 >
                   <View style={styles.componentsbuttonWrapper}>
                     <Image
@@ -498,7 +498,7 @@ const ApplicationForm2 = () => {
                 styles.componentsbutton10,
                 styles.componentsbuttonSpaceBlock2,
               ]}
-              onPress={saveChangesHandle}
+              // onPress={saveChangesHandle}
             >
               <Text style={[styles.viewAllServices7, styles.viewTypo]}>
                 Next

@@ -20,32 +20,32 @@ const ConfirmNavigation = ({route}) => {
 
     const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(() => {
-      async function fetchData() {
-        try {
-          const db = getFirestore(); // Use getFirestore() to initialize Firestore
+    // useEffect(() => {
+    //   async function fetchData() {
+    //     try {
+    //       const db = getFirestore(); // Use getFirestore() to initialize Firestore
     
-          // Get the user's UID 
-          const auth = getAuth();
-          const providerUID = auth.currentUser.uid;
-          const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
-          const docSnapshot = await getDoc(userBookingDocRef);
+    //       // Get the user's UID 
+    //       const auth = getAuth();
+    //       const providerUID = auth.currentUser.uid;
+    //       const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
+    //       const docSnapshot = await getDoc(userBookingDocRef);
   
-          if (docSnapshot.exists()) {
-            const booking = docSnapshot.data();
-            console.log("Booking Data: ", booking);
-            setBookingTitle(booking.title);
-            setBookingCategory(booking.category);
-          } else {
-            console.log("No such document!");
-          }
-        } catch (error) {
-          // console.error("Error retrieving data:", error);
-        }
-      }
+    //       if (docSnapshot.exists()) {
+    //         const booking = docSnapshot.data();
+    //         console.log("Booking Data: ", booking);
+    //         setBookingTitle(booking.title);
+    //         setBookingCategory(booking.category);
+    //       } else {
+    //         console.log("No such document!");
+    //       }
+    //     } catch (error) {
+    //       // console.error("Error retrieving data:", error);
+    //     }
+    //   }
     
-      fetchData(); // Call the fetchData function immediately
-    }, []); 
+    //   fetchData(); // Call the fetchData function immediately
+    // }, []); 
 
 //     const handleToggle = (value) => setToggleState(value);
 //     const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
@@ -145,20 +145,20 @@ const ConfirmNavigation = ({route}) => {
     defaultStatusMessage,
     );
 
-    setInterval(() => setSwipeStatusMessage(defaultStatusMessage), 5000);
-    const updateSwipeStatusMessage = (message) => setSwipeStatusMessage(message);
-    const renderSubHeading = (heading) => (
-    <Text style={styles.subHeading}>{heading}</Text>
-    );
-    let forceResetLastButton = null;
+    // setInterval(() => setSwipeStatusMessage(defaultStatusMessage), 5000);
+    // const updateSwipeStatusMessage = (message) => setSwipeStatusMessage(message);
+    // const renderSubHeading = (heading) => (
+    // <Text style={styles.subHeading}>{heading}</Text>
+    // );
+    // let forceResetLastButton = null;
 
-    const CheckoutButton = () => {
-    return(
-        <View style={{width: 100, height: 30, backgroundColor: '#C70039', borderRadius: 5, justifyContent: 'center', alignItems: 'center'}}>
-            <Text style={{color: '#ffffff'}}>Checkout</Text>
-        </View>
-    );
-    } 
+    // const CheckoutButton = () => {
+    // return(
+    //     <View style={{width: 100, height: 30, backgroundColor: '#C70039', borderRadius: 5, justifyContent: 'center', alignItems: 'center'}}>
+    //         <Text style={{color: '#ffffff'}}>Checkout</Text>
+    //     </View>
+    // );
+    // } 
 
     // Firestore reference to the serviceBookings collection
     const db = getFirestore();
@@ -169,96 +169,96 @@ const ConfirmNavigation = ({route}) => {
     const providerUID = auth.currentUser.uid;
     const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
 
-    const navigateToCustomer = async () => {
-        setIsLoading(true);
-        try {
-          // Update the status in Firestore for serviceBookings
-          console.log("Passed Item ID" , itemID);
-          console.log("Passed Matched Booking ID" , matchedBookingID);
-          console.log("Passed Customer UID" , customerUID);
+    // const navigateToCustomer = async () => {
+    //     setIsLoading(true);
+    //     try {
+    //       // Update the status in Firestore for serviceBookings
+    //       console.log("Passed Item ID" , itemID);
+    //       console.log("Passed Matched Booking ID" , matchedBookingID);
+    //       console.log("Passed Customer UID" , customerUID);
 
-          const q = query(bookingRef, where("bookingID", "==", matchedBookingID));
-          const querySnapshot = await getDocs(q);
-          querySnapshot.forEach((document) => {
-            const bookingDocRef = doc(db, "serviceBookings", customerUID, "activeBookings", document.id);
-            updateDoc(bookingDocRef, {
-              status: "In Transit"
-            });
-          });
+    //       const q = query(bookingRef, where("bookingID", "==", matchedBookingID));
+    //       const querySnapshot = await getDocs(q);
+    //       querySnapshot.forEach((document) => {
+    //         const bookingDocRef = doc(db, "serviceBookings", customerUID, "activeBookings", document.id);
+    //         updateDoc(bookingDocRef, {
+    //           status: "In Transit"
+    //         });
+    //       });
     
-          // Update the status in Firestore for providerProfiles
-          await updateDoc(userBookingDocRef, {
-            status: "In Transit"
-          });
+    //       // Update the status in Firestore for providerProfiles
+    //       await updateDoc(userBookingDocRef, {
+    //         status: "In Transit"
+    //       });
 
-          console.log("Booking Title: " ,bookingTitle);
-          console.log("Booking Category: " ,bookingCategory);
+    //       console.log("Booking Title: " ,bookingTitle);
+    //       console.log("Booking Category: " ,bookingCategory);
 
-          const notifDocRef = doc(db, "userProfiles", customerUID);
-          const notifCollection = collection(notifDocRef, "notifications");
+    //       const notifDocRef = doc(db, "userProfiles", customerUID);
+    //       const notifCollection = collection(notifDocRef, "notifications");
 
-          const today = new Date();
-          const options = {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          };
-          const formattedDate = today.toLocaleDateString("en-US", options); // Adjust locale as needed
+    //       const today = new Date();
+    //       const options = {
+    //         year: "numeric",
+    //         month: "long",
+    //         day: "numeric",
+    //       };
+    //       const formattedDate = today.toLocaleDateString("en-US", options); // Adjust locale as needed
 
-          const bookingDataNotif = {
-            // Using bookingID as the key for the map inside the document
-            [`${matchedBookingID}1`]: {
-              subTitle: `Your service provider for ${getFormattedServiceName()} is currently in transit and will arrive to your location shortly`,
-              title: `Your booking ${matchedBookingID} is on the way to you`,
-              createdAt: serverTimestamp(),
-            },
-            date: serverTimestamp(),
-          };
+    //       const bookingDataNotif = {
+    //         // Using bookingID as the key for the map inside the document
+    //         [`${matchedBookingID}1`]: {
+    //           subTitle: `Your service provider for ${getFormattedServiceName()} is currently in transit and will arrive to your location shortly`,
+    //           title: `Your booking ${matchedBookingID} is on the way to you`,
+    //           createdAt: serverTimestamp(),
+    //         },
+    //         date: serverTimestamp(),
+    //       };
 
-          const notificationDocRef = doc(notifCollection, formattedDate);
+    //       const notificationDocRef = doc(notifCollection, formattedDate);
 
-          try {
-            const notificationDoc = await getDoc(notificationDocRef);
-            if (notificationDoc.exists()) {
-              // Document exists, update it
-              await setDoc(notificationDocRef, bookingDataNotif, {
-                merge: true,
-              });
-              console.log("Notification updated successfully!");
-            } else {
-              // Document doesn't exist, create it
-              await setDoc(notificationDocRef, bookingDataNotif);
-              console.log("New notification document created!");
-            }
-          } catch (error) {
-            // console.error("Error updating notification:", error);
-          }
+    //       try {
+    //         const notificationDoc = await getDoc(notificationDocRef);
+    //         if (notificationDoc.exists()) {
+    //           // Document exists, update it
+    //           await setDoc(notificationDocRef, bookingDataNotif, {
+    //             merge: true,
+    //           });
+    //           console.log("Notification updated successfully!");
+    //         } else {
+    //           // Document doesn't exist, create it
+    //           await setDoc(notificationDocRef, bookingDataNotif);
+    //           console.log("New notification document created!");
+    //         }
+    //       } catch (error) {
+    //         // console.error("Error updating notification:", error);
+    //       }
     
-          setIsLoading(false);
+    //       setIsLoading(false);
     
-          // Navigate to the "GoToCustomer" screen
-          navigation.navigate('GoToCustomer', { itemID: itemID, matchedBookingID: matchedBookingID, customerUID: customerUID});
-        } catch (error) {
-          // console.error("Error updating Firestore documents:", error);
-          setIsLoading(false);
-        }
-    };
+    //       // Navigate to the "GoToCustomer" screen
+    //       navigation.navigate('GoToCustomer', { itemID: itemID, matchedBookingID: matchedBookingID, customerUID: customerUID});
+    //     } catch (error) {
+    //       // console.error("Error updating Firestore documents:", error);
+    //       setIsLoading(false);
+    //     }
+    // };
 
-  const getFormattedServiceName = () => {
-    console.log("Booking Title: " ,bookingTitle);
-    console.log("Booking Category: " ,bookingCategory);
-    if (!bookingTitle || !bookingCategory) {
-      return 'Service'; // Default text or handle as needed
-    }
+  // const getFormattedServiceName = () => {
+  //   console.log("Booking Title: " ,bookingTitle);
+  //   console.log("Booking Category: " ,bookingCategory);
+  //   if (!bookingTitle || !bookingCategory) {
+  //     return 'Service'; // Default text or handle as needed
+  //   }
 
-    // Check if the title is "Pet Care" or "Gardening"
-    if (bookingTitle === "Pet Care" || bookingTitle === "Gardening" || bookingTitle === "Cleaning") {
-      return bookingCategory;
-    } else {
-      // If not, concatenate the title and category
-      return `${bookingTitle} ${bookingCategory}`;
-    }
-  };
+  //   // Check if the title is "Pet Care" or "Gardening"
+  //   if (bookingTitle === "Pet Care" || bookingTitle === "Gardening" || bookingTitle === "Cleaning") {
+  //     return bookingCategory;
+  //   } else {
+  //     // If not, concatenate the title and category
+  //     return `${bookingTitle} ${bookingCategory}`;
+  //   }
+  // };
 
   return (
     <View style={styles.container}>
@@ -328,7 +328,7 @@ to Customer?`}</Text>
                 resetAfterSuccessAnimDelay={2000}
                 onSwipeFail={() => updateSwipeStatusMessage('Incomplete swipe!')}
                 onSwipeStart={() => updateSwipeStatusMessage('Swipe started!')}
-                onSwipeSuccess={navigateToCustomer}
+                // onSwipeSuccess={navigateToCustomer}
                 thumbIconImageSource={rightArrow}
                 thumbIconStyles={{borderRadius: 25}}
                 thumbIconWidth={50} 

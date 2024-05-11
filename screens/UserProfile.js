@@ -38,75 +38,75 @@ const UserProfile = () => {
   const [loading, setLoading] = useState(true); // Initialize loading state as true
   const [profileImage, setProfileImage] = useState(null);
 
-  const fetchUserData = async () => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (!currentUser) {
-        setName("");
-        setEmail("");
-        setLoading(false);
-        return;
-      }
+  // const fetchUserData = async () => {
+  //   const auth = getAuth();
+  //   const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+  //     if (!currentUser) {
+  //       setName("");
+  //       setEmail("");
+  //       setLoading(false);
+  //       return;
+  //     }
 
-      setUser(currentUser);
+  //     setUser(currentUser);
 
-      try {
-        const email = currentUser.email;
-        setEmail(email);
+  //     try {
+  //       const email = currentUser.email;
+  //       setEmail(email);
 
-        // Fetch the user's profile image based on their UID
-        fetchProfileImage(currentUser.uid);
+  //       // Fetch the user's profile image based on their UID
+  //       fetchProfileImage(currentUser.uid);
 
-        const db = getFirestore();
-        const userProfilesCollection = collection(db, "providerProfiles");
-        const userDocRef = doc(userProfilesCollection, currentUser.uid);
-        const userDocSnapshot = await getDoc(userDocRef);
+  //       const db = getFirestore();
+  //       const userProfilesCollection = collection(db, "providerProfiles");
+  //       const userDocRef = doc(userProfilesCollection, currentUser.uid);
+  //       const userDocSnapshot = await getDoc(userDocRef);
 
-        if (userDocSnapshot.exists()) {
-          const userData = userDocSnapshot.data();
-          const { name } = userData;
-          setName(name);
-          setLoading(false);
-          // console.log("User UID:", currentUser.uid);
-        } else {
-          console.log("No user data found for the given UID.");
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error("Error retrieving user data:", error);
-        setLoading(false);
-      }
-    });
+  //       if (userDocSnapshot.exists()) {
+  //         const userData = userDocSnapshot.data();
+  //         const { name } = userData;
+  //         setName(name);
+  //         setLoading(false);
+  //         // console.log("User UID:", currentUser.uid);
+  //       } else {
+  //         console.log("No user data found for the given UID.");
+  //         setLoading(false);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error retrieving user data:", error);
+  //       setLoading(false);
+  //     }
+  //   });
 
-    return unsubscribe;
-  };
+  //   return unsubscribe;
+  // };
 
-  const fetchProfileImage = async (uid) => {
-    const storage = getStorage();
-    const imageRef = storageRef(storage, `ProfilePictures/${uid}`);
+  // const fetchProfileImage = async (uid) => {
+  //   const storage = getStorage();
+  //   const imageRef = storageRef(storage, `ProfilePictures/${uid}`);
 
-    const defaultImage =  storageRef(storage, "ProfilePictures/serviceProviderIcon.png");
+  //   const defaultImage =  storageRef(storage, "ProfilePictures/serviceProviderIcon.png");
 
 
-    try {
-      const imageUrl = await getDownloadURL(imageRef);
-      setProfileImage(imageUrl);
-    } catch (error) {
-      //console.error("Error fetching profile image:", error);
-      // Set a default image URL if the image doesn't exist
-      const imageUrl = await getDownloadURL(defaultImage);
+  //   try {
+  //     const imageUrl = await getDownloadURL(imageRef);
+  //     setProfileImage(imageUrl);
+  //   } catch (error) {
+  //     //console.error("Error fetching profile image:", error);
+  //     // Set a default image URL if the image doesn't exist
+  //     const imageUrl = await getDownloadURL(defaultImage);
 
-      setProfileImage(imageUrl);
-    }
-  };
+  //     setProfileImage(imageUrl);
+  //   }
+  // };
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      fetchUserData();
-    }, 3000);
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     fetchUserData();
+  //   }, 3000);
 
-    return () => clearInterval(intervalId);
-  }, []);
+  //   return () => clearInterval(intervalId);
+  // }, []);
 
   return (
     <View style={styles.userProfile}>
@@ -223,6 +223,7 @@ const UserProfile = () => {
           </Pressable>
           <Pressable
             style={[styles.changePasswordBtn, styles.btnFlexBox]}
+            testID="wallet-button"
             onPress={() => navigation.navigate("Wallet")}
           >
             <View style={[styles.editProfileBtnInner, styles.profileFlexBox]}>

@@ -22,7 +22,7 @@ const TopTab = createMaterialTopTabNavigator();
 const screenHeight = Dimensions.get('window').height;
 
 const HelpCenterFAQ = () => {
-  const [isNavigatorActive, setIsNavigatorActive] = useState(false);
+  // const [isNavigatorActive, setIsNavigatorActive] = useState(false);
   return (
     <SafeAreaView style={styles.helpCenterFaq}>
       <StatusBar barStyle="default" />
@@ -35,43 +35,43 @@ const HelpCenterFAQ = () => {
         <View style={[styles.activeTabs, styles.activeTabsSpaceBlock]}>
           <TopTab.Navigator
             style={styles.tabGroupToptabs}
-            tabBar={({ state, descriptors, navigation, position }) => {
-              const [activeItems] = React.useState([<Tab11 />, <Tab21 />]);
-              const [normalItems] = React.useState([<Tab1 />, <Tab2 />]);
-              const activeIndex = state.index;
-              console.log("Active Tab: " ,activeIndex);
+            // tabBar={({ state, descriptors, navigation, position }) => {
+            //   const [activeItems] = React.useState([<Tab11 />, <Tab21 />]);
+            //   const [normalItems] = React.useState([<Tab1 />, <Tab2 />]);
+            //   const activeIndex = state.index;
+            //   console.log("Active Tab: " ,activeIndex);
               
-              // Update the state based on tab navigator's activity
-              React.useEffect(() => {
-                if(activeIndex === 1){
-                  setIsNavigatorActive(activeIndex === 0); // Assuming index 1 is where the tab navigator is active
-                }else{
-                  setIsNavigatorActive(activeIndex === 1); // Assuming index 1 is where the tab navigator is active
-                }
+            //   // Update the state based on tab navigator's activity
+            //   // React.useEffect(() => {
+            //   //   if(activeIndex === 1){
+            //   //     setIsNavigatorActive(activeIndex === 0); // Assuming index 1 is where the tab navigator is active
+            //   //   }else{
+            //   //     setIsNavigatorActive(activeIndex === 1); // Assuming index 1 is where the tab navigator is active
+            //   //   }
                 
-              }, [activeIndex]);
-              return (
-                <View style={styles.topTabBarStyle}>
-                  {normalItems.map((item, index) => {
-                    const isFocused = state.index === index;
-                    return (
-                      <TouchableOpacity
-                        key={index}
-                        style={{ flex: 1 }}
-                        onPress={() => {
-                          navigation.navigate({
-                            name: state.routes[index].name,
-                            merge: true,
-                          });
-                        }}
-                      >
-                        {activeIndex === index ? activeItems[index] : item}
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-              );
-            }}
+            //   // }, [activeIndex]);
+            //   // return (
+            //   //   <View style={styles.topTabBarStyle}>
+            //   //     {normalItems.map((item, index) => {
+            //   //       const isFocused = state.index === index;
+            //   //       return (
+            //   //         <TouchableOpacity
+            //   //           key={index}
+            //   //           style={{ flex: 1 }}
+            //   //           onPress={() => {
+            //   //             navigation.navigate({
+            //   //               name: state.routes[index].name,
+            //   //               merge: true,
+            //   //             });
+            //   //           }}
+            //   //         >
+            //   //           {activeIndex === index ? activeItems[index] : item}
+            //   //         </TouchableOpacity>
+            //   //       );
+            //   //     })}
+            //   //   </View>
+            //   // );
+            // }}
           >
             <TopTab.Screen
               name="FAQs Frame"

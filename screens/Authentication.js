@@ -67,31 +67,31 @@ const Authentication = ({ route }) => {
 
   const [showWaitText, setShowWaitText] = useState(true);
 
-  const startTimer = () => {
-    const intervalId = setInterval(() => {
-      setTimer((prevTimer) => {
-        if (prevTimer === 0) {
-          clearInterval(intervalId);
-          return 0; // Keep the timer at 0 seconds
-        } else {
-          return prevTimer - 1;
-        }
-      });
-    }, 1000);
-    // Save the intervalId in the state
-    setTimerIntervalId(intervalId);
-  };
+  // const startTimer = () => {
+  //   const intervalId = setInterval(() => {
+  //     setTimer((prevTimer) => {
+  //       if (prevTimer === 0) {
+  //         clearInterval(intervalId);
+  //         return 0; // Keep the timer at 0 seconds
+  //       } else {
+  //         return prevTimer - 1;
+  //       }
+  //     });
+  //   }, 1000);
+  //   // Save the intervalId in the state
+  //   setTimerIntervalId(intervalId);
+  // };
 
-  const handleResendCode = () => {
-    // Clear the previous interval before starting a new one
-    clearInterval(timerIntervalId);
-    // Reset the timer
-    setTimer(60);
-    // Start the new timer
-    startTimer();
+  // const handleResendCode = () => {
+  //   // Clear the previous interval before starting a new one
+  //   clearInterval(timerIntervalId);
+  //   // Reset the timer
+  //   setTimer(60);
+  //   // Start the new timer
+  //   startTimer();
 
-    sendVerificationCode();
-  };
+  //   sendVerificationCode();
+  // };
 
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [enteredOTP, setEnteredOTP] = useState("");
@@ -99,236 +99,236 @@ const Authentication = ({ route }) => {
     .fill(0)
     .map(() => createRef());
 
-  const handleInputChange = (value, index) => {
-    if (/^[0-9]*$/.test(value)) {
-      const newOtp = [...otp];
-      newOtp[index] = value;
-      setOtp(newOtp);
-      setEnteredOTP(newOtp.join(""));
+  // const handleInputChange = (value, index) => {
+  //   if (/^[0-9]*$/.test(value)) {
+  //     const newOtp = [...otp];
+  //     newOtp[index] = value;
+  //     setOtp(newOtp);
+  //     setEnteredOTP(newOtp.join(""));
 
-      if (index < 5 && value !== "") {
-        inputRefs[index + 1].current.focus();
-      }
-    }
-  };
+  //     if (index < 5 && value !== "") {
+  //       inputRefs[index + 1].current.focus();
+  //     }
+  //   }
+  // };
 
-  useEffect(() => {
-    // Start the countdown timer after sending the verification code
+  // useEffect(() => {
+  //   // Start the countdown timer after sending the verification code
 
-    startTimer();
+  //   startTimer();
 
-    // Uncomment the line below if you want to call sendVerificationCode when the component mounts
-    sendVerificationCode();
-  }, []);
+  //   // Uncomment the line below if you want to call sendVerificationCode when the component mounts
+  //   sendVerificationCode();
+  // }, []);
 
-  const sendVerificationCode = async () => {
-    console.log("Phone number is: ", phone);
-    try {
-      const response = await axios.post(
-        "https://us-central1-testingauth-9126f.cloudfunctions.net/sendOTP",
-        {
-          phoneNumber: phone,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      Toast.show({
-        type: "success",
-        position: "top",
-        text1: "Verification",
-        text2: "OTP has been sent❗",
-        visibilityTime: 5000,
-      });
+  // const sendVerificationCode = async () => {
+  //   console.log("Phone number is: ", phone);
+  //   try {
+  //     const response = await axios.post(
+  //       "https://us-central1-testingauth-9126f.cloudfunctions.net/sendOTP",
+  //       {
+  //         phoneNumber: phone,
+  //       },
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+  //     Toast.show({
+  //       type: "success",
+  //       position: "top",
+  //       text1: "Verification",
+  //       text2: "OTP has been sent❗",
+  //       visibilityTime: 5000,
+  //     });
 
-      console.log("Response data:", response.data);
-    } catch (error) {
-      // console.error("Error:", error.message);
+  //     console.log("Response data:", response.data);
+  //   } catch (error) {
+  //     // console.error("Error:", error.message);
 
-      Toast.show({
-        type: "error",
-        position: "top",
-        text1: "Error",
-        text2: error,
-        visibilityTime: 5000,
-      });
-    }
-  };
+  //     Toast.show({
+  //       type: "error",
+  //       position: "top",
+  //       text1: "Error",
+  //       text2: error,
+  //       visibilityTime: 5000,
+  //     });
+  //   }
+  // };
 
-  const verifyCode = async () => {
-    try {
-      const response = await axios.post(
-        "https://us-central1-testingauth-9126f.cloudfunctions.net/verifyOTP",
+  // const verifyCode = async () => {
+  //   try {
+  //     const response = await axios.post(
+  //       "https://us-central1-testingauth-9126f.cloudfunctions.net/verifyOTP",
 
-        {
-          phoneNumber: phone,
-          otp: enteredOTP,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+  //       {
+  //         phoneNumber: phone,
+  //         otp: enteredOTP,
+  //       },
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
 
-      console.log("Response data:", response.data);
+  //     console.log("Response data:", response.data);
 
-      const auth = getAuth();
+  //     const auth = getAuth();
 
-      try {
-        // Check if a document with the same phone number already exists
-        const db = getFirestore();
-        const querySnapshot = await getDocs(collection(db, "providerProfiles"));
+  //     try {
+  //       // Check if a document with the same phone number already exists
+  //       const db = getFirestore();
+  //       const querySnapshot = await getDocs(collection(db, "providerProfiles"));
 
-        // Create the provider with email and password
-        const providerCredential = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-        const provider = providerCredential.user;
+  //       // Create the provider with email and password
+  //       const providerCredential = await createUserWithEmailAndPassword(
+  //         auth,
+  //         email,
+  //         password
+  //       );
+  //       const provider = providerCredential.user;
 
-        registerAppWithFCM();
+  //       registerAppWithFCM();
 
-        const fcmToken = await messaging().getToken();
+  //       const fcmToken = await messaging().getToken();
 
-        // Get the provider's UID
-        const providerUid = provider.uid;
-        const providerAuth = auth.currentUser.uid;
+  //       // Get the provider's UID
+  //       const providerUid = provider.uid;
+  //       const providerAuth = auth.currentUser.uid;
 
-        // Initialize Firestore and reference the 'providerProfiles' collection
-        const providerDocRef = doc(db, "providerProfiles", providerUid);
-        const currentProviderDocRef = doc(db, "providerProfiles", providerAuth);
+  //       // Initialize Firestore and reference the 'providerProfiles' collection
+  //       const providerDocRef = doc(db, "providerProfiles", providerUid);
+  //       const currentProviderDocRef = doc(db, "providerProfiles", providerAuth);
 
-        // Check if a document with the same UID already exists
-        const providerDoc = await getDoc(currentProviderDocRef);
+  //       // Check if a document with the same UID already exists
+  //       const providerDoc = await getDoc(currentProviderDocRef);
 
-        if (providerDoc.exists()) {
-          // Provider signed up successfully, but a document with the same UID already exists
-          console.log("A provider with this UID already exists");
-          return;
-        }
+  //       if (providerDoc.exists()) {
+  //         // Provider signed up successfully, but a document with the same UID already exists
+  //         console.log("A provider with this UID already exists");
+  //         return;
+  //       }
 
-        // Save provider data to Firestore using the UID as the document ID
-        await setDoc(providerDocRef, {
-          name: name,
-          email: email,
-          phone: phone,
-          fcmToken: fcmToken,
-          availability: "available", // Set default availability to false
-          blackListed: [], // Initialize blackListed array with no values yet
-          bookingID: "",
-          bookingMatched: false,
-          bookingIndex: 0,
-          coordinates: {
-            latitude: 10.336641527084641,
-            longitude: 123.91533800644042,
-          },
-        });
+  //       // Save provider data to Firestore using the UID as the document ID
+  //       await setDoc(providerDocRef, {
+  //         name: name,
+  //         email: email,
+  //         phone: phone,
+  //         fcmToken: fcmToken,
+  //         availability: "available", // Set default availability to false
+  //         blackListed: [], // Initialize blackListed array with no values yet
+  //         bookingID: "",
+  //         bookingMatched: false,
+  //         bookingIndex: 0,
+  //         coordinates: {
+  //           latitude: 10.336641527084641,
+  //           longitude: 123.91533800644042,
+  //         },
+  //       });
 
-        // Create subcollections with empty fields
-        const notifications = collection(
-          currentProviderDocRef,
-          "notifications"
-        );
-        const today = new Date();
-        const options = {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        };
-        const formattedDate = today.toLocaleDateString("en-US", options); // Adjust locale as needed
+  //       // Create subcollections with empty fields
+  //       const notifications = collection(
+  //         currentProviderDocRef,
+  //         "notifications"
+  //       );
+  //       const today = new Date();
+  //       const options = {
+  //         year: "numeric",
+  //         month: "long",
+  //         day: "numeric",
+  //       };
+  //       const formattedDate = today.toLocaleDateString("en-US", options); // Adjust locale as needed
 
-        await setDoc(doc(notifications, formattedDate), {
-          accountCreation: {
-            subTitle: "Your account has been created",
-            title: "Account Setup Successful!",
-            createdAt: serverTimestamp(),
-          },
-          date: serverTimestamp(),
-        });
+  //       await setDoc(doc(notifications, formattedDate), {
+  //         accountCreation: {
+  //           subTitle: "Your account has been created",
+  //           title: "Account Setup Successful!",
+  //           createdAt: serverTimestamp(),
+  //         },
+  //         date: serverTimestamp(),
+  //       });
 
-        // Create subcollections with empty fields
-        const appForm1Ref = collection(providerDocRef, "appForm1"); // Replace 'subcollection_name' with your desired subcollection name
-        await addDoc(appForm1Ref, {
-          name: name,
-          email: email,
-          phone: phone,
-          city: "",
-        });
+  //       // Create subcollections with empty fields
+  //       const appForm1Ref = collection(providerDocRef, "appForm1"); // Replace 'subcollection_name' with your desired subcollection name
+  //       await addDoc(appForm1Ref, {
+  //         name: name,
+  //         email: email,
+  //         phone: phone,
+  //         city: "",
+  //       });
 
-        const appForm2Ref = collection(providerDocRef, "appForm2"); // Replace 'subcollection_name' with your desired subcollection name
-        await addDoc(appForm2Ref, {
-          idType: "",
-          idProofimg: "",
-        });
+  //       const appForm2Ref = collection(providerDocRef, "appForm2"); // Replace 'subcollection_name' with your desired subcollection name
+  //       await addDoc(appForm2Ref, {
+  //         idType: "",
+  //         idProofimg: "",
+  //       });
 
-        const appForm3Ref = collection(providerDocRef, "appForm3"); // Replace 'subcollection_name' with your desired subcollection name
-        await addDoc(appForm3Ref, {
-          categories: "",
-          subcategories: "",
-          services: "",
-        });
-        // Second empty document
-        await addDoc(appForm3Ref, {});
+  //       const appForm3Ref = collection(providerDocRef, "appForm3"); // Replace 'subcollection_name' with your desired subcollection name
+  //       await addDoc(appForm3Ref, {
+  //         categories: "",
+  //         subcategories: "",
+  //         services: "",
+  //       });
+  //       // Second empty document
+  //       await addDoc(appForm3Ref, {});
 
-        const userWalletRef = collection(providerDocRef, "userWallet"); // Replace 'subcollection_name' with your desired subcollection name
-        await addDoc(userWalletRef, {
-          wallet: 0,
-        });
+  //       const userWalletRef = collection(providerDocRef, "userWallet"); // Replace 'subcollection_name' with your desired subcollection name
+  //       await addDoc(userWalletRef, {
+  //         wallet: 0,
+  //       });
 
-        const activeBookings = collection(providerDocRef, "activeBookings"); // Replace 'subcollection_name' with your desired subcollection name
-        await addDoc(activeBookings, {});
+  //       const activeBookings = collection(providerDocRef, "activeBookings"); // Replace 'subcollection_name' with your desired subcollection name
+  //       await addDoc(activeBookings, {});
 
-        const historyBookings = collection(providerDocRef, "historyBookings"); // Replace 'subcollection_name' with your desired subcollection name
-        await addDoc(historyBookings, {});
+  //       const historyBookings = collection(providerDocRef, "historyBookings"); // Replace 'subcollection_name' with your desired subcollection name
+  //       await addDoc(historyBookings, {});
 
-        // User signed up successfully
-        console.log("Sign Up Successful!");
+  //       // User signed up successfully
+  //       console.log("Sign Up Successful!");
 
-        Toast.show({
-          type: "success",
-          position: "top",
-          text1: "Sign Up Successful",
-          text2: "You have successfully signed up✅",
-          visibilityTime: 3000,
-        });
-      } catch (error) {
-        // console.error("Sign-up error:", error);
+  //       Toast.show({
+  //         type: "success",
+  //         position: "top",
+  //         text1: "Sign Up Successful",
+  //         text2: "You have successfully signed up✅",
+  //         visibilityTime: 3000,
+  //       });
+  //     } catch (error) {
+  //       // console.error("Sign-up error:", error);
 
-        Toast.show({
-          type: "error",
-          position: "top",
-          text1: "Error",
-          text2: error.message || "An error occurred while signing up",
-          visibilityTime: 5000,
-        });
-      }
+  //       Toast.show({
+  //         type: "error",
+  //         position: "top",
+  //         text1: "Error",
+  //         text2: error.message || "An error occurred while signing up",
+  //         visibilityTime: 5000,
+  //       });
+  //     }
 
-      navigation.navigate("ApplicationForm1");
-    } catch (error) {
-      // console.error("Error verification:", error.message);
+  //     navigation.navigate("ApplicationForm1");
+  //   } catch (error) {
+  //     // console.error("Error verification:", error.message);
 
-      Toast.show({
-        type: "error",
-        position: "top",
-        text1: "Error Verification",
-        text2: error,
-        visibilityTime: 5000,
-      });
-    }
-  };
+  //     Toast.show({
+  //       type: "error",
+  //       position: "top",
+  //       text1: "Error Verification",
+  //       text2: error,
+  //       visibilityTime: 5000,
+  //     });
+  //   }
+  // };
 
-  async function registerAppWithFCM() {
-    try {
-      await messaging().registerDeviceForRemoteMessages();
-      console.log("Device registered for FCM");
-    } catch (error) {
-      // console.error("Error registering device for FCM", error);
-    }
-  }
+  // async function registerAppWithFCM() {
+  //   try {
+  //     await messaging().registerDeviceForRemoteMessages();
+  //     console.log("Device registered for FCM");
+  //   } catch (error) {
+  //     // console.error("Error registering device for FCM", error);
+  //   }
+  // }
 
   return (
     <View style={[styles.authentication, styles.frameFlexBox]}>
@@ -354,9 +354,9 @@ const Authentication = ({ route }) => {
                           ref={inputRefs[index]}
                           style={styles.input}
                           value={otp[index]}
-                          onChangeText={(value) =>
-                            handleInputChange(value, index)
-                          }
+                          // onChangeText={(value) =>
+                          //   handleInputChange(value, index)
+                          // }
                           keyboardType="numeric"
                           maxLength={1}
                         />
@@ -368,7 +368,7 @@ const Authentication = ({ route }) => {
                 <Pressable
                   style={styles.componentsbutton}
                   testID="send-verification-button"
-                  onPress={verifyCode}
+                  // onPress={verifyCode}
                 >
                   <Text style={styles.signIn}>Verify Code</Text>
                 </Pressable>
@@ -380,7 +380,7 @@ const Authentication = ({ route }) => {
                 {timer > 0 && <Text> Wait for {timer}s</Text>}
               </Text>
               {timer === 0 && (
-                <TouchableOpacity onPress={handleResendCode}>
+                <TouchableOpacity>
                   <Text style={[styles.codeTypo, styles.resendCode]}>
                     Resend Code
                   </Text>

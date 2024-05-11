@@ -37,126 +37,126 @@ const ApplicationForm1 = () => {
   const [phone, setPhone] = useState(""); // Added phone state
   const [loading, setLoading] = useState(true); // Initialize loading state as true
   
-  const fetchUserData = async () => {
-    const auth = getAuth();
-    const unsubscribeReference = onAuthStateChanged(auth, async (currentUser) => {
-      if (!currentUser) {
-        setName("");
-        setEmail("");
-        return;
-      }
+  // const fetchUserData = async () => {
+  //   const auth = getAuth();
+  //   const unsubscribeReference = onAuthStateChanged(auth, async (currentUser) => {
+  //     if (!currentUser) {
+  //       setName("");
+  //       setEmail("");
+  //       return;
+  //     }
 
-      setUser(currentUser);
+  //     setUser(currentUser);
 
-      try {
-        const email = currentUser.email;
-        setEmail(email);
+  //     try {
+  //       const email = currentUser.email;
+  //       setEmail(email);
 
-        const db = getFirestore();
-        const userProfilesCollection = collection(db, "providerProfiles");
-        const userDocRef = doc(userProfilesCollection, currentUser.uid);
-        const userDocSnapshot = await getDoc(userDocRef);
+  //       const db = getFirestore();
+  //       const userProfilesCollection = collection(db, "providerProfiles");
+  //       const userDocRef = doc(userProfilesCollection, currentUser.uid);
+  //       const userDocSnapshot = await getDoc(userDocRef);
 
-        if (userDocSnapshot.exists()) {
-          const userData = userDocSnapshot.data();
-          const { name } = userData;
-          setName(name);
-          console.log("Name:", name);
-        } else {
-          console.log("No user data found for the given UID.");
-        }
+  //       if (userDocSnapshot.exists()) {
+  //         const userData = userDocSnapshot.data();
+  //         const { name } = userData;
+  //         setName(name);
+  //         console.log("Name:", name);
+  //       } else {
+  //         console.log("No user data found for the given UID.");
+  //       }
 
-        // Fetch data from the single document inside appForm1
-        const appForm1Collection = collection(userDocRef, "appForm1");
-        const appForm1Query = query(appForm1Collection);
-        const appForm1Docs = await getDocs(appForm1Query);
+  //       // Fetch data from the single document inside appForm1
+  //       const appForm1Collection = collection(userDocRef, "appForm1");
+  //       const appForm1Query = query(appForm1Collection);
+  //       const appForm1Docs = await getDocs(appForm1Query);
 
-        if (appForm1Docs.size === 1) {
-          const appForm1Doc = appForm1Docs.docs[0];
-          const appForm1Data = appForm1Doc.data();
-          const { city, name, email, phone } = appForm1Data;
-          setCity(city);
-          setName(name);
-          setEmail(email);
-          setPhone(phone);
-          console.log("City:", city);
-          console.log("Name:", name);
-          console.log("Email:", email);
-          console.log("Phone:", phone);
-        } else {
-          console.log("No or multiple documents found in appForm1.");
-        }
-        setLoading(false);
-      } catch (error) {
-        // console.error("Error retrieving user data:", error);
-        setLoading(false);
-      }
-    });
+  //       if (appForm1Docs.size === 1) {
+  //         const appForm1Doc = appForm1Docs.docs[0];
+  //         const appForm1Data = appForm1Doc.data();
+  //         const { city, name, email, phone } = appForm1Data;
+  //         setCity(city);
+  //         setName(name);
+  //         setEmail(email);
+  //         setPhone(phone);
+  //         console.log("City:", city);
+  //         console.log("Name:", name);
+  //         console.log("Email:", email);
+  //         console.log("Phone:", phone);
+  //       } else {
+  //         console.log("No or multiple documents found in appForm1.");
+  //       }
+  //       setLoading(false);
+  //     } catch (error) {
+  //       // console.error("Error retrieving user data:", error);
+  //       setLoading(false);
+  //     }
+  //   });
 
-    return unsubscribeReference;
-  };
+  //   return unsubscribeReference;
+  // };
 
-  useEffect(() => {
-    const unsubscribe = fetchUserData();
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+  // useEffect(() => {
+  //   const unsubscribe = fetchUserData();
+  //   return () => {
+  //     unsubscribe();
+  //   };
+  // }, []);
 
-  const areInputsNotEmpty = () => {
-    // Check if all required inputs are not empty
-    return name !== '' && email !== '' && city !== '' && phone !== '';
-  };
+  // const areInputsNotEmpty = () => {
+  //   // Check if all required inputs are not empty
+  //   return name !== '' && email !== '' && city !== '' && phone !== '';
+  // };
 
-  const updateFirestoreData = async () => {
-    try {
-      const db = getFirestore();
-      const userProfilesCollection = collection(db, "providerProfiles");
-      const userDocRef = doc(userProfilesCollection, user.uid);
+  // const updateFirestoreData = async () => {
+  //   try {
+  //     const db = getFirestore();
+  //     const userProfilesCollection = collection(db, "providerProfiles");
+  //     const userDocRef = doc(userProfilesCollection, user.uid);
   
-      // Fetch data from the "appForm1" subcollection
-      const appForm1Collection = collection(userDocRef, "appForm1");
-      const appForm1Query = query(appForm1Collection);
-      const appForm1Docs = await getDocs(appForm1Query);
+  //     // Fetch data from the "appForm1" subcollection
+  //     const appForm1Collection = collection(userDocRef, "appForm1");
+  //     const appForm1Query = query(appForm1Collection);
+  //     const appForm1Docs = await getDocs(appForm1Query);
   
-      if (appForm1Docs.size === 1) {
-        const appForm1Doc = appForm1Docs.docs[0]; // Get the first document
-        const appForm1DocRef = doc(appForm1Collection, appForm1Doc.id); // Construct the reference using the document's ID
-        await setDoc(appForm1DocRef, {
-          name,
-          email,
-          city,
-          phone,
-        });
-        console.log("Data updated in Firestore.");
-      } else {
-        console.log("No or multiple documents found in appForm1.");
-      }
-    } catch (error) {
-      // console.error("Error updating Firestore data:", error);
-    }
-  };
+  //     if (appForm1Docs.size === 1) {
+  //       const appForm1Doc = appForm1Docs.docs[0]; // Get the first document
+  //       const appForm1DocRef = doc(appForm1Collection, appForm1Doc.id); // Construct the reference using the document's ID
+  //       await setDoc(appForm1DocRef, {
+  //         name,
+  //         email,
+  //         city,
+  //         phone,
+  //       });
+  //       console.log("Data updated in Firestore.");
+  //     } else {
+  //       console.log("No or multiple documents found in appForm1.");
+  //     }
+  //   } catch (error) {
+  //     // console.error("Error updating Firestore data:", error);
+  //   }
+  // };
 
-  const isValidPhilippinePhoneNumber = (phoneNumber) => {
-    // Clean the input by removing non-digit characters
-    //const cleanedPhoneNumber = phoneNumber.replace(/\D/g, "");
+  // const isValidPhilippinePhoneNumber = (phoneNumber) => {
+  //   // Clean the input by removing non-digit characters
+  //   //const cleanedPhoneNumber = phoneNumber.replace(/\D/g, "");
 
-    // Check if the cleaned phone number is exactly 10 digits
-    if (phoneNumber.length !== 13) {
-      return false;
-    }
+  //   // Check if the cleaned phone number is exactly 10 digits
+  //   if (phoneNumber.length !== 13) {
+  //     return false;
+  //   }
 
-    // Check if the first digit is 9
-    if (
-      phoneNumber.charAt(0) !== "+" &&
-      phoneNumber.charAt(1) !== "6" &&
-      phoneNumber.charAt(2) !== "3"
-    ) {
-      return false;
-    }
+  //   // Check if the first digit is 9
+  //   if (
+  //     phoneNumber.charAt(0) !== "+" &&
+  //     phoneNumber.charAt(1) !== "6" &&
+  //     phoneNumber.charAt(2) !== "3"
+  //   ) {
+  //     return false;
+  //   }
 
-    return true;
-  };
+  //   return true;
+  // };
   
 
   return (
@@ -244,7 +244,7 @@ const ApplicationForm1 = () => {
                         placeholderTextColor="#1a1b2d"
                         //value = {name}
                         value={name} // Set the value of the text input to the 'name' state
-                        onChangeText={(text) => setName(text)} // This allows you to edit the name
+                        // onChangeText={(text) => setName(text)} // This allows you to edit the name
                       />
                     </View>
                   </View>
@@ -263,7 +263,7 @@ const ApplicationForm1 = () => {
                       <TextInput
                         style={[styles.frameItem, styles.frameTypo]}
                         value={phone} // Set the value of the text input to the 'name' state
-                        onChangeText={(text) => setPhone(text)} // This allows you to edit the name
+                        // onChangeText={(text) => setPhone(text)} // This allows you to edit the name
                         placeholderTextColor="#1a1b2d"
                       />
                     </View>
@@ -281,7 +281,7 @@ const ApplicationForm1 = () => {
                       <TextInput
                         style={styles.frameTypo}
                         value={email} // Set the value of the text input to the 'name' state
-                        onChangeText={(text) => setEmail(text)} // This allows you to edit the name
+                        // onChangeText={(text) => setEmail(text)} // This allows you to edit the name
                         placeholderTextColor="#1a1b2d"
                       />
                     </View>
@@ -299,7 +299,7 @@ const ApplicationForm1 = () => {
                       <TextInput
                         style={styles.frameTypo}
                         value={city} // Set the value of the text input to the 'name' state
-                        onChangeText={(text) => setCity(text)} // This allows you to edit the name
+                        // onChangeText={(text) => setCity(text)} // This allows you to edit the name
                         placeholderTextColor="#1a1b2d"
                       />
                     </View>
@@ -317,32 +317,7 @@ const ApplicationForm1 = () => {
                     styles.componentsbutton3,
                     styles.componentsbuttonSpaceBlock1,
                   ]}
-                  onPress={async () => {
-                    if (!isValidPhilippinePhoneNumber(phone)) {
-                      Toast.show({
-                        type: "error",
-                        position: "top",
-                        text1: "Error",
-                        text2: "Enter a valid  phone number with format +63❗",
-                        visibilityTime: 5000,
-                      });
-                      return;
-                    }
-                    if (areInputsNotEmpty()) {
-                      // All inputs are not empty, navigate to "ApplicationForm2"
-                      await updateFirestoreData();
-                      navigation.navigate("ApplicationForm2");
-                    } else {
-                      Toast.show({
-                        type: "error",
-                        position: "top",
-                        text1: "Error",
-                        text2: "Form Incomplete",
-                        visibilityTime: 5000,
-                      });
-                      return;
-                    }
-                  }}            >
+                 >
                   <Text style={[styles.viewAllServices3, styles.viewTypo]}>
                     Next
                   </Text>

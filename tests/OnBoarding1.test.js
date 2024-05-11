@@ -56,4 +56,22 @@ describe("ChangePasswordUpdated component", () => {
     // Assert that navigation function is called with expected screen name
     expect(mockNavigate).toHaveBeenCalledWith("Onboarding2");
   });
+
+  test("Pressing the button navigates to next screen", () => {
+    // Mock navigation
+    const mockNavigate = jest.fn();
+    useNavigation.mockReturnValue({ navigate: mockNavigate });
+
+    // Render HomePage component
+    const { getByTestId } =  render(<Onboarding1/>);
+
+    // Find the Pressable element by its text content
+    const button = getByTestId("skip-button");
+
+    // Simulate a press event on the Pressable element
+    fireEvent.press(button);
+
+    // Assert that navigation function is called with expected screen name
+    expect(mockNavigate).toHaveBeenCalledWith("Onboarding3");
+  });
 });

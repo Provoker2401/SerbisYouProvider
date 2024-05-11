@@ -1,0 +1,1435 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1714892616795" clover="3.2.0">
+  <project timestamp="1714892616795" name="All files">
+    <metrics statements="1048" coveredstatements="628" conditionals="319" coveredconditionals="54" methods="218" coveredmethods="78" elements="1585" coveredelements="760" complexity="0" loc="1048" ncloc="1048" packages="5" files="122" classes="122"/>
+    <package name="SerbisYouProvider">
+      <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="GlobalStyles.js" path="D:\4th Year\Testing\SerbisYouProvider\GlobalStyles.js">
+        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="2" count="35" type="stmt"/>
+        <line num="32" count="35" type="stmt"/>
+        <line num="53" count="35" type="stmt"/>
+        <line num="130" count="35" type="stmt"/>
+        <line num="162" count="35" type="stmt"/>
+      </file>
+    </package>
+    <package name="SerbisYouProvider.animations">
+      <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="toggleAnimation.js" path="D:\4th Year\Testing\SerbisYouProvider\animations\toggleAnimation.js">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="3" count="4" type="stmt"/>
+      </file>
+    </package>
+    <package name="SerbisYouProvider.assets">
+      <metrics statements="71" coveredstatements="71" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="-icon-eye-empty.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\-icon-eye-empty.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+      </file>
+      <file name="-left-icon.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\-left-icon.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="-left-icon1.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\-left-icon1.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="-left-icon2.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\-left-icon2.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="-left-icon3.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\-left-icon3.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="arrow-right.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\arrow-right.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="chat-notifications-icon.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\chat-notifications-icon.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="clock-1.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\clock-1.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="copy.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\copy.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="date-range-light1.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\date-range-light1.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="dog-setting-1-1.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\dog-setting-1-1.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="dog-setting-4-1.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\dog-setting-4-1.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="dog-setting-5-1.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\dog-setting-5-1.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="ellipse-138.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\ellipse-138.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="3" type="stmt"/>
+      </file>
+      <file name="ellipse-139.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\ellipse-139.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="3" type="stmt"/>
+      </file>
+      <file name="ellipse-19.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\ellipse-19.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="ellipse-229.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\ellipse-229.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="3" type="stmt"/>
+      </file>
+      <file name="ellipse-4.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\ellipse-4.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="ellipse-52.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\ellipse-52.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="eye-off.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\eye-off.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="frame.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\frame.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+      </file>
+      <file name="gps-2.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\gps-2.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="group-6476.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\group-6476.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+      </file>
+      <file name="help-center-icon.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\help-center-icon.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="icon-filled.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\icon-filled.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+      </file>
+      <file name="icon1.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\icon1.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="3" type="stmt"/>
+      </file>
+      <file name="icon13.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\icon13.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="icon14.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\icon14.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="icon2.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\icon2.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="3" type="stmt"/>
+      </file>
+      <file name="icon3.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\icon3.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="3" type="stmt"/>
+      </file>
+      <file name="icon4.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\icon4.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="3" type="stmt"/>
+      </file>
+      <file name="icons8chatbubble100-1.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\icons8chatbubble100-1.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="image-2354.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\image-2354.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+      </file>
+      <file name="image-2356.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\image-2356.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+      </file>
+      <file name="image-23583.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\image-23583.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="image-2373.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\image-2373.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+      </file>
+      <file name="image-2387.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\image-2387.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="left-arrow-black.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\left-arrow-black.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="line-133.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\line-133.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="line-74.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\line-74.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="line-84.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\line-84.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+      </file>
+      <file name="line.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\line.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="lock.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\lock.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="markers--near-pinlet-marker1.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\markers--near-pinlet-marker1.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="mastercard--jpeg-0.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\mastercard--jpeg-0.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="mop-1.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\mop-1.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="navigationMap.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\navigationMap.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="notifications-icon.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\notifications-icon.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="order-notifications-icon.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\order-notifications-icon.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="password-icon.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\password-icon.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="payment-icon.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\payment-icon.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="policy-icon.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\policy-icon.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="polygon-up.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\polygon-up.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="profile-icon.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\profile-icon.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="rectangle-4408.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\rectangle-4408.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="resetpassword-1-1.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\resetpassword-1-1.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="right-arrow-black.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\right-arrow-black.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="serbisyouwhite-1.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\serbisyouwhite-1.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="sms-notifications-icon.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\sms-notifications-icon.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="town.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\town.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+      </file>
+      <file name="ui-iconarrow-backwardfilled.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\ui-iconarrow-backwardfilled.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="union.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\union.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="vector-3.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\vector-3.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="vector-32.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\vector-32.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="vector1.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\vector1.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+      </file>
+      <file name="vector2.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\vector2.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+      </file>
+      <file name="vector5.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\vector5.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="3" type="stmt"/>
+      </file>
+      <file name="vector7.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\vector7.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="vector8.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\vector8.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="vector9.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\vector9.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="vuesaxtwotonemessagetext.png" path="D:\4th Year\Testing\SerbisYouProvider\assets\vuesaxtwotonemessagetext.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="SerbisYouProvider.components">
+      <metrics statements="399" coveredstatements="35" conditionals="139" coveredconditionals="0" methods="88" coveredmethods="0"/>
+      <file name="AboutUsFrame.js" path="D:\4th Year\Testing\SerbisYouProvider\components\AboutUsFrame.js">
+        <metrics statements="3" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="0" type="stmt"/>
+        <line num="70" count="1" type="stmt"/>
+      </file>
+      <file name="ActiveBookingCard.js" path="D:\4th Year\Testing\SerbisYouProvider\components\ActiveBookingCard.js">
+        <metrics statements="39" coveredstatements="5" conditionals="18" coveredconditionals="0" methods="10" coveredmethods="0"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="23" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="29" count="0" type="stmt"/>
+        <line num="31" count="0" type="stmt"/>
+        <line num="35" count="1" type="stmt"/>
+        <line num="36" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="38" count="0" type="stmt"/>
+        <line num="40" count="0" type="stmt"/>
+        <line num="42" count="0" type="stmt"/>
+        <line num="44" count="0" type="stmt"/>
+        <line num="48" count="1" type="stmt"/>
+        <line num="49" count="0" type="stmt"/>
+        <line num="50" count="0" type="stmt"/>
+        <line num="51" count="0" type="stmt"/>
+        <line num="53" count="0" type="stmt"/>
+        <line num="54" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="55" count="0" type="stmt"/>
+        <line num="56" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="57" count="0" type="stmt"/>
+        <line num="58" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="59" count="0" type="stmt"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="64" count="0" type="stmt"/>
+        <line num="66" count="0" type="stmt"/>
+        <line num="67" count="0" type="stmt"/>
+        <line num="70" count="0" type="stmt"/>
+        <line num="71" count="0" type="stmt"/>
+        <line num="75" count="0" type="stmt"/>
+        <line num="156" count="0" type="stmt"/>
+        <line num="162" count="0" type="stmt"/>
+        <line num="172" count="1" type="stmt"/>
+      </file>
+      <file name="ActiveBookings.js" path="D:\4th Year\Testing\SerbisYouProvider\components\ActiveBookings.js">
+        <metrics statements="38" coveredstatements="2" conditionals="13" coveredconditionals="0" methods="11" coveredmethods="0"/>
+        <line num="21" count="1" type="stmt"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="30" count="0" type="stmt"/>
+        <line num="33" count="0" type="stmt"/>
+        <line num="34" count="0" type="stmt"/>
+        <line num="35" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="36" count="0" type="stmt"/>
+        <line num="37" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="38" count="0" type="stmt"/>
+        <line num="41" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="42" count="0" type="stmt"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="45" count="0" type="stmt"/>
+        <line num="46" count="0" type="stmt"/>
+        <line num="49" count="0" type="stmt"/>
+        <line num="50" count="0" type="stmt"/>
+        <line num="53" count="0" type="stmt"/>
+        <line num="57" count="0" type="stmt"/>
+        <line num="59" count="0" type="cond" truecount="0" falsecount="5"/>
+        <line num="60" count="0" type="stmt"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="67" count="0" type="stmt"/>
+        <line num="68" count="0" type="stmt"/>
+        <line num="69" count="0" type="stmt"/>
+        <line num="70" count="0" type="stmt"/>
+        <line num="71" count="0" type="stmt"/>
+        <line num="74" count="0" type="stmt"/>
+        <line num="77" count="0" type="stmt"/>
+        <line num="78" count="0" type="stmt"/>
+        <line num="94" count="0" type="stmt"/>
+        <line num="123" count="0" type="stmt"/>
+        <line num="144" count="0" type="stmt"/>
+        <line num="152" count="1" type="stmt"/>
+      </file>
+      <file name="BookingNotFound.js" path="D:\4th Year\Testing\SerbisYouProvider\components\BookingNotFound.js">
+        <metrics statements="6" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="55" count="1" type="stmt"/>
+      </file>
+      <file name="CancelBookingPrompt.js" path="D:\4th Year\Testing\SerbisYouProvider\components\CancelBookingPrompt.js">
+        <metrics statements="11" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="0"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="20" count="0" type="stmt"/>
+        <line num="21" count="0" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="67" count="1" type="stmt"/>
+      </file>
+      <file name="CountDownBooking.js" path="D:\4th Year\Testing\SerbisYouProvider\components\CountDownBooking.js">
+        <metrics statements="4" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="51" count="1" type="stmt"/>
+      </file>
+      <file name="FAQsFrame.js" path="D:\4th Year\Testing\SerbisYouProvider\components\FAQsFrame.js">
+        <metrics statements="65" coveredstatements="2" conditionals="50" coveredconditionals="0" methods="19" coveredmethods="0"/>
+        <line num="19" count="1" type="stmt"/>
+        <line num="20" count="0" type="stmt"/>
+        <line num="21" count="0" type="stmt"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="50" count="0" type="stmt"/>
+        <line num="72" count="0" type="stmt"/>
+        <line num="94" count="0" type="stmt"/>
+        <line num="117" count="0" type="stmt"/>
+        <line num="120" count="0" type="stmt"/>
+        <line num="123" count="0" type="stmt"/>
+        <line num="126" count="0" type="stmt"/>
+        <line num="130" count="0" type="stmt"/>
+        <line num="132" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="133" count="0" type="stmt"/>
+        <line num="152" count="0" type="stmt"/>
+        <line num="165" count="0" type="stmt"/>
+        <line num="166" count="0" type="stmt"/>
+        <line num="171" count="0" type="stmt"/>
+        <line num="172" count="0" type="stmt"/>
+        <line num="173" count="0" type="stmt"/>
+        <line num="175" count="0" type="stmt"/>
+        <line num="176" count="0" type="stmt"/>
+        <line num="177" count="0" type="stmt"/>
+        <line num="179" count="0" type="stmt"/>
+        <line num="180" count="0" type="stmt"/>
+        <line num="185" count="0" type="stmt"/>
+        <line num="186" count="0" type="stmt"/>
+        <line num="187" count="0" type="stmt"/>
+        <line num="189" count="0" type="stmt"/>
+        <line num="190" count="0" type="stmt"/>
+        <line num="191" count="0" type="stmt"/>
+        <line num="193" count="0" type="stmt"/>
+        <line num="194" count="0" type="stmt"/>
+        <line num="199" count="0" type="stmt"/>
+        <line num="200" count="0" type="stmt"/>
+        <line num="201" count="0" type="stmt"/>
+        <line num="203" count="0" type="stmt"/>
+        <line num="204" count="0" type="stmt"/>
+        <line num="205" count="0" type="stmt"/>
+        <line num="207" count="0" type="stmt"/>
+        <line num="208" count="0" type="stmt"/>
+        <line num="213" count="0" type="stmt"/>
+        <line num="214" count="0" type="stmt"/>
+        <line num="215" count="0" type="stmt"/>
+        <line num="217" count="0" type="stmt"/>
+        <line num="218" count="0" type="stmt"/>
+        <line num="219" count="0" type="stmt"/>
+        <line num="222" count="0" type="stmt"/>
+        <line num="234" count="0" type="stmt"/>
+        <line num="255" count="0" type="stmt"/>
+        <line num="276" count="0" type="stmt"/>
+        <line num="297" count="0" type="stmt"/>
+        <line num="351" count="0" type="stmt"/>
+        <line num="365" count="0" type="stmt"/>
+        <line num="431" count="0" type="stmt"/>
+        <line num="445" count="0" type="stmt"/>
+        <line num="511" count="0" type="stmt"/>
+        <line num="525" count="0" type="stmt"/>
+        <line num="591" count="0" type="stmt"/>
+        <line num="605" count="0" type="stmt"/>
+        <line num="669" count="1" type="stmt"/>
+      </file>
+      <file name="HistoryBookingCard.js" path="D:\4th Year\Testing\SerbisYouProvider\components\HistoryBookingCard.js">
+        <metrics statements="45" coveredstatements="6" conditionals="18" coveredconditionals="0" methods="8" coveredmethods="0"/>
+        <line num="26" count="1" type="stmt"/>
+        <line num="27" count="0" type="cond" truecount="0" falsecount="3"/>
+        <line num="29" count="0" type="stmt"/>
+        <line num="31" count="0" type="stmt"/>
+        <line num="33" count="0" type="stmt"/>
+        <line num="38" count="1" type="stmt"/>
+        <line num="39" count="0" type="cond" truecount="0" falsecount="3"/>
+        <line num="41" count="0" type="stmt"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="45" count="0" type="stmt"/>
+        <line num="49" count="1" type="stmt"/>
+        <line num="50" count="0" type="cond" truecount="0" falsecount="3"/>
+        <line num="52" count="0" type="stmt"/>
+        <line num="54" count="0" type="stmt"/>
+        <line num="56" count="0" type="stmt"/>
+        <line num="60" count="1" type="stmt"/>
+        <line num="61" count="0" type="cond" truecount="0" falsecount="7"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="65" count="0" type="stmt"/>
+        <line num="67" count="0" type="stmt"/>
+        <line num="69" count="0" type="stmt"/>
+        <line num="71" count="0" type="stmt"/>
+        <line num="73" count="0" type="stmt"/>
+        <line num="75" count="0" type="stmt"/>
+        <line num="79" count="1" type="stmt"/>
+        <line num="90" count="0" type="stmt"/>
+        <line num="91" count="0" type="stmt"/>
+        <line num="92" count="0" type="stmt"/>
+        <line num="94" count="0" type="stmt"/>
+        <line num="95" count="0" type="stmt"/>
+        <line num="96" count="0" type="stmt"/>
+        <line num="97" count="0" type="stmt"/>
+        <line num="98" count="0" type="stmt"/>
+        <line num="100" count="0" type="stmt"/>
+        <line num="108" count="0" type="stmt"/>
+        <line num="110" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="111" count="0" type="stmt"/>
+        <line num="112" count="0" type="stmt"/>
+        <line num="114" count="0" type="stmt"/>
+        <line num="118" count="0" type="stmt"/>
+        <line num="123" count="0" type="stmt"/>
+        <line num="125" count="0" type="stmt"/>
+        <line num="127" count="0" type="stmt"/>
+        <line num="163" count="0" type="stmt"/>
+        <line num="258" count="1" type="stmt"/>
+      </file>
+      <file name="HistoryBookings.js" path="D:\4th Year\Testing\SerbisYouProvider\components\HistoryBookings.js">
+        <metrics statements="94" coveredstatements="2" conditionals="27" coveredconditionals="0" methods="19" coveredmethods="0"/>
+        <line num="31" count="1" type="stmt"/>
+        <line num="32" count="0" type="stmt"/>
+        <line num="33" count="0" type="stmt"/>
+        <line num="35" count="0" type="stmt"/>
+        <line num="36" count="0" type="stmt"/>
+        <line num="37" count="0" type="stmt"/>
+        <line num="38" count="0" type="stmt"/>
+        <line num="39" count="0" type="stmt"/>
+        <line num="40" count="0" type="stmt"/>
+        <line num="42" count="0" type="stmt"/>
+        <line num="45" count="0" type="stmt"/>
+        <line num="48" count="0" type="stmt"/>
+        <line num="49" count="0" type="stmt"/>
+        <line num="50" count="0" type="stmt"/>
+        <line num="51" count="0" type="stmt"/>
+        <line num="52" count="0" type="stmt"/>
+        <line num="53" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="55" count="0" type="stmt"/>
+        <line num="56" count="0" type="stmt"/>
+        <line num="57" count="0" type="stmt"/>
+        <line num="59" count="0" type="stmt"/>
+        <line num="60" count="0" type="stmt"/>
+        <line num="61" count="0" type="stmt"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="64" count="0" type="stmt"/>
+        <line num="66" count="0" type="stmt"/>
+        <line num="71" count="0" type="stmt"/>
+        <line num="72" count="0" type="stmt"/>
+        <line num="73" count="0" type="stmt"/>
+        <line num="75" count="0" type="stmt"/>
+        <line num="76" count="0" type="stmt"/>
+        <line num="77" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="78" count="0" type="stmt"/>
+        <line num="80" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="81" count="0" type="stmt"/>
+        <line num="85" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="86" count="0" type="stmt"/>
+        <line num="89" count="0" type="stmt"/>
+        <line num="93" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="94" count="0" type="stmt"/>
+        <line num="99" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="100" count="0" type="stmt"/>
+        <line num="106" count="0" type="stmt"/>
+        <line num="112" count="0" type="stmt"/>
+        <line num="113" count="0" type="stmt"/>
+        <line num="115" count="0" type="stmt"/>
+        <line num="119" count="0" type="stmt"/>
+        <line num="121" count="0" type="stmt"/>
+        <line num="124" count="0" type="stmt"/>
+        <line num="125" count="0" type="stmt"/>
+        <line num="126" count="0" type="stmt"/>
+        <line num="130" count="0" type="stmt"/>
+        <line num="133" count="0" type="stmt"/>
+        <line num="134" count="0" type="stmt"/>
+        <line num="135" count="0" type="stmt"/>
+        <line num="136" count="0" type="stmt"/>
+        <line num="139" count="0" type="stmt"/>
+        <line num="140" count="0" type="stmt"/>
+        <line num="141" count="0" type="stmt"/>
+        <line num="142" count="0" type="stmt"/>
+        <line num="147" count="0" type="stmt"/>
+        <line num="158" count="0" type="stmt"/>
+        <line num="198" count="0" type="stmt"/>
+        <line num="200" count="0" type="stmt"/>
+        <line num="201" count="0" type="stmt"/>
+        <line num="202" count="0" type="stmt"/>
+        <line num="203" count="0" type="stmt"/>
+        <line num="204" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="206" count="0" type="stmt"/>
+        <line num="208" count="0" type="stmt"/>
+        <line num="213" count="0" type="stmt"/>
+        <line num="214" count="0" type="stmt"/>
+        <line num="215" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="216" count="0" type="stmt"/>
+        <line num="217" count="0" type="stmt"/>
+        <line num="219" count="0" type="stmt"/>
+        <line num="221" count="0" type="stmt"/>
+        <line num="222" count="0" type="stmt"/>
+        <line num="225" count="0" type="stmt"/>
+        <line num="228" count="0" type="stmt"/>
+        <line num="232" count="0" type="stmt"/>
+        <line num="235" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="266" count="0" type="stmt"/>
+        <line num="268" count="0" type="cond" truecount="0" falsecount="5"/>
+        <line num="269" count="0" type="stmt"/>
+        <line num="272" count="0" type="stmt"/>
+        <line num="286" count="0" type="stmt"/>
+        <line num="287" count="0" type="stmt"/>
+        <line num="302" count="0" type="stmt"/>
+        <line num="306" count="0" type="stmt"/>
+        <line num="307" count="0" type="stmt"/>
+        <line num="381" count="0" type="stmt"/>
+        <line num="402" count="0" type="stmt"/>
+        <line num="409" count="1" type="stmt"/>
+      </file>
+      <file name="PerformServicePrompt.js" path="D:\4th Year\Testing\SerbisYouProvider\components\PerformServicePrompt.js">
+        <metrics statements="82" coveredstatements="2" conditionals="13" coveredconditionals="0" methods="10" coveredmethods="0"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="31" count="0" type="stmt"/>
+        <line num="32" count="0" type="stmt"/>
+        <line num="33" count="0" type="stmt"/>
+        <line num="34" count="0" type="stmt"/>
+        <line num="35" count="0" type="stmt"/>
+        <line num="36" count="0" type="stmt"/>
+        <line num="38" count="0" type="stmt"/>
+        <line num="42" count="0" type="stmt"/>
+        <line num="44" count="0" type="stmt"/>
+        <line num="45" count="0" type="stmt"/>
+        <line num="48" count="0" type="stmt"/>
+        <line num="49" count="0" type="stmt"/>
+        <line num="50" count="0" type="stmt"/>
+        <line num="51" count="0" type="stmt"/>
+        <line num="53" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="54" count="0" type="stmt"/>
+        <line num="55" count="0" type="stmt"/>
+        <line num="56" count="0" type="stmt"/>
+        <line num="57" count="0" type="stmt"/>
+        <line num="59" count="0" type="stmt"/>
+        <line num="62" count="0" type="stmt"/>
+        <line num="66" count="0" type="stmt"/>
+        <line num="69" count="0" type="stmt"/>
+        <line num="70" count="0" type="stmt"/>
+        <line num="71" count="0" type="stmt"/>
+        <line num="73" count="0" type="stmt"/>
+        <line num="75" count="0" type="stmt"/>
+        <line num="76" count="0" type="stmt"/>
+        <line num="77" count="0" type="stmt"/>
+        <line num="78" count="0" type="stmt"/>
+        <line num="79" count="0" type="stmt"/>
+        <line num="81" count="0" type="stmt"/>
+        <line num="82" count="0" type="stmt"/>
+        <line num="83" count="0" type="stmt"/>
+        <line num="85" count="0" type="stmt"/>
+        <line num="86" count="0" type="stmt"/>
+        <line num="87" count="0" type="stmt"/>
+        <line num="88" count="0" type="stmt"/>
+        <line num="89" count="0" type="stmt"/>
+        <line num="95" count="0" type="stmt"/>
+        <line num="99" count="0" type="stmt"/>
+        <line num="100" count="0" type="stmt"/>
+        <line num="102" count="0" type="stmt"/>
+        <line num="103" count="0" type="stmt"/>
+        <line num="105" count="0" type="stmt"/>
+        <line num="106" count="0" type="stmt"/>
+        <line num="111" count="0" type="stmt"/>
+        <line num="113" count="0" type="stmt"/>
+        <line num="123" count="0" type="stmt"/>
+        <line num="125" count="0" type="stmt"/>
+        <line num="126" count="0" type="stmt"/>
+        <line num="127" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="129" count="0" type="stmt"/>
+        <line num="132" count="0" type="stmt"/>
+        <line num="135" count="0" type="stmt"/>
+        <line num="136" count="0" type="stmt"/>
+        <line num="139" count="0" type="stmt"/>
+        <line num="142" count="0" type="stmt"/>
+        <line num="145" count="0" type="stmt"/>
+        <line num="147" count="0" type="stmt"/>
+        <line num="151" count="0" type="stmt"/>
+        <line num="152" count="0" type="stmt"/>
+        <line num="153" count="0" type="stmt"/>
+        <line num="154" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="155" count="0" type="stmt"/>
+        <line num="159" count="0" type="cond" truecount="0" falsecount="5"/>
+        <line num="160" count="0" type="stmt"/>
+        <line num="163" count="0" type="stmt"/>
+        <line num="167" count="0" type="stmt"/>
+        <line num="168" count="0" type="stmt"/>
+        <line num="169" count="0" type="stmt"/>
+        <line num="172" count="0" type="stmt"/>
+        <line num="173" count="0" type="stmt"/>
+        <line num="176" count="0" type="stmt"/>
+        <line num="199" count="0" type="stmt"/>
+        <line num="213" count="1" type="stmt"/>
+      </file>
+      <file name="Tab1.js" path="D:\4th Year\Testing\SerbisYouProvider\components\Tab1.js">
+        <metrics statements="3" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="0" type="stmt"/>
+        <line num="18" count="2" type="stmt"/>
+      </file>
+      <file name="Tab11.js" path="D:\4th Year\Testing\SerbisYouProvider\components\Tab11.js">
+        <metrics statements="3" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="0" type="stmt"/>
+        <line num="18" count="2" type="stmt"/>
+      </file>
+      <file name="Tab2.js" path="D:\4th Year\Testing\SerbisYouProvider\components\Tab2.js">
+        <metrics statements="3" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="0" type="stmt"/>
+        <line num="17" count="2" type="stmt"/>
+      </file>
+      <file name="Tab21.js" path="D:\4th Year\Testing\SerbisYouProvider\components\Tab21.js">
+        <metrics statements="3" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="0" type="stmt"/>
+        <line num="18" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="SerbisYouProvider.screens">
+      <metrics statements="572" coveredstatements="516" conditionals="180" coveredconditionals="54" methods="130" coveredmethods="78"/>
+      <file name="AddCard.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\AddCard.js">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="16" count="11" type="stmt"/>
+        <line num="246" count="1" type="stmt"/>
+      </file>
+      <file name="ApplicationForm1.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\ApplicationForm1.js">
+        <metrics statements="10" coveredstatements="10" conditionals="2" coveredconditionals="1" methods="1" coveredmethods="1"/>
+        <line num="30" count="1" type="stmt"/>
+        <line num="31" count="1" type="stmt"/>
+        <line num="33" count="1" type="stmt"/>
+        <line num="34" count="1" type="stmt"/>
+        <line num="35" count="1" type="stmt"/>
+        <line num="36" count="1" type="stmt"/>
+        <line num="37" count="1" type="stmt"/>
+        <line num="38" count="1" type="stmt"/>
+        <line num="162" count="1" type="stmt"/>
+        <line num="334" count="1" type="stmt"/>
+      </file>
+      <file name="ApplicationForm2.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\ApplicationForm2.js">
+        <metrics statements="15" coveredstatements="12" conditionals="8" coveredconditionals="4" methods="4" coveredmethods="1"/>
+        <line num="23" count="2" type="stmt"/>
+        <line num="24" count="10" type="stmt"/>
+        <line num="26" count="10" type="stmt"/>
+        <line num="27" count="10" type="stmt"/>
+        <line num="28" count="10" type="stmt"/>
+        <line num="29" count="10" type="stmt"/>
+        <line num="30" count="10" type="stmt"/>
+        <line num="31" count="10" type="stmt"/>
+        <line num="35" count="10" type="stmt"/>
+        <line num="105" count="10" type="stmt"/>
+        <line num="325" count="10" type="stmt"/>
+        <line num="412" count="0" type="stmt"/>
+        <line num="427" count="0" type="stmt"/>
+        <line num="441" count="0" type="stmt"/>
+        <line num="514" count="2" type="stmt"/>
+      </file>
+      <file name="Authentication.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\Authentication.js">
+        <metrics statements="22" coveredstatements="22" conditionals="6" coveredconditionals="4" methods="3" coveredmethods="3"/>
+        <line num="36" count="1" type="stmt"/>
+        <line num="45" count="1" type="stmt"/>
+        <line num="46" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="47" count="1" type="stmt"/>
+        <line num="53" count="1" type="stmt"/>
+        <line num="54" count="4" type="stmt"/>
+        <line num="55" count="4" type="stmt"/>
+        <line num="57" count="4" type="stmt"/>
+        <line num="59" count="4" type="stmt"/>
+        <line num="61" count="4" type="stmt"/>
+        <line num="62" count="4" type="stmt"/>
+        <line num="63" count="4" type="stmt"/>
+        <line num="64" count="4" type="stmt"/>
+        <line num="66" count="4" type="stmt"/>
+        <line num="68" count="4" type="stmt"/>
+        <line num="96" count="4" type="stmt"/>
+        <line num="97" count="4" type="stmt"/>
+        <line num="98" count="4" type="stmt"/>
+        <line num="100" count="24" type="stmt"/>
+        <line num="333" count="4" type="stmt"/>
+        <line num="352" count="24" type="stmt"/>
+        <line num="402" count="1" type="stmt"/>
+      </file>
+      <file name="BookingsActive.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\BookingsActive.js">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="1"/>
+        <line num="23" count="1" type="stmt"/>
+        <line num="24" count="1" type="stmt"/>
+        <line num="26" count="1" type="stmt"/>
+        <line num="28" count="1" type="stmt"/>
+        <line num="29" count="1" type="stmt"/>
+        <line num="100" count="1" type="stmt"/>
+      </file>
+      <file name="CalendarStrips.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\CalendarStrips.js">
+        <metrics statements="30" coveredstatements="28" conditionals="4" coveredconditionals="4" methods="6" coveredmethods="2"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="14" count="2" type="stmt"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+        <line num="20" count="366" type="stmt"/>
+        <line num="21" count="366" type="stmt"/>
+        <line num="22" count="366" type="stmt"/>
+        <line num="25" count="366" type="cond" truecount="2" falsecount="0"/>
+        <line num="26" count="157" type="stmt"/>
+        <line num="30" count="157" type="stmt"/>
+        <line num="37" count="366" type="cond" truecount="2" falsecount="0"/>
+        <line num="38" count="105" type="stmt"/>
+        <line num="44" count="366" type="stmt"/>
+        <line num="51" count="1" type="stmt"/>
+        <line num="54" count="2" type="stmt"/>
+        <line num="58" count="2" type="stmt"/>
+        <line num="63" count="2" type="stmt"/>
+        <line num="64" count="0" type="stmt"/>
+        <line num="69" count="2" type="stmt"/>
+        <line num="70" count="0" type="stmt"/>
+        <line num="77" count="2" type="stmt"/>
+        <line num="88" count="2" type="stmt"/>
+        <line num="97" count="2" type="stmt"/>
+        <line num="140" count="1" type="stmt"/>
+      </file>
+      <file name="CashOutBalance.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\CashOutBalance.js">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="19" count="5" type="stmt"/>
+        <line num="21" count="5" type="stmt"/>
+        <line num="23" count="5" type="stmt"/>
+        <line num="66" count="1" type="stmt"/>
+        <line num="76" count="1" type="stmt"/>
+      </file>
+      <file name="ChangePassword.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\ChangePassword.js">
+        <metrics statements="12" coveredstatements="11" conditionals="18" coveredconditionals="5" methods="2" coveredmethods="1"/>
+        <line num="31" count="1" type="stmt"/>
+        <line num="32" count="6" type="stmt"/>
+        <line num="35" count="6" type="stmt"/>
+        <line num="36" count="6" type="stmt"/>
+        <line num="37" count="6" type="stmt"/>
+        <line num="38" count="6" type="stmt"/>
+        <line num="40" count="6" type="stmt"/>
+        <line num="41" count="6" type="stmt"/>
+        <line num="42" count="6" type="stmt"/>
+        <line num="138" count="6" type="stmt"/>
+        <line num="226" count="0" type="stmt"/>
+        <line num="321" count="1" type="stmt"/>
+      </file>
+      <file name="ChangePasswordUpdated.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\ChangePasswordUpdated.js">
+        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="17" count="4" type="stmt"/>
+        <line num="19" count="4" type="stmt"/>
+        <line num="49" count="1" type="stmt"/>
+        <line num="64" count="1" type="stmt"/>
+      </file>
+      <file name="ConfirmNavigation.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\ConfirmNavigation.js">
+        <metrics statements="19" coveredstatements="16" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="1"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="15" count="2" type="stmt"/>
+        <line num="16" count="2" type="stmt"/>
+        <line num="17" count="2" type="stmt"/>
+        <line num="18" count="2" type="stmt"/>
+        <line num="19" count="2" type="stmt"/>
+        <line num="21" count="2" type="stmt"/>
+        <line num="143" count="2" type="stmt"/>
+        <line num="144" count="2" type="stmt"/>
+        <line num="164" count="2" type="stmt"/>
+        <line num="165" count="2" type="stmt"/>
+        <line num="168" count="2" type="stmt"/>
+        <line num="169" count="2" type="stmt"/>
+        <line num="170" count="2" type="stmt"/>
+        <line num="263" count="2" type="stmt"/>
+        <line num="265" count="0" type="stmt"/>
+        <line num="329" count="0" type="stmt"/>
+        <line num="330" count="0" type="stmt"/>
+        <line num="425" count="1" type="stmt"/>
+      </file>
+      <file name="EReceipt.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\EReceipt.js">
+        <metrics statements="38" coveredstatements="31" conditionals="4" coveredconditionals="1" methods="7" coveredmethods="3"/>
+        <line num="29" count="1" type="stmt"/>
+        <line num="30" count="7" type="stmt"/>
+        <line num="32" count="7" type="stmt"/>
+        <line num="34" count="7" type="stmt"/>
+        <line num="35" count="7" type="stmt"/>
+        <line num="36" count="7" type="stmt"/>
+        <line num="38" count="7" type="stmt"/>
+        <line num="39" count="0" type="stmt"/>
+        <line num="49" count="7" type="stmt"/>
+        <line num="54" count="7" type="stmt"/>
+        <line num="55" count="7" type="stmt"/>
+        <line num="56" count="7" type="stmt"/>
+        <line num="57" count="7" type="stmt"/>
+        <line num="58" count="7" type="stmt"/>
+        <line num="59" count="7" type="stmt"/>
+        <line num="60" count="7" type="stmt"/>
+        <line num="61" count="7" type="stmt"/>
+        <line num="62" count="7" type="stmt"/>
+        <line num="63" count="7" type="stmt"/>
+        <line num="64" count="7" type="stmt"/>
+        <line num="66" count="7" type="stmt"/>
+        <line num="68" count="7" type="stmt"/>
+        <line num="69" count="7" type="stmt"/>
+        <line num="70" count="7" type="stmt"/>
+        <line num="71" count="7" type="stmt"/>
+        <line num="72" count="7" type="stmt"/>
+        <line num="73" count="7" type="stmt"/>
+        <line num="75" count="0" type="stmt"/>
+        <line num="83" count="0" type="stmt"/>
+        <line num="105" count="7" type="stmt"/>
+        <line num="109" count="7" type="stmt"/>
+        <line num="112" count="7" type="stmt"/>
+        <line num="113" count="0" type="stmt"/>
+        <line num="114" count="0" type="stmt"/>
+        <line num="134" count="7" type="stmt"/>
+        <line num="238" count="0" type="stmt"/>
+        <line num="298" count="0" type="stmt"/>
+        <line num="454" count="1" type="stmt"/>
+      </file>
+      <file name="EditService.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\EditService.js">
+        <metrics statements="43" coveredstatements="36" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="1"/>
+        <line num="29" count="1" type="stmt"/>
+        <line num="30" count="7" type="stmt"/>
+        <line num="35" count="7" type="stmt"/>
+        <line num="36" count="6" type="stmt"/>
+        <line num="37" count="0" type="stmt"/>
+        <line num="38" count="0" type="stmt"/>
+        <line num="39" count="0" type="stmt"/>
+        <line num="40" count="0" type="stmt"/>
+        <line num="41" count="0" type="stmt"/>
+        <line num="42" count="0" type="stmt"/>
+        <line num="45" count="0" type="stmt"/>
+        <line num="49" count="6" type="stmt"/>
+        <line num="50" count="6" type="stmt"/>
+        <line num="51" count="6" type="stmt"/>
+        <line num="56" count="6" type="stmt"/>
+        <line num="57" count="6" type="stmt"/>
+        <line num="61" count="6" type="stmt"/>
+        <line num="124" count="6" type="stmt"/>
+        <line num="140" count="6" type="stmt"/>
+        <line num="156" count="6" type="stmt"/>
+        <line num="171" count="6" type="stmt"/>
+        <line num="194" count="6" type="stmt"/>
+        <line num="213" count="6" type="stmt"/>
+        <line num="228" count="6" type="stmt"/>
+        <line num="244" count="6" type="stmt"/>
+        <line num="261" count="6" type="stmt"/>
+        <line num="278" count="6" type="stmt"/>
+        <line num="295" count="6" type="stmt"/>
+        <line num="312" count="6" type="stmt"/>
+        <line num="328" count="6" type="stmt"/>
+        <line num="344" count="6" type="stmt"/>
+        <line num="361" count="6" type="stmt"/>
+        <line num="378" count="6" type="stmt"/>
+        <line num="394" count="6" type="stmt"/>
+        <line num="411" count="6" type="stmt"/>
+        <line num="426" count="6" type="stmt"/>
+        <line num="442" count="6" type="stmt"/>
+        <line num="456" count="6" type="stmt"/>
+        <line num="473" count="6" type="stmt"/>
+        <line num="491" count="6" type="stmt"/>
+        <line num="509" count="6" type="stmt"/>
+        <line num="771" count="6" type="stmt"/>
+        <line num="947" count="1" type="stmt"/>
+      </file>
+      <file name="ForgotPasswordCode.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\ForgotPasswordCode.js">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="17" count="4" type="stmt"/>
+        <line num="19" count="4" type="stmt"/>
+        <line num="78" count="1" type="stmt"/>
+        <line num="92" count="1" type="stmt"/>
+        <line num="104" count="1" type="stmt"/>
+      </file>
+      <file name="ForgotPasswordConfirmation1.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\ForgotPasswordConfirmation1.js">
+        <metrics statements="9" coveredstatements="8" conditionals="6" coveredconditionals="2" methods="2" coveredmethods="1"/>
+        <line num="31" count="1" type="stmt"/>
+        <line num="32" count="2" type="stmt"/>
+        <line num="33" count="2" type="stmt"/>
+        <line num="34" count="2" type="stmt"/>
+        <line num="35" count="2" type="stmt"/>
+        <line num="36" count="2" type="stmt"/>
+        <line num="89" count="2" type="stmt"/>
+        <line num="157" count="0" type="stmt"/>
+        <line num="212" count="1" type="stmt"/>
+      </file>
+      <file name="ForgotPasswordResendCode.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\ForgotPasswordResendCode.js">
+        <metrics statements="5" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="1"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="17" count="2" type="stmt"/>
+        <line num="19" count="2" type="stmt"/>
+        <line num="79" count="0" type="stmt"/>
+        <line num="97" count="1" type="stmt"/>
+      </file>
+      <file name="ForgotPasswordUpdated.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\ForgotPasswordUpdated.js">
+        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="16" count="3" type="stmt"/>
+        <line num="18" count="3" type="stmt"/>
+        <line num="50" count="1" type="stmt"/>
+        <line num="66" count="1" type="stmt"/>
+      </file>
+      <file name="GoToCustomer.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\GoToCustomer.js">
+        <metrics statements="30" coveredstatements="28" conditionals="34" coveredconditionals="1" methods="3" coveredmethods="1"/>
+        <line num="33" count="1" type="stmt"/>
+        <line num="34" count="1" type="stmt"/>
+        <line num="35" count="1" type="stmt"/>
+        <line num="38" count="1" type="stmt"/>
+        <line num="39" count="1" type="stmt"/>
+        <line num="40" count="1" type="stmt"/>
+        <line num="41" count="1" type="stmt"/>
+        <line num="42" count="1" type="stmt"/>
+        <line num="43" count="1" type="stmt"/>
+        <line num="44" count="1" type="stmt"/>
+        <line num="45" count="1" type="stmt"/>
+        <line num="47" count="1" type="stmt"/>
+        <line num="48" count="1" type="stmt"/>
+        <line num="49" count="1" type="stmt"/>
+        <line num="52" count="1" type="stmt"/>
+        <line num="53" count="1" type="stmt"/>
+        <line num="55" count="1" type="stmt"/>
+        <line num="58" count="1" type="stmt"/>
+        <line num="59" count="1" type="stmt"/>
+        <line num="60" count="1" type="stmt"/>
+        <line num="61" count="1" type="stmt"/>
+        <line num="200" count="1" type="stmt"/>
+        <line num="204" count="1" type="stmt"/>
+        <line num="235" count="1" type="stmt"/>
+        <line num="242" count="1" type="stmt"/>
+        <line num="247" count="1" type="stmt"/>
+        <line num="480" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="515" count="0" type="stmt"/>
+        <line num="530" count="0" type="stmt"/>
+        <line num="816" count="1" type="stmt"/>
+      </file>
+      <file name="HelpCenterFAQ.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\HelpCenterFAQ.js">
+        <metrics statements="5" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="21" count="1" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="24" count="1" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="98" count="1" type="stmt"/>
+      </file>
+      <file name="Homepage.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\Homepage.js">
+        <metrics statements="36" coveredstatements="32" conditionals="8" coveredconditionals="2" methods="9" coveredmethods="3"/>
+        <line num="31" count="1" type="stmt"/>
+        <line num="32" count="1" type="stmt"/>
+        <line num="34" count="1" type="stmt"/>
+        <line num="36" count="1" type="stmt"/>
+        <line num="38" count="1" type="stmt"/>
+        <line num="41" count="1" type="stmt"/>
+        <line num="44" count="1" type="stmt"/>
+        <line num="46" count="1" type="stmt"/>
+        <line num="52" count="1" type="stmt"/>
+        <line num="53" count="1" type="stmt"/>
+        <line num="54" count="1" type="stmt"/>
+        <line num="55" count="1" type="stmt"/>
+        <line num="57" count="1" type="stmt"/>
+        <line num="59" count="1" type="stmt"/>
+        <line num="60" count="1" type="stmt"/>
+        <line num="61" count="1" type="stmt"/>
+        <line num="62" count="1" type="stmt"/>
+        <line num="265" count="1" type="stmt"/>
+        <line num="276" count="0" type="stmt"/>
+        <line num="279" count="0" type="stmt"/>
+        <line num="312" count="0" type="stmt"/>
+        <line num="344" count="0" type="stmt"/>
+        <line num="369" count="1" type="stmt"/>
+        <line num="370" count="1" type="stmt"/>
+        <line num="371" count="1" type="stmt"/>
+        <line num="372" count="1" type="stmt"/>
+        <line num="373" count="1" type="stmt"/>
+        <line num="374" count="1" type="stmt"/>
+        <line num="376" count="1" type="stmt"/>
+        <line num="383" count="1" type="stmt"/>
+        <line num="390" count="1" type="stmt"/>
+        <line num="478" count="1" type="stmt"/>
+        <line num="794" count="1" type="stmt"/>
+        <line num="795" count="1" type="stmt"/>
+        <line num="797" count="1" type="stmt"/>
+        <line num="923" count="1" type="stmt"/>
+      </file>
+      <file name="NewBooking.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\NewBooking.js">
+        <metrics statements="66" coveredstatements="57" conditionals="11" coveredconditionals="2" methods="8" coveredmethods="4"/>
+        <line num="49" count="1" type="stmt"/>
+        <line num="50" count="1" type="stmt"/>
+        <line num="51" count="1" type="stmt"/>
+        <line num="53" count="1" type="stmt"/>
+        <line num="55" count="1" type="stmt"/>
+        <line num="56" count="1" type="stmt"/>
+        <line num="57" count="1" type="stmt"/>
+        <line num="58" count="1" type="stmt"/>
+        <line num="59" count="1" type="stmt"/>
+        <line num="60" count="1" type="stmt"/>
+        <line num="61" count="1" type="stmt"/>
+        <line num="62" count="1" type="stmt"/>
+        <line num="63" count="1" type="stmt"/>
+        <line num="64" count="1" type="stmt"/>
+        <line num="65" count="1" type="stmt"/>
+        <line num="66" count="1" type="stmt"/>
+        <line num="67" count="1" type="stmt"/>
+        <line num="68" count="1" type="stmt"/>
+        <line num="69" count="1" type="stmt"/>
+        <line num="70" count="1" type="stmt"/>
+        <line num="71" count="1" type="stmt"/>
+        <line num="72" count="1" type="stmt"/>
+        <line num="73" count="1" type="stmt"/>
+        <line num="74" count="1" type="stmt"/>
+        <line num="75" count="1" type="stmt"/>
+        <line num="76" count="1" type="stmt"/>
+        <line num="77" count="1" type="stmt"/>
+        <line num="78" count="1" type="stmt"/>
+        <line num="82" count="1" type="stmt"/>
+        <line num="85" count="1" type="stmt"/>
+        <line num="86" count="1" type="stmt"/>
+        <line num="89" count="1" type="stmt"/>
+        <line num="93" count="1" type="stmt"/>
+        <line num="97" count="1" type="stmt"/>
+        <line num="99" count="1" type="stmt"/>
+        <line num="101" count="1" type="stmt"/>
+        <line num="102" count="1" type="stmt"/>
+        <line num="103" count="1" type="stmt"/>
+        <line num="104" count="1" type="stmt"/>
+        <line num="105" count="1" type="stmt"/>
+        <line num="340" count="1" type="stmt"/>
+        <line num="347" count="1" type="stmt"/>
+        <line num="352" count="1" type="stmt"/>
+        <line num="354" count="1" type="stmt"/>
+        <line num="355" count="1" type="stmt"/>
+        <line num="584" count="1" type="stmt"/>
+        <line num="585" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="767" count="1" type="stmt"/>
+        <line num="768" count="1" type="stmt"/>
+        <line num="770" count="1" type="stmt"/>
+        <line num="771" count="0" type="stmt"/>
+        <line num="776" count="0" type="stmt"/>
+        <line num="777" count="0" type="stmt"/>
+        <line num="778" count="0" type="stmt"/>
+        <line num="781" count="1" type="stmt"/>
+        <line num="786" count="1" type="stmt"/>
+        <line num="787" count="1" type="stmt"/>
+        <line num="791" count="0" type="stmt"/>
+        <line num="792" count="0" type="stmt"/>
+        <line num="796" count="1" type="stmt"/>
+        <line num="797" count="1" type="stmt"/>
+        <line num="801" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="988" count="0" type="stmt"/>
+        <line num="1031" count="0" type="stmt"/>
+        <line num="1032" count="0" type="stmt"/>
+        <line num="1166" count="1" type="stmt"/>
+      </file>
+      <file name="Notifications.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\Notifications.js">
+        <metrics statements="12" coveredstatements="10" conditionals="8" coveredconditionals="1" methods="3" coveredmethods="1"/>
+        <line num="28" count="1" type="stmt"/>
+        <line num="29" count="2" type="stmt"/>
+        <line num="30" count="2" type="stmt"/>
+        <line num="31" count="2" type="stmt"/>
+        <line num="32" count="2" type="stmt"/>
+        <line num="33" count="2" type="stmt"/>
+        <line num="34" count="2" type="stmt"/>
+        <line num="36" count="2" type="stmt"/>
+        <line num="94" count="2" type="stmt"/>
+        <line num="151" count="0" type="stmt"/>
+        <line num="159" count="0" type="stmt"/>
+        <line num="191" count="1" type="stmt"/>
+      </file>
+      <file name="NotificationsSettings.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\NotificationsSettings.js">
+        <metrics statements="14" coveredstatements="14" conditionals="8" coveredconditionals="4" methods="5" coveredmethods="1"/>
+        <line num="17" count="1" type="stmt"/>
+        <line num="18" count="9" type="stmt"/>
+        <line num="20" count="9" type="stmt"/>
+        <line num="22" count="9" type="stmt"/>
+        <line num="24" count="9" type="stmt"/>
+        <line num="25" count="9" type="stmt"/>
+        <line num="26" count="9" type="stmt"/>
+        <line num="27" count="9" type="stmt"/>
+        <line num="29" count="9" type="stmt"/>
+        <line num="32" count="9" type="stmt"/>
+        <line num="35" count="9" type="stmt"/>
+        <line num="38" count="9" type="stmt"/>
+        <line num="103" count="9" type="stmt"/>
+        <line num="465" count="1" type="stmt"/>
+      </file>
+      <file name="Onboarding1.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\Onboarding1.js">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="15" count="5" type="stmt"/>
+        <line num="17" count="5" type="stmt"/>
+        <line num="30" count="1" type="stmt"/>
+        <line num="104" count="1" type="stmt"/>
+        <line num="121" count="1" type="stmt"/>
+      </file>
+      <file name="Onboarding2.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\Onboarding2.js">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="15" count="5" type="stmt"/>
+        <line num="17" count="5" type="stmt"/>
+        <line num="30" count="1" type="stmt"/>
+        <line num="102" count="1" type="stmt"/>
+        <line num="118" count="1" type="stmt"/>
+      </file>
+      <file name="Onboarding3.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\Onboarding3.js">
+        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="15" count="3" type="stmt"/>
+        <line num="17" count="3" type="stmt"/>
+        <line num="97" count="1" type="stmt"/>
+        <line num="111" count="1" type="stmt"/>
+      </file>
+      <file name="PaymentOptions.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\PaymentOptions.js">
+        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="121" count="1" type="stmt"/>
+        <line num="220" count="1" type="stmt"/>
+      </file>
+      <file name="PerformTheService.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\PerformTheService.js">
+        <metrics statements="27" coveredstatements="23" conditionals="13" coveredconditionals="4" methods="8" coveredmethods="3"/>
+        <line num="25" count="1" type="stmt"/>
+        <line num="26" count="6" type="stmt"/>
+        <line num="28" count="6" type="stmt"/>
+        <line num="29" count="6" type="stmt"/>
+        <line num="30" count="6" type="stmt"/>
+        <line num="31" count="6" type="stmt"/>
+        <line num="32" count="6" type="stmt"/>
+        <line num="33" count="6" type="stmt"/>
+        <line num="34" count="6" type="stmt"/>
+        <line num="35" count="6" type="stmt"/>
+        <line num="37" count="6" type="stmt"/>
+        <line num="39" count="6" type="stmt"/>
+        <line num="40" count="6" type="stmt"/>
+        <line num="42" count="6" type="stmt"/>
+        <line num="46" count="6" type="stmt"/>
+        <line num="50" count="6" type="stmt"/>
+        <line num="103" count="6" type="stmt"/>
+        <line num="104" count="6" type="cond" truecount="2" falsecount="2"/>
+        <line num="105" count="6" type="stmt"/>
+        <line num="109" count="0" type="cond" truecount="0" falsecount="5"/>
+        <line num="110" count="0" type="stmt"/>
+        <line num="113" count="0" type="stmt"/>
+        <line num="117" count="6" type="stmt"/>
+        <line num="118" count="6" type="cond" truecount="1" falsecount="1"/>
+        <line num="234" count="6" type="stmt"/>
+        <line num="471" count="0" type="stmt"/>
+        <line num="685" count="1" type="stmt"/>
+      </file>
+      <file name="PrivacyPolicy.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\PrivacyPolicy.js">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="15" count="2" type="stmt"/>
+        <line num="170" count="1" type="stmt"/>
+      </file>
+      <file name="SignIn.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\SignIn.js">
+        <metrics statements="33" coveredstatements="29" conditionals="6" coveredconditionals="2" methods="9" coveredmethods="6"/>
+        <line num="31" count="1" type="stmt"/>
+        <line num="32" count="18" type="stmt"/>
+        <line num="33" count="18" type="stmt"/>
+        <line num="34" count="18" type="stmt"/>
+        <line num="36" count="18" type="stmt"/>
+        <line num="38" count="18" type="stmt"/>
+        <line num="42" count="18" type="cond" truecount="1" falsecount="1"/>
+        <line num="46" count="18" type="stmt"/>
+        <line num="47" count="3" type="stmt"/>
+        <line num="49" count="3" type="stmt"/>
+        <line num="52" count="3" type="stmt"/>
+        <line num="57" count="1" type="stmt"/>
+        <line num="58" count="1" type="stmt"/>
+        <line num="59" count="1" type="stmt"/>
+        <line num="61" count="1" type="stmt"/>
+        <line num="62" count="1" type="stmt"/>
+        <line num="63" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="64" count="1" type="stmt"/>
+        <line num="66" count="1" type="stmt"/>
+        <line num="67" count="1" type="stmt"/>
+        <line num="75" count="1" type="stmt"/>
+        <line num="77" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="99" count="0" type="stmt"/>
+        <line num="109" count="1" type="stmt"/>
+        <line num="120" count="2" type="stmt"/>
+        <line num="121" count="2" type="stmt"/>
+        <line num="123" count="2" type="stmt"/>
+        <line num="133" count="18" type="stmt"/>
+        <line num="186" count="5" type="stmt"/>
+        <line num="213" count="3" type="stmt"/>
+        <line num="237" count="0" type="stmt"/>
+        <line num="280" count="0" type="stmt"/>
+        <line num="302" count="1" type="stmt"/>
+      </file>
+      <file name="SignUp.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\SignUp.js">
+        <metrics statements="32" coveredstatements="31" conditionals="14" coveredconditionals="10" methods="12" coveredmethods="10"/>
+        <line num="29" count="1" type="stmt"/>
+        <line num="30" count="11" type="stmt"/>
+        <line num="31" count="11" type="stmt"/>
+        <line num="32" count="11" type="stmt"/>
+        <line num="33" count="11" type="stmt"/>
+        <line num="34" count="11" type="stmt"/>
+        <line num="36" count="11" type="stmt"/>
+        <line num="38" count="11" type="stmt"/>
+        <line num="42" count="11" type="cond" truecount="1" falsecount="1"/>
+        <line num="46" count="11" type="stmt"/>
+        <line num="48" count="1" type="stmt"/>
+        <line num="51" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="56" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="57" count="1" type="stmt"/>
+        <line num="63" count="11" type="stmt"/>
+        <line num="64" count="2" type="stmt"/>
+        <line num="66" count="2" type="cond" truecount="6" falsecount="0"/>
+        <line num="67" count="1" type="stmt"/>
+        <line num="74" count="1" type="stmt"/>
+        <line num="76" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="77" count="1" type="stmt"/>
+        <line num="84" count="1" type="stmt"/>
+        <line num="274" count="11" type="stmt"/>
+        <line num="298" count="0" type="stmt"/>
+        <line num="331" count="1" type="stmt"/>
+        <line num="344" count="1" type="stmt"/>
+        <line num="389" count="1" type="stmt"/>
+        <line num="432" count="1" type="stmt"/>
+        <line num="473" count="1" type="stmt"/>
+        <line num="481" count="1" type="stmt"/>
+        <line num="499" count="1" type="stmt"/>
+        <line num="516" count="1" type="stmt"/>
+      </file>
+      <file name="Splash.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\Splash.js">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="4" type="stmt"/>
+        <line num="23" count="1" type="stmt"/>
+      </file>
+      <file name="TermsAndConditions.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\TermsAndConditions.js">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="15" count="2" type="stmt"/>
+        <line num="324" count="1" type="stmt"/>
+      </file>
+      <file name="UserProfile.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\UserProfile.js">
+        <metrics statements="15" coveredstatements="15" conditionals="2" coveredconditionals="1" methods="7" coveredmethods="7"/>
+        <line num="32" count="1" type="stmt"/>
+        <line num="33" count="7" type="stmt"/>
+        <line num="35" count="7" type="stmt"/>
+        <line num="36" count="7" type="stmt"/>
+        <line num="37" count="7" type="stmt"/>
+        <line num="38" count="7" type="stmt"/>
+        <line num="39" count="7" type="stmt"/>
+        <line num="111" count="7" type="stmt"/>
+        <line num="156" count="1" type="stmt"/>
+        <line num="191" count="1" type="stmt"/>
+        <line num="227" count="1" type="stmt"/>
+        <line num="262" count="1" type="stmt"/>
+        <line num="297" count="1" type="stmt"/>
+        <line num="332" count="1" type="stmt"/>
+        <line num="371" count="1" type="stmt"/>
+      </file>
+      <file name="ViewBookingDetails.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\ViewBookingDetails.js">
+        <metrics statements="28" coveredstatements="25" conditionals="26" coveredconditionals="5" methods="5" coveredmethods="2"/>
+        <line num="27" count="1" type="stmt"/>
+        <line num="28" count="3" type="stmt"/>
+        <line num="30" count="3" type="stmt"/>
+        <line num="31" count="3" type="stmt"/>
+        <line num="32" count="3" type="stmt"/>
+        <line num="33" count="3" type="stmt"/>
+        <line num="34" count="3" type="stmt"/>
+        <line num="35" count="3" type="stmt"/>
+        <line num="36" count="3" type="stmt"/>
+        <line num="37" count="3" type="stmt"/>
+        <line num="38" count="3" type="stmt"/>
+        <line num="39" count="3" type="stmt"/>
+        <line num="40" count="3" type="stmt"/>
+        <line num="41" count="3" type="stmt"/>
+        <line num="42" count="3" type="stmt"/>
+        <line num="43" count="3" type="stmt"/>
+        <line num="44" count="3" type="stmt"/>
+        <line num="45" count="3" type="stmt"/>
+        <line num="46" count="3" type="stmt"/>
+        <line num="47" count="3" type="stmt"/>
+        <line num="48" count="3" type="stmt"/>
+        <line num="49" count="3" type="stmt"/>
+        <line num="382" count="3" type="stmt"/>
+        <line num="413" count="1" type="stmt"/>
+        <line num="650" count="0" type="stmt"/>
+        <line num="668" count="0" type="stmt"/>
+        <line num="669" count="0" type="stmt"/>
+        <line num="947" count="1" type="stmt"/>
+      </file>
+      <file name="Wallet.js" path="D:\4th Year\Testing\SerbisYouProvider\screens\Wallet.js">
+        <metrics statements="9" coveredstatements="8" conditionals="2" coveredconditionals="1" methods="2" coveredmethods="1"/>
+        <line num="29" count="1" type="stmt"/>
+        <line num="30" count="2" type="stmt"/>
+        <line num="31" count="2" type="stmt"/>
+        <line num="32" count="2" type="stmt"/>
+        <line num="34" count="2" type="stmt"/>
+        <line num="35" count="2" type="stmt"/>
+        <line num="169" count="2" type="stmt"/>
+        <line num="204" count="0" type="stmt"/>
+        <line num="257" count="1" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>

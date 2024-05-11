@@ -74,6 +74,7 @@ const ForgotPasswordCode = () => {
           </View>
           <Pressable
             style={[styles.verifyBtn, styles.codeFlexBox1]}
+            testID="verify-button"
             onPress={() => navigation.navigate("ForgotPasswordResendCode")}
           >
             <View style={styles.button}>
@@ -87,6 +88,7 @@ const ForgotPasswordCode = () => {
           >{`Didn’t receive code? `}</Text>
           <Pressable
             style={styles.codeFlexBox}
+            testID="resend-button"
             onPress={() => navigation.navigate("ForgotPasswordResendCode")}
           >
             <Text style={[styles.resendCode, styles.codeTypo]}>

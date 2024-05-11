@@ -110,7 +110,7 @@ describe("SignIn", () => {
         type: "error",
         position: "top",
         text1: errorMessage,
-        text2: "User not found❗",
+        text2: "Wrong email or password❗",
         visibilityTime: 5000,
       });
     });

@@ -37,131 +37,134 @@ const Wallet = () => {
     day: "numeric",
   });
 
-  useEffect(() => {
-    fetchData(); // Call the fetchData function when the component mounts
-    fetchUserTransactions();
-  }, []); // Empty dependency array to run the effect only once on mount
+  // useEffect(() => {
+  //   fetchData(); // Call the fetchData function when the component mounts
+  //   fetchUserTransactions();
+  // }, []); // Empty dependency array to run the effect only once on mount
 
-  const fetchData = async () => {
-    try {
-      const db = getFirestore();
-      const auth = getAuth();
-      const user = auth.currentUser;
-      const userProfilesCollection = collection(db, "providerProfiles");
-      const userDocRef = doc(userProfilesCollection, user.uid);
+  // const fetchData = async () => {
+  //   try {
+  //     const db = getFirestore();
+  //     const auth = getAuth();
+  //     const user = auth.currentUser;
+  //     const userProfilesCollection = collection(db, "providerProfiles");
+  //     const userDocRef = doc(userProfilesCollection, user.uid);
 
       
 
-      // Fetch data from the "userWallet" collection
-      const userWalletCollection = collection(userDocRef, "userWallet");
-      const userWalletQuery = query(userWalletCollection);
-      const userWalletDocs = await getDocs(userWalletQuery);
+  //     // Fetch data from the "userWallet" collection
+  //     const userWalletCollection = collection(userDocRef, "userWallet");
+  //     const userWalletQuery = query(userWalletCollection);
+  //     const userWalletDocs = await getDocs(userWalletQuery);
 
-      if (userWalletDocs.size === 1) {
-        const userWalletDoc = userWalletDocs.docs[0];
-        const userWalletDocData = userWalletDoc.data(); // Retrieve document data
+  //     if (userWalletDocs.size === 1) {
+  //       const userWalletDoc = userWalletDocs.docs[0];
+  //       const userWalletDocData = userWalletDoc.data(); // Retrieve document data
 
-        // Assuming 'wallet' is a field in the document
-        const walletValue = userWalletDocData.wallet;
+  //       // Assuming 'wallet' is a field in the document
+  //       const walletValue = userWalletDocData.wallet;
 
-        setWalletValue(walletValue); // Set the wallet value in the component state
-      } else {
-        console.log("No or multiple documents found in userWallet.");
-      }
-    } catch (error) {
-      console.error("Error fetching wallet data from Firestore:", error);
-    }
-  };
+  //       setWalletValue(walletValue); // Set the wallet value in the component state
+  //     } else {
+  //       console.log("No or multiple documents found in userWallet.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching wallet data from Firestore:", error);
+  //   }
+  // };
 
-  const handleCashOut = async () => {
-    try {
-      if (walletValue !== 0) {
-        const db = getFirestore();
-        const auth = getAuth();
-        const user = auth.currentUser;
-        const userProfilesCollection = collection(db, "providerProfiles");
-        const userDocRef = doc(userProfilesCollection, user.uid);
-  
-        const userID = user.uid;
-  
-        // Fetch data from the "userWallet" collection
-        const userWalletCollection = collection(userDocRef, "userWallet");
-        const userWalletQuery = query(userWalletCollection);
-        const userWalletDocs = await getDocs(userWalletQuery);
-  
-        if (userWalletDocs.size === 1) {
-          const userWalletDoc = userWalletDocs.docs[0];
-          const userWalletDocData = userWalletDoc.data();
-  
-          // Assuming 'wallet' is a field in the document
-          const currentWalletValue = userWalletDocData.wallet;
-  
-          // Use the current wallet value as the cash-out amount
-          const cashOutAmount = currentWalletValue;
-  
-          // Deduct the cash-out amount from the wallet value
-          const newWalletValue = 0; // Set to 0 for complete cash-out, modify as needed
-  
-          // Update the wallet value in the Firestore database
-          await updateDoc(userWalletDoc.ref, { wallet: newWalletValue });
-  
-          // Update the state to re-render the component with the new wallet value
-          setWalletValue(newWalletValue);
-  
-          // Extract the first 8 characters of the userID
-          const shortUserID = userID.substring(0, 8);
-  
-          // Navigate to the "CashOutBalance" screen and pass shortUserID as a parameter
-          navigation.navigate("CashOutBalance", { shortUserID });
-        } else {
-          console.log("No or multiple documents found in userWallet.");
-        }
-      } else {
-        Toast.show({
-          type: "error",
-          position: "top",
-          text1: "Wallet value is 0",
-          text2: "Cannot proceed with cash out❗" ,
-          visibilityTime: 5000,
-        });
-        console.error("Cannot proceed with cash out. Wallet value is 0.");
-      }
-    } catch (error) {
-      console.error("Error handling cash out:", error);
-    }
-  };
+
   
 
-  const fetchUserTransactions = async () => {
-    try {
-      const db = getFirestore();
-      const auth = getAuth();
-      const user = auth.currentUser;
-      const userProfilesCollection = collection(db, "providerProfiles");
-      const userDocRef = doc(userProfilesCollection, user.uid);
+  // const fetchUserTransactions = async () => {
+  //   try {
+  //     const db = getFirestore();
+  //     const auth = getAuth();
+  //     const user = auth.currentUser;
+  //     const userProfilesCollection = collection(db, "providerProfiles");
+  //     const userDocRef = doc(userProfilesCollection, user.uid);
 
-      // Fetch data from the "userWallet" collection
-      const userWalletCollection = collection(userDocRef, "userWallet");
-      const userWalletQuery = query(userWalletCollection);
-      const userWalletDocs = await getDocs(userWalletQuery);
+  //     // Fetch data from the "userWallet" collection
+  //     const userWalletCollection = collection(userDocRef, "userWallet");
+  //     const userWalletQuery = query(userWalletCollection);
+  //     const userWalletDocs = await getDocs(userWalletQuery);
 
-      if (userWalletDocs.size === 1) {
-        const userWalletDoc = userWalletDocs.docs[0];
-        const userWalletDocData = userWalletDoc.data();
+  //     if (userWalletDocs.size === 1) {
+  //       const userWalletDoc = userWalletDocs.docs[0];
+  //       const userWalletDocData = userWalletDoc.data();
 
-        // Assuming 'transactions' is the field containing the array of transactions
-        const transactionsArray = userWalletDocData.transactions || [];
-        setUserTransactions(transactionsArray);
-        console.log("User Transactions:", transactionsArray);
+  //       // Assuming 'transactions' is the field containing the array of transactions
+  //       const transactionsArray = userWalletDocData.transactions || [];
+  //       setUserTransactions(transactionsArray);
+  //       console.log("User Transactions:", transactionsArray);
 
-        // You can now use the transactionsArray in your component state or for rendering
-      } else {
-        console.log("No or multiple documents found in userWallet.");
-      }
-    } catch (error) {
-      console.error("Error fetching user transactions:", error);
-    }
-  };
+  //       // You can now use the transactionsArray in your component state or for rendering
+  //     } else {
+  //       console.log("No or multiple documents found in userWallet.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching user transactions:", error);
+  //   }
+  // };
+
+
+  // const handleCashOut = async () => {
+  //   try {
+  //     if (walletValue !== 0) {
+  //       const db = getFirestore();
+  //       const auth = getAuth();
+  //       const user = auth.currentUser;
+  //       const userProfilesCollection = collection(db, "providerProfiles");
+  //       const userDocRef = doc(userProfilesCollection, user.uid);
+  
+  //       const userID = user.uid;
+  
+  //       // Fetch data from the "userWallet" collection
+  //       const userWalletCollection = collection(userDocRef, "userWallet");
+  //       const userWalletQuery = query(userWalletCollection);
+  //       const userWalletDocs = await getDocs(userWalletQuery);
+  
+  //       if (userWalletDocs.size === 1) {
+  //         const userWalletDoc = userWalletDocs.docs[0];
+  //         const userWalletDocData = userWalletDoc.data();
+  
+  //         // Assuming 'wallet' is a field in the document
+  //         const currentWalletValue = userWalletDocData.wallet;
+  
+  //         // Use the current wallet value as the cash-out amount
+  //         const cashOutAmount = currentWalletValue;
+  
+  //         // Deduct the cash-out amount from the wallet value
+  //         const newWalletValue = 0; // Set to 0 for complete cash-out, modify as needed
+  
+  //         // Update the wallet value in the Firestore database
+  //         await updateDoc(userWalletDoc.ref, { wallet: newWalletValue });
+  
+  //         // Update the state to re-render the component with the new wallet value
+  //         setWalletValue(newWalletValue);
+  
+  //         // Extract the first 8 characters of the userID
+  //         const shortUserID = userID.substring(0, 8);
+  
+  //         // Navigate to the "CashOutBalance" screen and pass shortUserID as a parameter
+  //         navigation.navigate("CashOutBalance", { shortUserID });
+  //       } else {
+  //         console.log("No or multiple documents found in userWallet.");
+  //       }
+  //     } else {
+  //       Toast.show({
+  //         type: "error",
+  //         position: "top",
+  //         text1: "Wallet value is 0",
+  //         text2: "Cannot proceed with cash out❗" ,
+  //         visibilityTime: 5000,
+  //       });
+  //       console.error("Cannot proceed with cash out. Wallet value is 0.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error handling cash out:", error);
+  //   }
+  // };
 
   return (
     <View style={styles.wallet}>
@@ -180,7 +183,7 @@ const Wallet = () => {
             <Text style={styles.php3200}>
               {walletValue !== null ? `Php ${walletValue}` : "Loading..."}
             </Text>
-            <Pressable style={styles.button} onPress={handleCashOut}>
+            <Pressable style={styles.button}>
               <Text style={[styles.button1, styles.wallet1Typo]}>Cash Out</Text>
             </Pressable>
           </View>

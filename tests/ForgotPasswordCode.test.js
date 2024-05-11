@@ -5,6 +5,11 @@ import { useNavigation } from "@react-navigation/native";
 import { updateDoc } from "firebase/firestore";
 import { updateEmail } from "firebase/auth";
 
+jest.mock("@react-navigation/native", () => ({
+  useNavigation: jest.fn(),
+}));
+
+
 jest.mock("firebase/firestore", () => ({
   getFirestore: jest.fn(),
   collection: jest.fn(),
@@ -54,5 +59,41 @@ describe("ForgotPasswordCode component", () => {
     expect(text).toBeTruthy();
     expect(text1).toBeTruthy();
 
+  });
+
+  test("Pressing the button navigates to next screen", () => {
+    // Mock navigation
+    const mockNavigate = jest.fn();
+    useNavigation.mockReturnValue({ navigate: mockNavigate });
+
+    // Render HomePage component
+    const { getByTestId } =  render(<ForgotPasswordCode/>);
+
+    // Find the Pressable element by its text content
+    const button = getByTestId("verify-button");
+
+    // Simulate a press event on the Pressable element
+    fireEvent.press(button);
+
+    // Assert that navigation function is called with expected screen name
+    expect(mockNavigate).toHaveBeenCalledWith("ForgotPasswordResendCode");
+  });
+
+  test("Pressing the button navigates to next screen", () => {
+    // Mock navigation
+    const mockNavigate = jest.fn();
+    useNavigation.mockReturnValue({ navigate: mockNavigate });
+
+    // Render HomePage component
+    const { getByTestId } =  render(<ForgotPasswordCode/>);
+
+    // Find the Pressable element by its text content
+    const button = getByTestId("resend-button");
+
+    // Simulate a press event on the Pressable element
+    fireEvent.press(button);
+
+    // Assert that navigation function is called with expected screen name
+    expect(mockNavigate).toHaveBeenCalledWith("ForgotPasswordResendCode");
   });
 });

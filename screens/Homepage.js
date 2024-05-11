@@ -45,9 +45,9 @@ const Homepage = ({ route }) => {
 
   const [isAcceptOrdersEnabled, setIsAcceptOrdersEnabled] = useState(false);
 
-  const toggleAcceptOrdersSwitch = () => {
-    setIsAcceptOrdersEnabled((previousState) => !previousState);
-  };
+  // const toggleAcceptOrdersSwitch = () => {
+  //   setIsAcceptOrdersEnabled((previousState) => !previousState);
+  // };
 
   const [wallet, setWallet] = useState("");
   const [numberOfUpcomingServices, setNumberOfUpcomingServices] = useState();
@@ -61,225 +61,225 @@ const Homepage = ({ route }) => {
   const [arrowSubCategoryRotation, setArrowSubCategoryRotation] = useState([]);
   const [showSubContent, setShowSubContent] = useState([]);
 
-  useEffect(() => {
-    const fetchTailoredServices = async () => {
-      try {
-        const db = getFirestore();
-        const auth = getAuth();
-        const providerUID = auth.currentUser.uid;
+  // useEffect(() => {
+  //   const fetchTailoredServices = async () => {
+  //     try {
+  //       const db = getFirestore();
+  //       const auth = getAuth();
+  //       const providerUID = auth.currentUser.uid;
 
-        const q = query(collection(db, "providerProfiles", providerUID, "appForm3" ));
-        const querySnapshot = await getDocs(q);
+  //       const q = query(collection(db, "providerProfiles", providerUID, "appForm3" ));
+  //       const querySnapshot = await getDocs(q);
 
-        let bookings;
+  //       let bookings;
 
-        // Check if there are at least two documents
-        if (querySnapshot.size <= 2) {
-          // Get the second document (index 1 since arrays are 0-based)
-          const secondDocumentSnapshot = querySnapshot.docs[1];
+  //       // Check if there are at least two documents
+  //       if (querySnapshot.size <= 2) {
+  //         // Get the second document (index 1 since arrays are 0-based)
+  //         const secondDocumentSnapshot = querySnapshot.docs[1];
 
-          // Get the data of the second document
-          const secondDocumentData = secondDocumentSnapshot.data();
+  //         // Get the data of the second document
+  //         const secondDocumentData = secondDocumentSnapshot.data();
 
-          bookings = secondDocumentData;
-        } else {
-          console.log("There are not enough documents in appForm3 subcollection.");
-        }
-        setTailoredCategory(bookings);
+  //         bookings = secondDocumentData;
+  //       } else {
+  //         console.log("There are not enough documents in appForm3 subcollection.");
+  //       }
+  //       setTailoredCategory(bookings);
 
-        const authStatus = await messaging().requestPermission();
-        const enabled =
-          authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-          authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  //       const authStatus = await messaging().requestPermission();
+  //       const enabled =
+  //         authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+  //         authStatus === messaging.AuthorizationStatus.PROVISIONAL;
     
-        if (enabled) {
-          console.log("Authorization status:", authStatus);
-        }
-      } catch (error) {
-        // Handle errors, e.g., permission issues
-        console.log("Error fetching active bookings: ", error);
-        return [];
-      }
-    };
+  //       if (enabled) {
+  //         console.log("Authorization status:", authStatus);
+  //       }
+  //     } catch (error) {
+  //       // Handle errors, e.g., permission issues
+  //       console.log("Error fetching active bookings: ", error);
+  //       return [];
+  //     }
+  //   };
     
-    fetchTailoredServices();
-  }, []);
+  //   fetchTailoredServices();
+  // }, []);
 
-  useEffect(() => {
-    if (tailoredCategory) {
-      setShowSubCategory(Array(Object.keys(tailoredCategory).length).fill(false));
-      // Initialize arrowRotations with animated values
-      const initialCategoryRotations = Array(Object.keys(tailoredCategory).length).fill(0).map(() => new Animated.Value(0));
-      setArrowCategoryRotation(initialCategoryRotations);
+  // useEffect(() => {
+  //   if (tailoredCategory) {
+  //     setShowSubCategory(Array(Object.keys(tailoredCategory).length).fill(false));
+  //     // Initialize arrowRotations with animated values
+  //     const initialCategoryRotations = Array(Object.keys(tailoredCategory).length).fill(0).map(() => new Animated.Value(0));
+  //     setArrowCategoryRotation(initialCategoryRotations);
 
-      setShowSubContent(
-        Object.values(tailoredCategory).map((services) =>
-          Array(Object.keys(services).length).fill(false)
-        )
-      );
-      const initialSubCategoryRotations = Object.values(tailoredCategory).map((services) =>
-        Array(Object.keys(services).length).fill(0).map(() => new Animated.Value(0))
-      );
-      setArrowSubCategoryRotation(initialSubCategoryRotations);
-    }
-  }, [tailoredCategory]);
+  //     setShowSubContent(
+  //       Object.values(tailoredCategory).map((services) =>
+  //         Array(Object.keys(services).length).fill(false)
+  //       )
+  //     );
+  //     const initialSubCategoryRotations = Object.values(tailoredCategory).map((services) =>
+  //       Array(Object.keys(services).length).fill(0).map(() => new Animated.Value(0))
+  //     );
+  //     setArrowSubCategoryRotation(initialSubCategoryRotations);
+  //   }
+  // }, [tailoredCategory]);
 
-  const toggleCategory = (index) => {
-    const newShowContent = [...showSubCategory];
-    newShowContent[index] = !newShowContent[index];
-    setShowSubCategory(newShowContent);
+  // const toggleCategory = (index) => {
+  //   const newShowContent = [...showSubCategory];
+  //   newShowContent[index] = !newShowContent[index];
+  //   setShowSubCategory(newShowContent);
 
-    const newArrowRotations = [...arrowCategoryRotation];
-    Animated.timing(newArrowRotations[index], {
-      toValue: newShowContent[index] ? 1 : 0,
-      duration: 200,
-      useNativeDriver: true,
-    }).start();
-    LayoutAnimation.configureNext(toggleAnimation);
-    setArrowCategoryRotation(newArrowRotations);
-  };
+  //   const newArrowRotations = [...arrowCategoryRotation];
+  //   Animated.timing(newArrowRotations[index], {
+  //     toValue: newShowContent[index] ? 1 : 0,
+  //     duration: 200,
+  //     useNativeDriver: true,
+  //   }).start();
+  //   LayoutAnimation.configureNext(toggleAnimation);
+  //   setArrowCategoryRotation(newArrowRotations);
+  // };
 
-  const toggleSubCategory = (index, subIndex) => {
-    const newShowSubContent = [...showSubContent];
-    newShowSubContent[index][subIndex] = !newShowSubContent[index][subIndex];
-    setShowSubContent(newShowSubContent);
+  // const toggleSubCategory = (index, subIndex) => {
+  //   const newShowSubContent = [...showSubContent];
+  //   newShowSubContent[index][subIndex] = !newShowSubContent[index][subIndex];
+  //   setShowSubContent(newShowSubContent);
 
-    const newSubArrowRotations = [...arrowSubCategoryRotation];
-    Animated.timing(newSubArrowRotations[index][subIndex], {
-      toValue: newShowSubContent[index][subIndex] ? 1 : 0,
-      duration: 200,
-      useNativeDriver: false,
-    }).start();
-    LayoutAnimation.configureNext(toggleAnimation);
-    setArrowSubCategoryRotation(newSubArrowRotations);
-  };
+  //   const newSubArrowRotations = [...arrowSubCategoryRotation];
+  //   Animated.timing(newSubArrowRotations[index][subIndex], {
+  //     toValue: newShowSubContent[index][subIndex] ? 1 : 0,
+  //     duration: 200,
+  //     useNativeDriver: false,
+  //   }).start();
+  //   LayoutAnimation.configureNext(toggleAnimation);
+  //   setArrowSubCategoryRotation(newSubArrowRotations);
+  // };
 
-  const arrowCategoryRotate = (index) => {
-    if (!arrowCategoryRotation[index]) return '0deg'; // Check if arrowRotations[index] is defined
-    return arrowCategoryRotation[index].interpolate({
-      inputRange: [0, 1],
-      outputRange: ['0deg', '90deg'],
-    });
-  };
+  // const arrowCategoryRotate = (index) => {
+  //   if (!arrowCategoryRotation[index]) return '0deg'; // Check if arrowRotations[index] is defined
+  //   return arrowCategoryRotation[index].interpolate({
+  //     inputRange: [0, 1],
+  //     outputRange: ['0deg', '90deg'],
+  //   });
+  // };
 
-  const subCategoryArrowRotate = (index, subIndex) => {
-    if (!arrowSubCategoryRotation[index] || !arrowSubCategoryRotation[index][subIndex]) return '0deg';
-    return arrowSubCategoryRotation[index][subIndex].interpolate({
-      inputRange: [0, 1],
-      outputRange: ['0deg', '90deg'],
-    });
-  };
+  // const subCategoryArrowRotate = (index, subIndex) => {
+  //   if (!arrowSubCategoryRotation[index] || !arrowSubCategoryRotation[index][subIndex]) return '0deg';
+  //   return arrowSubCategoryRotation[index][subIndex].interpolate({
+  //     inputRange: [0, 1],
+  //     outputRange: ['0deg', '90deg'],
+  //   });
+  // };
 
-  const getCategoryImageSource = (category) => {
-    switch (category) {
-      case "Plumbing":
-        return require("../assets/plumbing.png");
-      case "Carpentry":
-        return require("../assets/carpentry.png");
-      case "Pet Care":
-        return require("../assets/pet-care.png");
-      case "Electrical":
-        return require("../assets/electrical.png");
-      case "Gardening":
-        return require("../assets/gardening.png");
-      case "Cleaning":
-        return require("../assets/cleaning-category.png");
-      default:
-        return require("../assets/cleaning-category.png");
-    }
-  };
+  // const getCategoryImageSource = (category) => {
+  //   switch (category) {
+  //     case "Plumbing":
+  //       return require("../assets/plumbing.png");
+  //     case "Carpentry":
+  //       return require("../assets/carpentry.png");
+  //     case "Pet Care":
+  //       return require("../assets/pet-care.png");
+  //     case "Electrical":
+  //       return require("../assets/electrical.png");
+  //     case "Gardening":
+  //       return require("../assets/gardening.png");
+  //     case "Cleaning":
+  //       return require("../assets/cleaning-category.png");
+  //     default:
+  //       return require("../assets/cleaning-category.png");
+  //   }
+  // };
   
-  const getServiceImageSource = (category, service) => {
-    if(category === "Plumbing") {
-      switch (service) {
-        case "Installation":
-          return require("../assets/plumbing-installation.png");
-        case "Repairs/Replacement":
-          return require("../assets/plumbing-repair.png");
-        default:
-          return require("../assets/plumbing-installation.png");
-      }
-    }else if(category === "Electrical") {
-      switch (service) {
-        case "Installation":
-          return require("../assets/electrical-installation.png");
-        case "Repairs/Replacement":
-          return require("../assets/electrical-repair.png");
-        default:
-          return require("../assets/electrical-installation.png");
-      }
-    }else if(category === "Carpentry") {
-      switch (service) {
-        case "Installation":
-          return require("../assets/carpentry-installation.png");
-        case "Repairs/Replacement":
-          return require("../assets/carpentry-repair.png");
-        case "Furniture Assembly And Disassembly":
-          return require("../assets/furniture-assembly-and-disassembly.png");
-        default:
-          return require("../assets/carpentry-installation.png");
-      }
-    }else if(category === "Cleaning" || category === "Pet Care" || category === "Gardening"){
-      switch (service) {
-        case "Standard Cleaning":
-          return require("../assets/standard-cleaning.png");
-        case "Deep Cleaning":
-          return require("../assets/deep-cleaning.png");
-        case "Electronic Appliance Cleaning":
-          return require("../assets/electronic-appliance-cleaning.png");
-        case "Pest Control":
-          return require("../assets/pest-control.png");
-        case "Dog Training":
-          return require("../assets/dog-training.png");
-        case "Dog Pet Grooming":
-          return require("../assets/pet-grooming.png");
-        case "Cat Pet Grooming":
-          return require("../assets/pet-grooming.png");
-        case "Bird Pet Grooming":
-          return require("../assets/pet-grooming.png");
-        case "Rabbit Pet Grooming":
-          return require("../assets/pet-grooming.png");
-        case "Dog Pet Sitting":
-          return require("../assets/pet-sitting.png");
-        case "Cat Pet Sitting":
-          return require("../assets/pet-sitting.png");
-        case "Bird Pet Sitting":
-          return require("../assets/pet-sitting.png");
-        case "Rabbit Pet Sitting":
-          return require("../assets/pet-sitting.png");
-        case "Garden Maintenance":
-          return require("../assets/garden-maintenance.png");
-        case "Landscape Design and Planning":
-          return require("../assets/landscape-design-and-planning.png");
-        case "Irrigation System Installation/Repairs":
-          return require("../assets/irrigation-system.png");
-        case "Pest and Disease Management":
-          return require("../assets/pest-and-disease-management.png");
-        default:
-          return require("../assets/standard-cleaning.png");
-      }
-    }
-  };
+  // const getServiceImageSource = (category, service) => {
+  //   if(category === "Plumbing") {
+  //     switch (service) {
+  //       case "Installation":
+  //         return require("../assets/plumbing-installation.png");
+  //       case "Repairs/Replacement":
+  //         return require("../assets/plumbing-repair.png");
+  //       default:
+  //         return require("../assets/plumbing-installation.png");
+  //     }
+  //   }else if(category === "Electrical") {
+  //     switch (service) {
+  //       case "Installation":
+  //         return require("../assets/electrical-installation.png");
+  //       case "Repairs/Replacement":
+  //         return require("../assets/electrical-repair.png");
+  //       default:
+  //         return require("../assets/electrical-installation.png");
+  //     }
+  //   }else if(category === "Carpentry") {
+  //     switch (service) {
+  //       case "Installation":
+  //         return require("../assets/carpentry-installation.png");
+  //       case "Repairs/Replacement":
+  //         return require("../assets/carpentry-repair.png");
+  //       case "Furniture Assembly And Disassembly":
+  //         return require("../assets/furniture-assembly-and-disassembly.png");
+  //       default:
+  //         return require("../assets/carpentry-installation.png");
+  //     }
+  //   }else if(category === "Cleaning" || category === "Pet Care" || category === "Gardening"){
+  //     switch (service) {
+  //       case "Standard Cleaning":
+  //         return require("../assets/standard-cleaning.png");
+  //       case "Deep Cleaning":
+  //         return require("../assets/deep-cleaning.png");
+  //       case "Electronic Appliance Cleaning":
+  //         return require("../assets/electronic-appliance-cleaning.png");
+  //       case "Pest Control":
+  //         return require("../assets/pest-control.png");
+  //       case "Dog Training":
+  //         return require("../assets/dog-training.png");
+  //       case "Dog Pet Grooming":
+  //         return require("../assets/pet-grooming.png");
+  //       case "Cat Pet Grooming":
+  //         return require("../assets/pet-grooming.png");
+  //       case "Bird Pet Grooming":
+  //         return require("../assets/pet-grooming.png");
+  //       case "Rabbit Pet Grooming":
+  //         return require("../assets/pet-grooming.png");
+  //       case "Dog Pet Sitting":
+  //         return require("../assets/pet-sitting.png");
+  //       case "Cat Pet Sitting":
+  //         return require("../assets/pet-sitting.png");
+  //       case "Bird Pet Sitting":
+  //         return require("../assets/pet-sitting.png");
+  //       case "Rabbit Pet Sitting":
+  //         return require("../assets/pet-sitting.png");
+  //       case "Garden Maintenance":
+  //         return require("../assets/garden-maintenance.png");
+  //       case "Landscape Design and Planning":
+  //         return require("../assets/landscape-design-and-planning.png");
+  //       case "Irrigation System Installation/Repairs":
+  //         return require("../assets/irrigation-system.png");
+  //       case "Pest and Disease Management":
+  //         return require("../assets/pest-and-disease-management.png");
+  //       default:
+  //         return require("../assets/standard-cleaning.png");
+  //     }
+  //   }
+  // };
 
   // Render the activeBookings
   const renderTailoredServices = () => {
-    if (!tailoredCategory) {
-      return <Text>Loading...</Text>; // or any loading indicator
-    }
+    // if (!tailoredCategory) {
+    //   return <Text>Loading...</Text>; // or any loading indicator
+    // }
 
-    // Check if tailoredCategory is an array and has items before mapping
-    if (Object.keys(tailoredCategory).length === 0) {
-      return <Text>No tailored services available</Text>; // Or any other placeholder
-    }
-    console.log("renderTailoredServices" , tailoredCategory);
+    // // Check if tailoredCategory is an array and has items before mapping
+    // if (Object.keys(tailoredCategory).length === 0) {
+    //   return <Text>No tailored services available</Text>; // Or any other placeholder
+    // }
+    // console.log("renderTailoredServices" , tailoredCategory);
     
     return (
       <SafeAreaView style={styles.comment1Parent}>
         {Object.entries(tailoredCategory).map(([category, services], index) => (
           <View key={category} style={styles.verticalGap}>
-            <Pressable style={styles.comment1} onPress={() => toggleCategory(index)}>
+            <Pressable style={styles.comment1} >
               <View style={styles.collapseArrowWrapper}>
-                <Animated.Image
+                {/* <Animated.Image
                   style={[
                     styles.collapseArrowIcon,
                     {
@@ -291,13 +291,13 @@ const Homepage = ({ route }) => {
                   }]}
                   contentFit="cover"
                   source={require("../assets/collapse-arrow3.png")}
-                />
+                /> */}
               </View>
               <View style={styles.cleaningCategory}>
                 <Image
                   style={styles.cleaningCategoryIcon}
                   contentFit="cover"
-                  source={getCategoryImageSource(category)}
+                  // source={getCategoryImageSource(category)}
                 />
               </View>
               <View style={styles.cleaningWrapper}>
@@ -310,9 +310,9 @@ const Homepage = ({ route }) => {
             {showSubCategory[index] && (
               Object.entries(services).map(([service, bookings] , subIndex) => (
                 <View key={service} style={styles.comment5Parent}>
-                  <Pressable style={styles.commentFlexBox2} onPress={() => toggleSubCategory(index, subIndex)}>
+                  <Pressable style={styles.commentFlexBox2} >
                     <View style={styles.collapseArrowWrapper}>
-                      <Animated.Image
+                      {/* <Animated.Image
                         style={[
                           styles.collapseArrowIcon,
                           {
@@ -324,13 +324,13 @@ const Homepage = ({ route }) => {
                         }]}
                         contentFit="cover"
                         source={require("../assets/collapse-arrow3.png")}
-                      />
+                      /> */}
                     </View>
                     <View style={styles.comment5Inner}>
                       <Image
                         style={styles.cleaningCategoryIcon}
                         contentFit="cover"
-                        source={getServiceImageSource(category, service)}
+                        // source={getServiceImageSource(category, service)}
                       />
                     </View>
                     <View style={styles.standardCleaningWrapper}>
@@ -394,286 +394,286 @@ const Homepage = ({ route }) => {
           "historyBookings"
         );
 
-        const unsubscribeWallet = onSnapshot(
-          userWalletCollectionRef,
-          (querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              const walletData = doc.data();
+        // const unsubscribeWallet = onSnapshot(
+        //   userWalletCollectionRef,
+        //   (querySnapshot) => {
+        //     querySnapshot.forEach((doc) => {
+        //       const walletData = doc.data();
 
-              const wallet = walletData.wallet;
+        //       const wallet = walletData.wallet;
 
-              setWallet(wallet);
-            });
-          }
-        );
+        //       setWallet(wallet);
+        //     });
+        //   }
+        // );
 
-        const unsubscribeUpcomingServices = onSnapshot(
-          upcomingServicesCollectionRef,
-          (querySnapshot) => {
-            // Get the total number of documents
-            const totalDocuments = querySnapshot.size;
-            console.log(
-              "Total number of documents inside upcomingServicesCollectionRef:",
-              totalDocuments
-            );
+        // const unsubscribeUpcomingServices = onSnapshot(
+        //   upcomingServicesCollectionRef,
+        //   (querySnapshot) => {
+        //     // Get the total number of documents
+        //     const totalDocuments = querySnapshot.size;
+        //     console.log(
+        //       "Total number of documents inside upcomingServicesCollectionRef:",
+        //       totalDocuments
+        //     );
 
-            // Filter documents with status Upcoming
-            const filteredDocumentsUpcoming = querySnapshot.docs.filter(
-              (doc) => {
-                const status = doc.data().status;
-                return status === "Upcoming";
-              }
-            );
+        //     // Filter documents with status Upcoming
+        //     const filteredDocumentsUpcoming = querySnapshot.docs.filter(
+        //       (doc) => {
+        //         const status = doc.data().status;
+        //         return status === "Upcoming";
+        //       }
+        //     );
 
-            const numberOfUpcoming = filteredDocumentsUpcoming.length;
+        //     const numberOfUpcoming = filteredDocumentsUpcoming.length;
 
-            setNumberOfUpcomingServices(numberOfUpcoming);
+        //     setNumberOfUpcomingServices(numberOfUpcoming);
 
-            // Filter documents with status "In Transit" or "In Progress"
-            const filteredDocuments = querySnapshot.docs.filter((doc) => {
-              const status = doc.data().status;
-              return status === "In Transit" || status === "In Progress";
-            });
+        //     // Filter documents with status "In Transit" or "In Progress"
+        //     const filteredDocuments = querySnapshot.docs.filter((doc) => {
+        //       const status = doc.data().status;
+        //       return status === "In Transit" || status === "In Progress";
+        //     });
 
-            // Get the count of filtered documents
-            const numberOfFilteredDocuments = filteredDocuments.length;
-            console.log(
-              "Number of documents with status 'In Transit' or 'In Progress':",
-              numberOfFilteredDocuments
-            );
+        //     // Get the count of filtered documents
+        //     const numberOfFilteredDocuments = filteredDocuments.length;
+        //     console.log(
+        //       "Number of documents with status 'In Transit' or 'In Progress':",
+        //       numberOfFilteredDocuments
+        //     );
 
-            // Set the count to a state variable
-            setTodayBookings(numberOfFilteredDocuments);
-          }
-        );
+        //     // Set the count to a state variable
+        //     setTodayBookings(numberOfFilteredDocuments);
+        //   }
+        // );
 
-        const unsubscribeTotalService = onSnapshot(
-          totalServiceCollectionRef,
-          (querySnapshot) => {
-            const numberOfHistory = querySnapshot.size;
+        // const unsubscribeTotalService = onSnapshot(
+        //   totalServiceCollectionRef,
+        //   (querySnapshot) => {
+        //     const numberOfHistory = querySnapshot.size;
 
-            // Filter documents with status Upcoming
-            const filteredTotalServices = querySnapshot.docs.filter(
-              (doc) => {
-                const status = doc.data().status;
-                return status === "Completed" || status === "Canceled";
-              }
-            );
+        //     // Filter documents with status Upcoming
+        //     const filteredTotalServices = querySnapshot.docs.filter(
+        //       (doc) => {
+        //         const status = doc.data().status;
+        //         return status === "Completed" || status === "Canceled";
+        //       }
+        //     );
 
-            const numberOfTotalServices = filteredTotalServices.length;
+        //     const numberOfTotalServices = filteredTotalServices.length;
 
-            setTotalHistory(numberOfTotalServices);
-          }
-        );
+        //     setTotalHistory(numberOfTotalServices);
+        //   }
+        // );
 
-        return () => {
-          unsubscribeWallet(); // Cleanup function to unsubscribe from wallet updates
-          unsubscribeUpcomingServices(); // Cleanup function to unsubscribe from upcomingServices updates
-        };
+        // return () => {
+        //   unsubscribeWallet(); // Cleanup function to unsubscribe from wallet updates
+        //   unsubscribeUpcomingServices(); // Cleanup function to unsubscribe from upcomingServices updates
+        // };
       } catch (error) {
-        console.error("Error fetching wallet data:", error);
+        // console.error("Error fetching wallet data:", error);
       }
     };
 
     fetchWalletAndCount(); // Call the fetchWalletAndCount function
   }, []);
 
-  useEffect(() => {
-    async function fetchName() {
-      try {
-        const db = getFirestore();
-        const auth = getAuth();
-        const userUID = auth.currentUser.uid;
-        const providerProfilesCollection = doc(db, "providerProfiles", userUID);
+  // useEffect(() => {
+  //   async function fetchName() {
+  //     try {
+  //       const db = getFirestore();
+  //       const auth = getAuth();
+  //       const userUID = auth.currentUser.uid;
+  //       const providerProfilesCollection = doc(db, "providerProfiles", userUID);
 
-        getDoc(providerProfilesCollection)
-          .then(async (docSnapshot) => {
-            if (docSnapshot.exists()) {
-              const providerData = docSnapshot.data();
-              const coordinates = providerData.coordinates;
-              setProviderName(providerData.name);
+  //       getDoc(providerProfilesCollection)
+  //         .then(async (docSnapshot) => {
+  //           if (docSnapshot.exists()) {
+  //             const providerData = docSnapshot.data();
+  //             const coordinates = providerData.coordinates;
+  //             setProviderName(providerData.name);
 
-              console.log("Provider Name: ", providerData.name);
-            } else {
-              console.log("No such document!");
-            }
-          })
-          .catch((error) => {
-            console.error("Error getting document:", error);
-          })
-          .finally(() => {
-            // Set loading to false when data fetching is complete
-            setLoading(false);
-          });
-      } catch (error) {
-        console.error("Error retrieving data:", error);
-      }
-    }
+  //             console.log("Provider Name: ", providerData.name);
+  //           } else {
+  //             console.log("No such document!");
+  //           }
+  //         })
+  //         .catch((error) => {
+  //           console.error("Error getting document:", error);
+  //         })
+  //         .finally(() => {
+  //           // Set loading to false when data fetching is complete
+  //           setLoading(false);
+  //         });
+  //     } catch (error) {
+  //       console.error("Error retrieving data:", error);
+  //     }
+  //   }
 
-    fetchName();
-  }, []);
+  //   fetchName();
+  // }, []);
 
   // make a listener for the switch to update in firebase
-  useEffect(() => {
-    const toggleAvailability = async () => {
-      const db = getFirestore();
-      const auth = getAuth();
-      const providerUID = auth.currentUser.uid;
+  // useEffect(() => {
+  //   const toggleAvailability = async () => {
+  //     const db = getFirestore();
+  //     const auth = getAuth();
+  //     const providerUID = auth.currentUser.uid;
 
-      const providerDocRef = doc(db, "providerProfiles", providerUID);
+  //     const providerDocRef = doc(db, "providerProfiles", providerUID);
 
-      const providerSnapshot = await getDoc(providerDocRef);
+  //     const providerSnapshot = await getDoc(providerDocRef);
 
-      try {
-        if (providerSnapshot.exists()) {
-          const providerAvailable = providerSnapshot.data().availability;
+  //     try {
+  //       if (providerSnapshot.exists()) {
+  //         const providerAvailable = providerSnapshot.data().availability;
 
 
-          if (isAcceptOrdersEnabled) {
-            // Update the availability field in Firestore
-            await updateDoc(providerDocRef, {
-              availability: "available",
-            });
-          } else {
-            await updateDoc(providerDocRef, {
-              availability: "unavailable",
-            });
-          }
-        } else {
-          console.log("Provider Snapshot doesnt exist");
-        }
-      } catch (error) {
-        console.log("Toggle availability error", error);
-      }
-    };
+  //         if (isAcceptOrdersEnabled) {
+  //           // Update the availability field in Firestore
+  //           await updateDoc(providerDocRef, {
+  //             availability: "available",
+  //           });
+  //         } else {
+  //           await updateDoc(providerDocRef, {
+  //             availability: "unavailable",
+  //           });
+  //         }
+  //       } else {
+  //         console.log("Provider Snapshot doesnt exist");
+  //       }
+  //     } catch (error) {
+  //       console.log("Toggle availability error", error);
+  //     }
+  //   };
 
-    toggleAvailability(); // call toogle availability
-  }, [isAcceptOrdersEnabled]);
+  //   toggleAvailability(); // call toogle availability
+  // }, [isAcceptOrdersEnabled]);
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    let unsubscribe;
+  //   let unsubscribe;
 
-    async function fetchData() {
-      const db = getFirestore();
-      const auth = getAuth();
-      const user = auth.currentUser;
-      const userUID = auth.currentUser.uid;
+  //   async function fetchData() {
+  //     const db = getFirestore();
+  //     const auth = getAuth();
+  //     const user = auth.currentUser;
+  //     const userUID = auth.currentUser.uid;
 
-      const providerDocRef = doc(db, "providerProfiles", userUID);
+  //     const providerDocRef = doc(db, "providerProfiles", userUID);
 
-       unsubscribe = onSnapshot(providerDocRef, (docSnapshot) => {
-        if (docSnapshot.exists) {
-          const data = docSnapshot.data();
-          const providerStatus = data.availability;
-          const providerbookingAccepted = data.bookingMatched;
+  //      unsubscribe = onSnapshot(providerDocRef, (docSnapshot) => {
+  //       if (docSnapshot.exists) {
+  //         const data = docSnapshot.data();
+  //         const providerStatus = data.availability;
+  //         const providerbookingAccepted = data.bookingMatched;
 
-          if (providerStatus === "onHold" && providerbookingAccepted) {
-            // Check if the switch is turned on
+  //         if (providerStatus === "onHold" && providerbookingAccepted) {
+  //           // Check if the switch is turned on
 
-            const serviceBookingsCollection = collection(db, "serviceBookings");
-            const providerProfilesCollection = doc(
-              db,
-              "providerProfiles",
-              userUID
-            );
+  //           const serviceBookingsCollection = collection(db, "serviceBookings");
+  //           const providerProfilesCollection = doc(
+  //             db,
+  //             "providerProfiles",
+  //             userUID
+  //           );
 
-            getDoc(providerProfilesCollection)
-              .then(async (docSnapshot) => {
-                if (docSnapshot.exists()) {
-                  const providerData = docSnapshot.data();
-                  const coordinates = providerData.coordinates;
+  //           getDoc(providerProfilesCollection)
+  //             .then(async (docSnapshot) => {
+  //               if (docSnapshot.exists()) {
+  //                 const providerData = docSnapshot.data();
+  //                 const coordinates = providerData.coordinates;
 
-                  console.log("Provider data: ", providerData);
-                  console.log("Provider Coordinates: ", coordinates);
-                  console.log(
-                    "Provider Coordinates Latitude: ",
-                    coordinates.latitude
-                  );
-                  console.log(
-                    "Provider Coordinates Latitude: ",
-                    coordinates.longitude
-                  );
-                  if (providerData.bookingMatched == true) {
-                    if (providerData.bookingID != null) {
-                      const q = query(serviceBookingsCollection);
+  //                 console.log("Provider data: ", providerData);
+  //                 console.log("Provider Coordinates: ", coordinates);
+  //                 console.log(
+  //                   "Provider Coordinates Latitude: ",
+  //                   coordinates.latitude
+  //                 );
+  //                 console.log(
+  //                   "Provider Coordinates Latitude: ",
+  //                   coordinates.longitude
+  //                 );
+  //                 if (providerData.bookingMatched == true) {
+  //                   if (providerData.bookingID != null) {
+  //                     const q = query(serviceBookingsCollection);
 
-                      const querySnapshot = await getDocs(q);
+  //                     const querySnapshot = await getDocs(q);
 
-                      if (!querySnapshot.empty) {
-                        // doc.data() is never undefined for query doc snapshots
-                        // console.log(doc.id, " => ", doc.data());
-                        querySnapshot.forEach((doc) => {
-                          // Access data of the document using .data()
-                          const bookingData = doc.data();
-                          const id = doc.id;
+  //                     if (!querySnapshot.empty) {
+  //                       // doc.data() is never undefined for query doc snapshots
+  //                       // console.log(doc.id, " => ", doc.data());
+  //                       querySnapshot.forEach((doc) => {
+  //                         // Access data of the document using .data()
+  //                         const bookingData = doc.data();
+  //                         const id = doc.id;
 
-                          // Access specific fields like "name"
-                          const name = bookingData.name;
-                          const accepted = bookingData.bookingAccepted;
-                          const assigned = bookingData.bookingAssigned;
-                          console.log("Booking Data: ", bookingData);
-                          console.log(
-                            "user Booking ID: ",
-                            providerData.bookingID
-                          );
-                          console.log("ID: ", id);
+  //                         // Access specific fields like "name"
+  //                         const name = bookingData.name;
+  //                         const accepted = bookingData.bookingAccepted;
+  //                         const assigned = bookingData.bookingAssigned;
+  //                         console.log("Booking Data: ", bookingData);
+  //                         console.log(
+  //                           "user Booking ID: ",
+  //                           providerData.bookingID
+  //                         );
+  //                         console.log("ID: ", id);
 
-                          const latitude = parseFloat(coordinates.latitude);
-                          const longitude = parseFloat(coordinates.longitude);
+  //                         const latitude = parseFloat(coordinates.latitude);
+  //                         const longitude = parseFloat(coordinates.longitude);
 
-                          if (id == providerData.bookingID) {
-                            console.log("ID: ", id);
-                            console.log("Name: ", name);
-                            navigation.navigate("NewBooking", {
-                              name: name,
-                              userBookingID: id,
-                              matchedBookingID: providerData.bookingID,
-                              bookingIndex: providerData.bookingIndex,
-                              providerCoordinates: {
-                                latitude: latitude,
-                                longitude: longitude,
-                              },
-                            });
-                          }
-                        });
-                      } else {
-                        console.log(
-                          "The 'serviceBookings' collection is empty."
-                        );
-                      }
-                    } else {
-                      console.log("No booking ID found!");
-                    }
-                  } else {
-                    console.log("No booking matched!");
-                  }
-                } else {
-                  console.log("No such document!");
-                }
-              })
-              .catch((error) => {
-                console.error("Error getting document:", error);
-              })
-              .finally(() => {
-                // Set loading to false when data fetching is complete
-                setLoading(false);
-              });
-          }
+  //                         if (id == providerData.bookingID) {
+  //                           console.log("ID: ", id);
+  //                           console.log("Name: ", name);
+  //                           navigation.navigate("NewBooking", {
+  //                             name: name,
+  //                             userBookingID: id,
+  //                             matchedBookingID: providerData.bookingID,
+  //                             bookingIndex: providerData.bookingIndex,
+  //                             providerCoordinates: {
+  //                               latitude: latitude,
+  //                               longitude: longitude,
+  //                             },
+  //                           });
+  //                         }
+  //                       });
+  //                     } else {
+  //                       console.log(
+  //                         "The 'serviceBookings' collection is empty."
+  //                       );
+  //                     }
+  //                   } else {
+  //                     console.log("No booking ID found!");
+  //                   }
+  //                 } else {
+  //                   console.log("No booking matched!");
+  //                 }
+  //               } else {
+  //                 console.log("No such document!");
+  //               }
+  //             })
+  //             .catch((error) => {
+  //               console.error("Error getting document:", error);
+  //             })
+  //             .finally(() => {
+  //               // Set loading to false when data fetching is complete
+  //               setLoading(false);
+  //             });
+  //         }
 
-          // check if available is
-        }
-      });
+  //         // check if available is
+  //       }
+  //     });
 
-    }
+  //   }
 
-    fetchData(); // Call the fetchData function immediately
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
-  }, []); 
+  //   fetchData(); // Call the fetchData function immediately
+  //   return () => {
+  //     if (unsubscribe) {
+  //       unsubscribe();
+  //     }
+  //   };
+  // }, []); 
 
   // useEffect(() => {
   //   async function fetchData() {
@@ -829,7 +829,7 @@ const Homepage = ({ route }) => {
                     trackColor={{ false: "#979797", true: "#1A244D" }}
                     thumbColor={isAcceptOrdersEnabled ? "#00A8E8" : "#Fff"}
                     // ios_backgroundColor="grey"
-                    onValueChange={toggleAcceptOrdersSwitch}
+                    // onValueChange={toggleAcceptOrdersSwitch}
                     value={isAcceptOrdersEnabled}
                   />
                   {/* <Switch
