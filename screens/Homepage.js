@@ -231,21 +231,9 @@ const Homepage = ({ route }) => {
           return require("../assets/pest-control.png");
         case "Dog Training":
           return require("../assets/dog-training.png");
-        case "Dog Pet Grooming":
+        case "Pet Grooming":
           return require("../assets/pet-grooming.png");
-        case "Cat Pet Grooming":
-          return require("../assets/pet-grooming.png");
-        case "Bird Pet Grooming":
-          return require("../assets/pet-grooming.png");
-        case "Rabbit Pet Grooming":
-          return require("../assets/pet-grooming.png");
-        case "Dog Pet Sitting":
-          return require("../assets/pet-sitting.png");
-        case "Cat Pet Sitting":
-          return require("../assets/pet-sitting.png");
-        case "Bird Pet Sitting":
-          return require("../assets/pet-sitting.png");
-        case "Rabbit Pet Sitting":
+        case "Pet Sitting":
           return require("../assets/pet-sitting.png");
         case "Garden Maintenance":
           return require("../assets/garden-maintenance.png");

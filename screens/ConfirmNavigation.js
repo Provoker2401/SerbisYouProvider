@@ -46,100 +46,6 @@ const ConfirmNavigation = ({route}) => {
     
       fetchData(); // Call the fetchData function immediately
     }, []); 
-
-//     const handleToggle = (value) => setToggleState(value);
-//     const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
-//   const [isConfirmed, setConfirmed] = useState(false);
-//   // Animated value for X translation
-//   const X = useSharedValue(0);
-//   // Toggled State
-//   const [toggled, setToggled] = useState(false);
-
-//     // Fires when animation ends
-//     const handleComplete = (isToggled) => {
-//         if (isToggled !== toggled) {
-//           setToggled(isToggled);
-//           handleToggle(isToggled);
-//         }
-//       };
-
-//     // Gesture Handler Events
-//     const animatedGestureHandler = useAnimatedGestureHandler({
-//     onStart: (_, ctx) => {
-//         ctx.completed = toggled;
-//     },
-//     onActive: (e, ctx) => {
-//         let newValue;
-//         if (ctx.completed) {
-//         newValue = H_SWIPE_RANGE + e.translationX;
-//         } else {
-//         newValue = e.translationX;
-//         }
-
-//         if (newValue >= 0 && newValue <= H_SWIPE_RANGE) {
-//         X.value = newValue;
-//         }
-//     },
-//     onEnd: () => {
-//         if (X.value < BUTTON_WIDTH / 2 - SWIPEABLE_DIMENSIONS / 2) {
-//         X.value = withSpring(0);
-//         runOnJS(handleComplete)(false);
-//         } else {
-//         X.value = withSpring(H_SWIPE_RANGE);
-//         runOnJS(handleComplete)(true);
-//         }
-//     },
-//     });
-
-//     const InterpolateXInput = [0, H_SWIPE_RANGE];
-//     const AnimatedStyles = {
-//     swipeCont: useAnimatedStyle(() => {
-//         return {};
-//     }),
-//     colorWave: useAnimatedStyle(() => {
-//         return {
-//         width: H_WAVE_RANGE + X.value,
-
-//         opacity: interpolate(X.value, InterpolateXInput, [0, 1]),
-//         };
-//     }),
-//     swipeable: useAnimatedStyle(() => {
-//         return {
-//         backgroundColor: interpolateColor(
-//             X.value,
-//             [0, BUTTON_WIDTH - SWIPEABLE_DIMENSIONS - BUTTON_PADDING],
-//             ['#06d6a0', '#fff'],
-//         ),
-//         transform: [{translateX: X.value}],
-//         };
-//     }),
-//     swipeText: useAnimatedStyle(() => {
-//         return {
-//         opacity: interpolate(
-//             X.value,
-//             InterpolateXInput,
-//             [0.7, 0],
-//             Extrapolate.CLAMP,
-//         ),
-//         transform: [
-//             {
-//             translateX: interpolate(
-//                 X.value,
-//                 InterpolateXInput,
-//                 [0, BUTTON_WIDTH / 2 - SWIPEABLE_DIMENSIONS],
-//                 Extrapolate.CLAMP,
-//             ),
-//             },
-//         ],
-//         };
-//     }),
-//     };
-
-//   // Handle the confirmation slide
-//   const handleSlideComplete = () => {
-//     // You can add additional logic here if needed
-//     setConfirmed(true);
-//   };
     const defaultStatusMessage = '';
     const [swipeStatusMessage, setSwipeStatusMessage] = useState(
     defaultStatusMessage,
@@ -284,46 +190,9 @@ to Customer?`}</Text>
             </Text>
         </View>
         <View style={styles.container1}>
-          {/* <Text style={styles.title}>React Native Swipe Button</Text> */}
           <Text style={styles.swipeStatus}>{swipeStatusMessage}</Text>
-          {/* {renderSubHeading('Swipe status callbacks')} */}
-          {/* <SwipeButton
-            containerStyles={{borderRadius: 25}}
-            // height={25}
-            shouldResetAfterSuccess={true}
-            resetAfterSuccessAnimDelay={3000}
-            onSwipeFail={() => updateSwipeStatusMessage('Incomplete swipe!')}
-            onSwipeStart={() => updateSwipeStatusMessage('Swipe started!')}
-            onSwipeSuccess={() => updateSwipeStatusMessage('Submitted successfully!')}
-            railBackgroundColor="#31a57c"
-            railStyles={{
-              backgroundColor: '#fff',
-              borderColor: '#000',
-            }}
-            // railStyles={{borderRadius: 5}}
-            // thumbIconComponent={CheckoutButton}
-            thumbIconImageSource={rightArrow}
-            thumbIconStyles={{borderRadius: 25}}
-            thumbIconWidth={50} 
-            thumbIconBackgroundColor="#FFFFFF"
-            title="Slide to confirm"
-          /> */}
-          {/* {renderSubHeading('Reverse swipe enabled')}
-          <SwipeButton
-            // enableReverseSwipe
-            onSwipeSuccess={() => updateSwipeStatusMessage('Slide success!')}
-            railBackgroundColor="#a493d6"
-            thumbIconImageSource={rightArrow}
-            thumbIconBackgroundColor="#FFFFFF"
-            title="Slide to unlock"
-          /> */}
-          {/* {renderSubHeading('Set a component as thumb icon & use forceReset')} */}
           <View style={styles.content1}>
             <SwipeButton
-                // disableResetOnTap
-                // forceReset={ reset => {
-                //   forceResetLastButton = reset
-                // }}
                 shouldResetAfterSuccess={true}
                 resetAfterSuccessAnimDelay={2000}
                 onSwipeFail={() => updateSwipeStatusMessage('Incomplete swipe!')}
@@ -347,77 +216,8 @@ to Customer?`}</Text>
                 }}
             />
           </View>
-
-          {/* <View style={{ alignItems: 'center', marginBottom: 5 }}>
-            <Button onPress={() => forceResetLastButton && forceResetLastButton()} title="Force reset" />
-          </View>   
-           {renderSubHeading('Set .png image as thumb icon')}
-          <SwipeButton thumbIconImageSource={'./assets/arrow-right.png'} railBackgroundColor="#cfb0dd"/> 
-          {renderSubHeading('Set height & reset after successful swipe')}
-          <SwipeButton height={25} shouldResetAfterSuccess={true} resetAfterSuccessAnimDelay={1000} /> 
-          {renderSubHeading('Set height and width')}
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <SwipeButton height={35} width={200} title="Swipe" disabled={disableCBButton} />
-            <View style={{ marginLeft: 15, width: 150, height: 32 }}><Button onPress={() => setDisableCBButton(!disableCBButton)} title="Toggle disable" /></View>
-          </View>   */}
-
         </View>
       </View>
-      
-
-      {/*<View style={styles.swiperContainer}>
-        <Swiper
-            style={styles.swiper}
-            showsButtons={true}
-            onIndexChanged={() => setConfirmed(false)}
-            onMomentumScrollEnd={handleSlideComplete}
-            loop={false}
-            >
-          <View style={styles.slide}>
-            <Text style={styles.slideText}>Slide to Confirm</Text>
-          </View>
-        </Swiper>
-      </View> */}
-        {/* <Animated.View style={[styles.swipeCont, AnimatedStyles.swipeCont]}>
-            <AnimatedLinearGradient
-                style={[AnimatedStyles.colorWave, styles.colorWave]}
-                colors={['#06d6a0', '#1b9aaa']}
-                start={{x: 0.0, y: 0.5}}
-                end={{x: 1, y: 0.5}}
-            />
-            <GestureHandlerRootView style={{ flex: 1 }}>
-                <PanGestureHandler onGestureEvent={animatedGestureHandler}>
-                    <Animated.View style={[styles.swipeable, AnimatedStyles.swipeable]} />
-                </PanGestureHandler>
-            </GestureHandlerRootView>
-
-            <Animated.Text style={[styles.swipeText, AnimatedStyles.swipeText]}>
-                Swipe Me
-            </Animated.Text>
-        </Animated.View> */}
-        {/* <View style={styles.content1}>
-            <SwipeButton
-                // disableResetOnTap
-                // forceReset={ reset => {
-                //   forceResetLastButton = reset
-                // }}
-                shouldResetAfterSuccess={true}
-                resetAfterSuccessAnimDelay={3000}
-                onSwipeFail={() => updateSwipeStatusMessage('Incomplete swipe!')}
-                onSwipeStart={() => updateSwipeStatusMessage('Swipe started!')}
-                onSwipeSuccess={() => updateSwipeStatusMessage('Submitted successfully!')}
-                thumbIconImageSource={rightArrow}
-                thumbIconStyles={{borderRadius: 25}}
-                thumbIconWidth={50} 
-                thumbIconBackgroundColor="#FFFFFF"
-                railBackgroundColor="#9fc7e8"
-                railStyles={{
-                backgroundColor: '#fff',
-                borderColor: '#000',
-                }}
-                title="Slide to confirm"
-            />
-        </View> */}
     </View>
   );
 };
@@ -526,31 +326,6 @@ swiperContainer: {
     fontWeight: 'bold',
     color: '#1fb28a',
   },
-//   swipeCont: {
-//     height: BUTTON_HEIGHT,
-//     width: BUTTON_WIDTH,
-//     backgroundColor: '#fff',
-//     borderRadius: BUTTON_HEIGHT,
-//     padding: BUTTON_PADDING,
-//     display: 'flex',
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     flexDirection: 'row',
-//   },
-//   colorWave: {
-//     position: 'absolute',
-//     left: 0,
-//     height: BUTTON_HEIGHT,
-//     borderRadius: BUTTON_HEIGHT,
-//   },
-//   swipeable: {
-//     position: 'absolute',
-//     left: BUTTON_PADDING,
-//     height: SWIPEABLE_DIMENSIONS,
-//     width: SWIPEABLE_DIMENSIONS,
-//     borderRadius: SWIPEABLE_DIMENSIONS,
-//     zIndex: 3,
-//   },
   swipeText: {
     alignSelf: 'center',
     fontSize: 20,

@@ -25,7 +25,7 @@ import {
   query,
   serverTimestamp,
 } from "firebase/firestore"; // Updated imports
-import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import * as ImagePicker from "expo-image-picker";
 import {
   getStorage,
@@ -104,26 +104,6 @@ const ConfirmService = ({route}) => {
     fetchData(); // Call the fetchData function immediately
   }, []); 
 
-  const fetchProfileImage = async (uid) => {
-    const storage = getStorage();
-    const imageRef = ref(storage, `ProviderProof/${uid}`);
-    const defaultImage = ref(
-      storage,
-      "ProfilePictures/serviceProviderIcon.png"
-    );
-
-    try {
-      const imageUrl = await getDownloadURL(imageRef);
-      setProfileImage(imageUrl);
-    } catch (error) {
-      //console.error("Error fetching profile image:", error);
-      // Set a default image URL if the image doesn't exist
-      const imageUrl = await getDownloadURL(defaultImage);
-
-      setProfileImage(imageUrl);
-    }
-  };
-
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -190,8 +170,6 @@ const ConfirmService = ({route}) => {
   };
 
   const handleCompletedService = async () => {
-     // timestamp
-    //service
     const currentDate = new Date();
     const monthNames = [
       "January",
@@ -376,6 +354,13 @@ const ConfirmService = ({route}) => {
       } catch (error) {
         console.error("Error updating notification:", error);
       }
+
+      Toast.show({
+        type: "success",
+        position: "top",
+        text1: "Service Successfully Completed✅",
+        visibilityTime: 3000,
+      });
 
       // Navigate to PerformTheService screen with itemId
       // navigation.navigate("BottomTabsRoot", { screen: "Homepage" });
@@ -566,133 +551,6 @@ const ConfirmService = ({route}) => {
               </View>
               )}
               <View style={styles.subcategoriesFrame}>
-                {/* <View
-                  style={[
-                    styles.dateAndTimeFrame,
-                    styles.dateAndTimeFrameFlexBox,
-                  ]}
-                >
-                  <View style={styles.bookingDetailsLabel2}>
-                    <View style={styles.frameParent}>
-                      <View
-                        style={[styles.frameWrapper, styles.frameSpaceBlock]}
-                      >
-                        <View style={styles.wrapper}>
-                          <View style={styles.frameWrapper2}>
-                            <View style={styles.bookingDetailsLabel2}>
-                              <Text style={[styles.text1, styles.text1Text]}>
-                                2
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-                      </View>
-                      <View
-                        style={[
-                          styles.frameFrame,
-                          styles.frameWrapperSpaceBlock,
-                        ]}
-                      >
-                        <View style={styles.bookingDetailsLabel2}>
-                          <Text style={[styles.toiletSystem, styles.text1Text]}>
-                            Toilet System
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={[styles.frameParent1, styles.frameFlexBox]}>
-                      <View
-                        style={[styles.frameWrapper, styles.frameSpaceBlock]}
-                      >
-                        <View style={styles.wrapper}>
-                          <View style={styles.frameWrapper2}>
-                            <View style={styles.bookingDetailsLabel2}>
-                              <Text style={[styles.text1, styles.text1Text]}>
-                                2
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-                      </View>
-                      <View
-                        style={[
-                          styles.frameFrame,
-                          styles.frameWrapperSpaceBlock,
-                        ]}
-                      >
-                        <View style={styles.bookingDetailsLabel2}>
-                          <Text style={[styles.toiletSystem, styles.text1Text]}>
-                            Septic Tank Cleaning
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={[styles.frameParent1, styles.frameFlexBox]}>
-                      <View
-                        style={[styles.frameWrapper, styles.frameSpaceBlock]}
-                      >
-                        <View style={styles.wrapper}>
-                          <View style={styles.frameWrapper2}>
-                            <View style={styles.bookingDetailsLabel2}>
-                              <Text style={[styles.text1, styles.text1Text]}>
-                                2
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-                      </View>
-                      <View
-                        style={[
-                          styles.frameWrapper10,
-                          styles.frameWrapperSpaceBlock,
-                        ]}
-                      >
-                        <View style={styles.bookingDetailsLabel2}>
-                          <Text style={[styles.toiletSystem, styles.text1Text]}>
-                            Cage or Habitat Cleaning
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={[styles.frameParent1, styles.frameFlexBox]}>
-                      <View
-                        style={[styles.frameWrapper, styles.frameSpaceBlock]}
-                      >
-                        <View style={styles.wrapper}>
-                          <View style={styles.frameWrapper2}>
-                            <View style={styles.bookingDetailsLabel2}>
-                              <Text style={[styles.text1, styles.text1Text]}>
-                                2
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-                      </View>
-                      <View
-                        style={[
-                          styles.frameFrame,
-                          styles.frameWrapperSpaceBlock,
-                        ]}
-                      >
-                        <View style={styles.bookingDetailsLabel2}>
-                          <Text style={[styles.toiletSystem, styles.text1Text]}>
-                            Toilet System
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                  <View
-                    style={[
-                      styles.frameWrapper15,
-                      styles.frameWrapperSpaceBlock,
-                    ]}
-                  >
-                    <View style={styles.frame4}>
-                      <Text style={styles.text5}>₱2000.00</Text>
-                    </View>
-                  </View>
-                </View> */}
                 <View style={[styles.dateAndTimeFrame1, styles.viewFlexBox]}>
                   <View style={styles.collectCashFromCustomerWrapper}>
                     <View style={styles.frame5}>
@@ -727,11 +585,6 @@ completed service`}</Text>
                       </Pressable>
                     </View>
                   )}
-                  {/* <View style={[styles.dateAndTimeFrame2, styles.frameFlexBox]}>
-                    <Pressable style={styles.frame7}>
-                      <Text style={styles.addPhoto}>Add Photo</Text>
-                    </Pressable>
-                  </View> */}
                 </View>
               </View>
             </View>

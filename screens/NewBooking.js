@@ -813,12 +813,12 @@ const NewBooking = ({ route }) => {
           region={initialMapRegion}
           onLayout={onMapLayout}
         >
-          {/* <Marker
+          <Marker
             coordinate={markerPosition}
             title="Provider's Location"
             draggable={false}
             image={require("../assets/provider-2.png")}
-          /> */}
+          />
           {coordinates.latitude && coordinates.longitude && (
             <Marker
               coordinate={coordinates}

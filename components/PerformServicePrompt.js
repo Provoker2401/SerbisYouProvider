@@ -4,19 +4,19 @@ import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import { Padding, Border, FontSize, FontFamily, Color } from "../GlobalStyles";
 import {
-    getFirestore,
-    collection,
-    doc,
-    getDoc,
-    updateDoc,
-    where,
-    getDocs,
-    setDoc,
-    query,
-    serverTimestamp,
-  } from "firebase/firestore"; // Updated imports
-  import { getAuth } from "firebase/auth";
-  import * as TaskManager from "expo-task-manager";
+  getFirestore,
+  collection,
+  doc,
+  getDoc,
+  updateDoc,
+  where,
+  getDocs,
+  setDoc,
+  query,
+  serverTimestamp,
+} from "firebase/firestore"; // Updated imports
+import { getAuth } from "firebase/auth";
+import * as TaskManager from "expo-task-manager";
 import * as Location from "expo-location";
 
 const PerformServicePrompt = ({ onClose, itemID, matchedBookingID, customerUID, onProgress}) => {
@@ -26,7 +26,6 @@ const PerformServicePrompt = ({ onClose, itemID, matchedBookingID, customerUID, 
   const [yesBtnVisible, setYesBtnVisible] = useState(false);
 
   const getCurrentLocationTask = "background-location-task";
-
 
   const stopUpdateLocation = async () => {
     try {

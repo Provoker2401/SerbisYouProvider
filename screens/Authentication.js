@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useState, useEffect, useRef, createRef } from "react";
-import { Image } from "expo-image";
 import {
   StatusBar,
   StyleSheet,
@@ -8,9 +7,6 @@ import {
   View,
   TextInput,
   Pressable,
-  ActivityIndicator,
-  Alert,
-  Button,
   TouchableOpacity,
 } from "react-native";
 import { FontSize, FontFamily, Padding, Border, Color } from "../GlobalStyles";
@@ -29,9 +25,9 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import Toast from "react-native-toast-message";
-// import * as FirebaseRecaptcha from "expo-firebase-recaptcha";
 import axios from "axios";
 import messaging from '@react-native-firebase/messaging';
+import Spinner from "react-native-loading-spinner-overlay";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDWQablgpC3ElsqOQuVhQU2YFsri1VmCss",
@@ -55,8 +51,9 @@ const Authentication = ({ route }) => {
   const navigation = useNavigation();
 
   const [confirmInProgress, setConfirmInProgress] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(60);
+  const [requestID, setrequestID] = useState("");
 
   console.log("Name:", name);
   console.log("Email:", email);
@@ -179,9 +176,10 @@ const Authentication = ({ route }) => {
 
       try {
         // Check if a document with the same phone number already exists
+        
         const db = getFirestore();
         const querySnapshot = await getDocs(collection(db, "providerProfiles"));
-
+        setLoading(true);
         // Create the provider with email and password
         const providerCredential = await createUserWithEmailAndPassword(
           auth,
@@ -223,8 +221,8 @@ const Authentication = ({ route }) => {
           bookingMatched: false,
           bookingIndex: 0,
           coordinates: {
-            latitude: 10.336641527084641,
-            longitude: 123.91533800644042,
+            latitude: 10.374995463888457,
+            longitude: 123.91922703537087,
           },
         });
 
@@ -281,6 +279,7 @@ const Authentication = ({ route }) => {
 
         const historyBookings = collection(providerDocRef, "historyBookings"); // Replace 'subcollection_name' with your desired subcollection name
         await addDoc(historyBookings, {});
+        setLoading(false);
 
         // User signed up successfully
         console.log("Sign Up Successful!");
@@ -307,7 +306,7 @@ const Authentication = ({ route }) => {
       navigation.navigate("ApplicationForm1");
     } catch (error) {
       console.error("Error verification:", error.message);
-
+      setLoading(false);
       Toast.show({
         type: "error",
         position: "top",
@@ -361,6 +360,13 @@ Enter the code in that message to continue.`}</Text>
                         />
                       ))}
                   </View>
+                  {loading ? (
+                    <Spinner visible={true} />
+                    ) : (
+                      <View style={styles.container}>
+                      </View>
+                    )
+                  }
                 </View>
               </View>
               <View style={[styles.verifyframe, styles.frameFlexBox]}>
@@ -382,11 +388,6 @@ Enter the code in that message to continue.`}</Text>
                 </TouchableOpacity>
               )}
             </View>
-            {/* <View style={[styles.group34600reSendCodeIn0, styles.frameFlexBox]}>
-              {timer > 0 && (
-                <Text>Resend code in: {timer} seconds</Text>
-              )}
-            </View> */}
           </View>
         </View>
       </View>
@@ -395,6 +396,12 @@ Enter the code in that message to continue.`}</Text>
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    display: 'none',
+  },
   frameFlexBox: {
     justifyContent: "center",
     alignItems: "center",

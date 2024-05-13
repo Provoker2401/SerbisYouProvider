@@ -262,16 +262,6 @@ const ChangePassword = () => {
                   )
                 ) : null
               }
-
-                  
-              
-                {/* <Text style={[styles.weak, styles.weakTypo]}>WEAK</Text>
-                <Text style={[styles.average, styles.badgePosition]}>
-                  AVERAGE
-                </Text>
-                <Text style={[styles.strong, styles.strongPosition]}>
-                  STRONG
-                </Text> */}
               </View>
             </View>
             <View style={styles.vectorParentSpaceBlock}>
@@ -293,10 +283,6 @@ const ChangePassword = () => {
                   )
                 ) : null
               }
-
-              {/* <View style={[styles.weakBar, styles.barLayout]} />
-              <View style={[styles.averageBar, styles.barLayout]} />
-              <View style={[styles.strongBar, styles.barLayout]} /> */}
             </View>
           </View>
         </View>
@@ -304,7 +290,6 @@ const ChangePassword = () => {
           <View style={styles.changeBtnWrapper}>
             <Pressable
               style={styles.frameParent}
-              // onPress={() => navigation.navigate("ChangePasswordUpdated")}
               onPress={saveChangesHandle}
             >
               <View style={[styles.button, styles.buttonFlexBox]}>

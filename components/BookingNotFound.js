@@ -4,7 +4,7 @@ import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import { FontFamily, Color, FontSize, Padding, Border } from "../GlobalStyles";
 
-const CountDownBooking = ({ onClose }) => {
+const BookingNotFound = ({ onClose }) => {
   const navigation = useNavigation();
 
   const handleOkPress = () => {
@@ -125,4 +125,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CountDownBooking;
+export default BookingNotFound;

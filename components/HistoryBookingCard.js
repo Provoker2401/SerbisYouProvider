@@ -11,16 +11,10 @@ import { FontSize, FontFamily, Color, Border, Padding } from "../GlobalStyles";
 import { useNavigation } from "@react-navigation/native";
 import {
   getFirestore,
-  collection,
   doc,
   getDoc,
-  getDocs,
-  setDoc,
-  where,
-  query,
-  onSnapshot,
 } from "firebase/firestore"; // Updated imports
-import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
 // Define a function to map the status to the corresponding style
 const getStatusStyle = (status) => {
@@ -43,36 +37,6 @@ const getCardBackgroundColor = (status) => {
       return styles.completed;
     default:
       return {};
-  }
-};
-
-const getButtonText = (status) => {
-  switch (status) {
-    case "Cancelled":
-      return "Cancelled";
-    case "Completed":
-      return "Completed";
-    default:
-      return "Action";
-  }
-};
-
-const getPaymentMethodText = (paymentMethod) => {
-  switch (paymentMethod) {
-    case "Gcash":
-      return "Gcash";
-    case "Cash":
-      return "Cash";
-    case "Paymaya":
-      return "Paymaya";
-    case "Paypal":
-      return "Paypal";
-    case "BPI":
-      return "BPI";
-    case "BDO":
-      return "BDO";
-    default:
-      return "Action";
   }
 };
 
@@ -104,23 +68,16 @@ const HistoryBookingCard = ({
         "historyBookings",
         id
       );
-
       const docSnapshot = await getDoc(userBookingDocRef);
 
       if (docSnapshot.exists()) {
-        const booking = docSnapshot.data();
-        console.log("Booking Data:", booking);
-
         navigation.navigate("EReceipt", { id });
-
-
       } else {
         console.log("No such document");
       }
     } catch (error) {}
   };
 
-  console.log("ID", id);
 
   return (
     <View style={styles.cancelledFrameSpaceBlock}>
@@ -153,23 +110,17 @@ const HistoryBookingCard = ({
               </View>
               <View style={styles.frameView}>
                 <View style={styles.amParent}>
-                  {/* <Text style={[styles.am, styles.amTypo]}>5:00 AM</Text> */}
                   <Text style={[styles.uscTalambanCebu, styles.amTypo]}>
                     {location}
                   </Text>
                 </View>
-                <Pressable
-                  style={styles.vectorWrapper}
-                  onPress={() => navigation.navigate("CalendarStrips")}
-                >
                   <Image
                     style={styles.vectorIcon}
                     contentFit="cover"
                     source={require("../assets/vector3.png")}
                   />
-                </Pressable>
+                </View>
               </View>
-            </View>
             <View
               style={[styles.vectorContainer, styles.historyBookingsSpaceBlock]}
             >

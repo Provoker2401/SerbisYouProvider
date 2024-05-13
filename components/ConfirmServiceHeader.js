@@ -12,7 +12,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import { Color, FontSize, FontFamily, Padding } from "../GlobalStyles";
-// import { TouchableOpacity } from "react-native-gesture-handler";
 
 const ConfirmServiceHeader = ({ style }) => {
   const navigation = useNavigation();

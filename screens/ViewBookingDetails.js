@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StatusBar,
   StyleSheet,
@@ -14,15 +14,10 @@ import { useNavigation } from "@react-navigation/native";
 import { Padding, Color, Border, FontFamily, FontSize } from "../GlobalStyles";
 import {
   getFirestore,
-  collection,
   doc,
   getDoc,
-  getDocs,
-  setDoc,
-  where,
-  query,
 } from "firebase/firestore"; // Updated imports
-import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
 const ViewBookingDetails = ({ route }) => {
   const navigation = useNavigation();

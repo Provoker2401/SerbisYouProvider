@@ -8,22 +8,18 @@ import {
   ScrollView,
   TextInput,
 } from "react-native";
-import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import { Border, Padding, FontFamily, FontSize, Color } from "../GlobalStyles";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import SectionedMultiSelect from "react-native-sectioned-multi-select";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import {
   getFirestore,
   collection,
   query,
-  where,
   getDocs,
   doc,
-  getDoc,
   setDoc,
-  addDoc,
 } from "firebase/firestore";
 
 const ApplicationForm3 = () => {
@@ -64,14 +60,14 @@ const ApplicationForm3 = () => {
       id: 3,
       items: [
         { name: "Dog Training", id: 40 },
-        { name: "Dog Pet Grooming", id: 41},
-        { name: "Cat Pet Grooming", id: 42},
-        { name: "Bird Pet Grooming", id: 43},
-        { name: "Rabbit Pet Grooming", id: 44},
-        { name: "Dog Pet Sitting", id: 45 },
-        { name: "Cat Pet Sitting", id: 46 },
-        { name: "Bird Pet Sitting", id: 47 },
-        { name: "Rabbit Pet Sitting", id: 48 },
+        { name: "Pet Grooming", id: 41},
+        // { name: "Cat Pet Grooming", id: 42},
+        // { name: "Bird Pet Grooming", id: 43},
+        // { name: "Rabbit Pet Grooming", id: 44},
+        { name: "Pet Sitting", id: 42 },
+        // { name: "Cat Pet Sitting", id: 46 },
+        // { name: "Bird Pet Sitting", id: 47 },
+        // { name: "Rabbit Pet Sitting", id: 48 },
       ],
     },
     {
@@ -267,150 +263,194 @@ const ApplicationForm3 = () => {
     },
   ];
 
-  const dogpetGroomingItems = [
+  const petGroomingItems = [
     {
-      name: "Dog Pet Grooming",
+      name: "Pet Grooming",
       category: "Pet Care",
-      subGroup: "Dog Pet Grooming",
+      subGroup: "Pet Grooming",
       id: 1000,
       items: [
-        { name: "Bathing and Shampooing", id: 1001 },
-        { name: "Brushing and Combing", id: 1002 },
-        { name: "Haircuts and Trims", id: 1003 },
-        { name: "Ear and Teeth Cleaning", id: 1004 },
-        { name: "Nail Trimming", id: 1005 },
-        { name: "Anal Gland Expression", id: 1006 },
-        { name: "Flea and Tick Treatments", id: 1007 },
-        { name: "Skin and Coat Treatments", id: 1008 },
+        { name: "Bathing and Shampooing (DOG)", id: 1001 },
+        { name: "Brushing and Combing (DOG)", id: 1002 },
+        { name: "Haircuts and Trims (DOG)", id: 1003 },
+        { name: "Ear and Teeth Cleaning (DOG)", id: 1004 },
+        { name: "Nail Trimming (DOG)", id: 1005 },
+        { name: "Anal Gland Expression (DOG)", id: 1006 },
+        { name: "Flea and Tick Treatments (DOG)", id: 1007 },
+        { name: "Skin and Coat Treatments (DOG)", id: 1008 },
+        { name: "Bathing and Shampooing (CAT)", id: 1010 },
+        { name: "Brushing and Combing (CAT)", id: 1011 },
+        { name: "Haircuts and Trims (CAT)", id: 1012 },
+        { name: "Ear and Teeth Cleaning (CAT)", id: 1013 },
+        { name: "Nail Trimming (CAT)", id: 1014 },
+        { name: "Anal Gland Expression (CAT)", id: 1015 },
+        { name: "Flea and Tick Treatments (CAT)", id: 1016 },
+        { name: "Skin and Coat Treatments (CAT)", id: 1017 },
+        { name: "Bathing (BIRD)", id: 1019 },
+        { name: "Beak Trimming (BIRD)", id: 1020 },
+        { name: "Beak Conditioning (BIRD)", id: 1021 },
+        { name: "Nail Trimming (BIRD)", id: 1022 },
+        { name: "Feather Trimming (BIRD)", id: 1023 },
+        { name: "Wing Clipping (BIRD)", id: 1024 },
+        { name: "Feather Conditioning (BIRD)", id: 1025 },
+        { name: "Bathing (RABBIT)", id: 1027 },
+        { name: "Brushing and Combing (RABBIT)", id: 1028 },
+        { name: "Fur Removal (RABBIT)", id: 1029 },
+        { name: "Ear and Teeth Cleaning (RABBIT)", id: 1030 },
+        { name: "Nail Trimming (RABBIT)", id: 1031 },
+        { name: "Scent Gland Clipping (RABBIT)", id: 1032 },
+        { name: "Eye Cleaning (RABBIT)", id: 1033 },
       ],
     },
   ];
 
   const catpetGroomingItems = [
     {
-      name: "Cat Pet Grooming",
+      name: "Pet Grooming",
       category: "Pet Care",
-      subGroup: "Cat Pet Grooming",
+      subGroup: "Pet Grooming",
       id: 1009,
       items: [
-        { name: "Bathing and Shampooing", id: 1010 },
-        { name: "Brushing and Combing", id: 1011 },
-        { name: "Haircuts and Trims", id: 1012 },
-        { name: "Ear and Teeth Cleaning", id: 1013 },
-        { name: "Nail Trimming", id: 1014 },
-        { name: "Anal Gland Expression", id: 1015 },
-        { name: "Flea and Tick Treatments", id: 1016 },
-        { name: "Skin and Coat Treatments", id: 1017 },
+        { name: "Bathing and Shampooing (CAT)", id: 1010 },
+        { name: "Brushing and Combing (CAT)", id: 1011 },
+        { name: "Haircuts and Trims (CAT)", id: 1012 },
+        { name: "Ear and Teeth Cleaning (CAT)", id: 1013 },
+        { name: "Nail Trimming (CAT)", id: 1014 },
+        { name: "Anal Gland Expression (CAT)", id: 1015 },
+        { name: "Flea and Tick Treatments (CAT)", id: 1016 },
+        { name: "Skin and Coat Treatments (CAT)", id: 1017 },
       ],
     },
   ];
 
   const birdpetGroomingItems = [
     {
-      name: "Bird Pet Grooming",
+      name: "Pet Grooming",
       category: "Pet Care",
-      subGroup: "Bird Pet Grooming",
+      subGroup: "Pet Grooming",
       id: 1018,
       items: [
-        { name: "Bathing", id: 1019 },
-        { name: "Beak Trimming", id: 1020 },
-        { name: "Beak Conditioning", id: 1021 },
-        { name: "Nail Trimming", id: 1022 },
-        { name: "Feather Trimming", id: 1023 },
-        { name: "Wing Clipping", id: 1024 },
-        { name: "Feather Conditioning", id: 1025 },
+        { name: "Bathing (BIRD)", id: 1019 },
+        { name: "Beak Trimming (BIRD)", id: 1020 },
+        { name: "Beak Conditioning (BIRD)", id: 1021 },
+        { name: "Nail Trimming (BIRD)", id: 1022 },
+        { name: "Feather Trimming (BIRD)", id: 1023 },
+        { name: "Wing Clipping (BIRD)", id: 1024 },
+        { name: "Feather Conditioning (BIRD)", id: 1025 },
       ],
     },
   ];
 
   const rabbitpetGroomingItems = [
     {
-      name: "Rabbit Pet Grooming",
+      name: "Pet Grooming",
       category: "Pet Care",
-      subGroup: "Rabbit Pet Grooming",
+      subGroup: "Pet Grooming",
       id: 1026,
       items: [
-        { name: "Bathing", id: 1027 },
-        { name: "Brushing and Combing", id: 1028 },
-        { name: "Fur Removal", id: 1029 },
-        { name: "Ear and Teeth Cleaning", id: 1030 },
-        { name: "Nail Trimming", id: 1031 },
-        { name: "Scent Gland Clipping", id: 1032 },
-        { name: "Eye Cleaning", id: 1033 },
+        { name: "Bathing (RABBIT)", id: 1027 },
+        { name: "Brushing and Combing (RABBIT)", id: 1028 },
+        { name: "Fur Removal (RABBIT)", id: 1029 },
+        { name: "Ear and Teeth Cleaning (RABBIT)", id: 1030 },
+        { name: "Nail Trimming (RABBIT)", id: 1031 },
+        { name: "Scent Gland Clipping (RABBIT)", id: 1032 },
+        { name: "Eye Cleaning (RABBIT)", id: 1033 },
       ],
     },
   ];
 
-  const dogpetSittingItems = [
+  const petSittingItems = [
     {
-      name: "Dog Pet Sitting",
+      name: "Pet Sitting",
       category: "Pet Care",
-      subGroup: "Dog Pet Sitting",
+      subGroup: "Pet Sitting",
       id: 1100,
       items: [
-        { name: "Feeding and Watering", id: 1101 },
-        { name: "Exercise and Playtime", id: 1102 },
-        { name: "Potty Breaks", id: 1103 },
-        { name: "Medication Administration", id: 1104 },
-        { name: "Cage or Habitat Cleaning", id: 1105 },
-        { name: "Specialized Care", id: 1106 },
-        { name: "Flea and Tick Treatments", id: 1107 },
-        { name: "Skin and Coat Treatments", id: 1108 },
+        { name: "Feeding and Watering (DOG)", id: 1101 },
+        { name: "Exercise and Playtime (DOG)", id: 1102 },
+        { name: "Potty Breaks (DOG)", id: 1103 },
+        { name: "Medication Administration (DOG)", id: 1104 },
+        { name: "Cage or Habitat Cleaning (DOG)", id: 1105 },
+        { name: "Specialized Care (DOG)", id: 1106 },
+        { name: "Flea and Tick Treatments (DOG)", id: 1107 },
+        { name: "Skin and Coat Treatments (DOG)", id: 1108 },
+        { name: "Feeding and Watering (CAT)", id: 1110 },
+        { name: "Exercise and Playtime (CAT)", id: 1111 },
+        { name: "Potty Breaks (CAT)", id: 1112 },
+        { name: "Medication Administration (CAT)", id: 1113 },
+        { name: "Cage or Habitat Cleaning (CAT)", id: 1114 },
+        { name: "Specialized Care (CAT)", id: 1115 },
+        { name: "Flea and Tick Treatments (CAT)", id: 1116 },
+        { name: "Skin and Coat Treatments (CAT)", id: 1117 },
+        { name: "Feeding and Watering (BIRD)", id: 1119 },
+        { name: "Exercise and Playtime (BIRD)", id: 1120 },
+        { name: "Medication Administration (BIRD)", id: 1121 },
+        { name: "Cage or Habitat Cleaning (BIRD)", id: 1122 },
+        { name: "Bird Massage (BIRD)", id: 1123 },
+        { name: "Interactive Socialization (BIRD)", id: 1124 },
+        { name: "Outdoor Exploration (BIRD)", id: 1125 },
+        { name: "Feeding and Watering (RABBIT)", id: 1127 },
+        { name: "Exercise and Playtime (RABBIT)", id: 1128 },
+        { name: "Litter Box Maintenance (RABBIT)", id: 1129 },
+        { name: "Medication Administration (RABBIT)", id: 1130 },
+        { name: "Cage or Habitat Cleaning (RABBIT)", id: 1131 },
+        { name: "Specialized Care (RABBIT)", id: 1132 },
+        { name: "Skin and Fur Treatments (RABBIT)", id: 1133 },
       ],
     },
   ];
 
   const catpetSittingItems = [
     {
-      name: " Cat Pet Sitting",
+      name: "Pet Sitting",
       category: "Pet Care",
-      subGroup: "Cat Pet Sitting",
+      subGroup: "Pet Sitting",
       id: 1109,
       items: [
-        { name: "Feeding and Watering", id: 1110 },
-        { name: "Exercise and Playtime", id: 1111 },
-        { name: "Potty Breaks", id: 1112 },
-        { name: "Medication Administration", id: 1113 },
-        { name: "Cage or Habitat Cleaning", id: 1114 },
-        { name: "Specialized Care", id: 1115 },
-        { name: "Flea and Tick Treatments", id: 1116 },
-        { name: "Skin and Coat Treatments", id: 1117 },
+        { name: "Feeding and Watering (CAT)", id: 1110 },
+        { name: "Exercise and Playtime (CAT)", id: 1111 },
+        { name: "Potty Breaks (CAT)", id: 1112 },
+        { name: "Medication Administration (CAT)", id: 1113 },
+        { name: "Cage or Habitat Cleaning (CAT)", id: 1114 },
+        { name: "Specialized Care (CAT)", id: 1115 },
+        { name: "Flea and Tick Treatments (CAT)", id: 1116 },
+        { name: "Skin and Coat Treatments (CAT)", id: 1117 },
       ],
     },
   ];
 
   const birdpetSittingItems = [
     {
-      name: " Bird Pet Sitting",
+      name: "Pet Sitting",
       category: "Pet Care",
-      subGroup: "Bird Pet Sitting",
+      subGroup: "Pet Sitting",
       id: 1118,
       items: [
-        { name: "Feeding and Watering", id: 1119 },
-        { name: "Exercise and Playtime", id: 1120 },
-        { name: "Medication Administration", id: 1121 },
-        { name: "Cage or Habitat Cleaning", id: 1122 },
-        { name: "Bird Massage", id: 1123 },
-        { name: "Interactive Socialization", id: 1124 },
-        { name: "Outdoor Exploration", id: 1125 },
+        { name: "Feeding and Watering (BIRD)", id: 1119 },
+        { name: "Exercise and Playtime (BIRD)", id: 1120 },
+        { name: "Medication Administration (BIRD)", id: 1121 },
+        { name: "Cage or Habitat Cleaning (BIRD)", id: 1122 },
+        { name: "Bird Massage (BIRD)", id: 1123 },
+        { name: "Interactive Socialization (BIRD)", id: 1124 },
+        { name: "Outdoor Exploration (BIRD)", id: 1125 },
       ],
     },
   ];
 
   const rabbitpetSittingItems = [
     {
-      name: " Rabbit Pet Sitting",
+      name: "Pet Sitting",
       category: "Pet Care",
-      subGroup: "Rabbit Pet Sitting",
+      subGroup: "Pet Sitting",
       id: 1126,
       items: [
-        { name: "Feeding and Watering", id: 1127 },
-        { name: "Exercise and Playtime", id: 1128 },
-        { name: "Litter Box Maintenance", id: 1129 },
-        { name: "Medication Administration", id: 1130 },
-        { name: "Cage or Habitat Cleaning", id: 1131 },
-        { name: "Specialized Care", id: 1132 },
-        { name: "Skin and Fur Treatments", id: 1133 },
+        { name: "Feeding and Watering (RABBIT)", id: 1127 },
+        { name: "Exercise and Playtime (RABBIT)", id: 1128 },
+        { name: "Litter Box Maintenance (RABBIT)", id: 1129 },
+        { name: "Medication Administration (RABBIT)", id: 1130 },
+        { name: "Cage or Habitat Cleaning (RABBIT)", id: 1131 },
+        { name: "Specialized Care (RABBIT)", id: 1132 },
+        { name: "Skin and Fur Treatments (RABBIT)", id: 1133 },
       ],
     },
   ];
@@ -618,15 +658,12 @@ const ApplicationForm3 = () => {
         }
       }
     });
-    // console.log("mainCategoryData: " + mainCategoryData);
-
 
     const CategoriesName = [];
     const ServicesName = [];
 
     const updatedData = {};
     const mainCategoryData2 = {};
-    // console.log("updatedTailoredServices: " , updatedTailoredServices);
 
     selectedItems.forEach((selectedId) => {
       for (const mainCategory of subCategoryItems) {
@@ -643,113 +680,24 @@ const ApplicationForm3 = () => {
             updatedData[mainCategory.category][mainCategory.subGroup] = []; // Initialize as an array
           }
           updatedData[mainCategory.category][mainCategory.subGroup].push(subCategory.name);
-
-
           if (!mainCategoryData2[mainCategory.name]) {
-            // console.log("Category 2:", mainCategory);
-            // console.log("Category Name 2:", mainCategory.name);
             mainCategoryData2[mainCategory.name] = [];
           }
-          // console.log("Subcategory Name 2:", subCategory);
-          // console.log("Main Category Data 2:", mainCategoryData2);
-          // console.log("Sub Category Data 2:", mainCategoryData2[mainCategory]);
           mainCategoryData2[mainCategory.name].push(subCategory.name);
-
-
-          // if (!mainCategoryData2[mainCategory.category]) {
-          //   console.log("Category 2:", mainCategory);
-          //   console.log("Category Name 2:", mainCategory.subGroup);
-          //   // mainCategoryData2[mainCategory.category] = {};
-          //   mainCategoryData2[mainCategory.category] = {};
-          //   mainCategoryData2[mainCategory.category][mainCategory.subGroup] = [];
-          // }
-          // console.log("Subcategory Name 2:", subCategory);
-          // console.log("Main Category Data 2:", mainCategoryData2);
-          // console.log("Sub Category Data 2:", mainCategoryData2[mainCategory]);
-          // mainCategoryData2[mainCategory.category][mainCategory.subGroup].push(subCategory.name);
         }
-        // console.log("OG mainCategory:", mainCategory);
-        // console.log("OG Subcategory:", subCategory);
-        // if(mainCategory.name !== undefined){
-        //   console.log("mainCategory Name:", mainCategory.name);
-        // }
-        // if(subCategory.name !== undefined){
-        //   console.log("Subcategory Name:", subCategory.name);
-        // }
-        
-        // console.log("Category Data 2:", mainCategoryData2);
-        // console.log("Main Category Data 2:", mainCategoryData2[mainCategory.name]);
       }
     });
-
-    console.log("Main Data 2:", mainCategoryData2);
-    console.log("Updated Data:", updatedData);
-
-    // Merge mainCategoryData2 into mainCategoryData
-    // for (const mainCategoryName in mainCategoryData2) {
-    //   console.log("Category Data 2:", mainCategoryData2[mainCategoryName]);
-    //   for (const category in mainCategoryData) {
-    //     // console.log("mainCategoryData: " + mainCategoryData[category]);
-
-    //     // console.log("Category Data:", category);
-    //     for (const subCategory in mainCategoryData[category]) {
-    //       if(mainCategoryData2[mainCategoryName] == mainCategoryData[category][subCategory]){
-    //         for (const services in mainCategoryData2[mainCategoryName]) {
-    //           mainCategoryData[category][subCategory] = mainCategoryData2[mainCategoryName][services]
-    //         }
-    //       }
-    //     }
-    //   }
-      // if (mainCategoryData[mainCategoryName]) {
-        
-      //   mainCategoryData[mainCategoryName].push(...mainCategoryData2[mainCategoryName]);
-      // } else {
-      //   console.log("OG Data:", mainCategoryData);
-      //   console.log("New Data:", mainCategoryName);
-      //   console.log("Old Data:", mainCategoryData[mainCategoryName]);
-      //   for (const services in mainCategoryData[mainCategoryName]) {
-      //     mainCategoryData[mainCategoryName][services] = mainCategoryData2[mainCategoryName];
-      //   }
-        
-      // }
-    // }
-    console.log("Main Category Data:", mainCategoryData);
 
     // Log the main category names and their associated subcategories to the console
     for (const mainCategoryName in mainCategoryData) {
       console.log(
         mainCategoryName + ": " + mainCategoryData[mainCategoryName].join(", ")
       );
-      // console.log("Categories" + ":" + mainCategoryName);
-      // console.log("Services" + ":" + mainCategoryData[mainCategoryName]);
       const categoryName = mainCategoryName;
       const servicesName = mainCategoryData[mainCategoryName];
-
-      // if (mainCategoryData2[mainCategoryName]) {
-      //   console.log("Old Data " , mainCategoryData[mainCategoryName]);
-      //   mainCategoryData[mainCategoryName].push(...mainCategoryData2[mainCategoryName.name]);
-      // }
-
-      // console.log("Original Updated " ,mainCategoryName);
-      
-      // console.log("New Data " , mainCategoryData[mainCategoryName]);
-
-      // Second Option:
-      // updatedData[mainCategoryName] = {};
-      
-      // for (const subCategoryName of mainCategoryData[mainCategoryName]) {
-      //   updatedData[mainCategoryName][subCategoryName] = [];
-      // }
-
-
       CategoriesName.push(categoryName);
       ServicesName.push(...servicesName);
     }
-
-    console.log("Updated Data: " + updatedData);
-    // console.log("CategoriesName: " + CategoriesName);
-    // console.log("ServicesName: " + ServicesName);
-
     // Log the main category names and their associated subcategories to the console
     const SubCategories = [];
 
@@ -757,50 +705,6 @@ const ApplicationForm3 = () => {
       const subCategoryValues = mainCategoryData2[mainCategoryName];
       SubCategories.push(...subCategoryValues);
     }
-
-    console.log("SubCategories:", SubCategories);
-
-    // try {
-    //   const db = getFirestore();
-    //   const auth = getAuth(); // Get the Firebase Authentication object
-
-    //   const user = auth.currentUser; // Get the currently authenticated user
-    //   if (!user) {
-    //     console.error("User is not authenticated.");
-    //     return;
-    //   }
-
-    //   const uid = user.uid; // Get the UID of the authenticated user
-
-    //   // Reference to the Firestore collection "providerProfiles"
-    //   const providerProfilesCollection = collection(db, "providerProfiles");
-
-    //   // Reference to the user's document within the collection
-    //   const userDocument = doc(providerProfilesCollection, uid);
-
-    //   // Reference to the "appForm3" collection within the user's document
-    //   const appForm3Collection = collection(userDocument, "appForm3");
-
-    //   // Reference to the Firestore collection where you want to store subcategories
-    //   //const subcategoriesCollection = collection(db, 'providerProfiles');
-
-    //   // Loop through the subcategoriesData and save them as documents in Firestore
-    //   for (const mainCategoryName in mainCategoryData2) {
-    //     const data = {
-    //       //mainCategory: mainCategoryName,
-    //       subcategories: mainCategoryData2[mainCategoryName],
-    //     };
-    //     await addDoc(appForm3Collection, data);
-    //   }
-
-    //   console.log("Subcategories data saved to Firestore successfully");
-    // } catch (error) {
-    //   console.error("Error saving subcategories data to Firestore: ", error);
-    // }
-
-    console.log("Category: " + CategoriesName);
-    console.log("Services: " + ServicesName);
-    console.log("Sub Category: " + SubCategories);
 
     try {
       const db = getFirestore();
@@ -829,7 +733,6 @@ const ApplicationForm3 = () => {
         };
 
         await setDoc(appForm3DocRef, data);
-        // await setDoc(appForm3DocRef1, updatedTailoredServices);
         await setDoc(appForm3DocRef1, updatedData);
 
         console.log("Data updated in Firestore.");
@@ -840,86 +743,8 @@ const ApplicationForm3 = () => {
     } catch (error) {
       console.error("Error updating Firestore data:", error);
     }
-    // try {
-    //   const db = getFirestore();
-    //   const auth = getAuth(); // Get the Firebase Authentication object
-
-    //   // Get the currently authenticated user
-    //   const user = auth.currentUser;
-    //   if (!user) {
-    //     console.error("No authenticated user found.");
-    //     return;
-    //   }
-
-    //   const providerUID = user.uid; // Get the currently authenticated user
-    //   // const userProfilesCollection = collection(db, "providerProfiles");
-    //   // const userDocRef = doc(userProfilesCollection, user.uid);
-    //   const bookingRef = collection(db, "providerProfiles", providerUID, "appForm3");
-    //   // console.log("ID: " , user.uid)
-
-    //   // Fetch data from the "appForm1" subcollection
-    //   // const appForm3Collection = collection(userDocRef, "appForm3");
-    //   // const appForm3Query = query(appForm3Collection);
-    //   // const appForm3Docs = await getDocs(appForm3Query);
-    //   const data = {
-    //     category: CategoriesName,
-    //     services: ServicesName,
-    //     SubCategories: SubCategories,
-    //   };
-
-    //   const docRefData = await addDoc(bookingRef, data);
-    //   console.log("Data document written with ID: ", docRefData.id);
-  
-    //   // Second Document - Store "updatedData"
-    //   const docRefUpdatedData = await addDoc(bookingRef, updatedData);
-    //   console.log("UpdatedData document written with ID: ", docRefUpdatedData.id);
-
-    //   // if (bookingRef) {
-    //     // const appForm3Doc = appForm3Docs.docs[0]; // Get the first document
-    //     // const appForm3Doc1 = appForm3Docs.docs[0]; // Get the first document
-    //     // const appForm3DocRef = doc(appForm3Collection, appForm3Doc.id); // Construct the reference using the document's ID
-    //     // const appForm3DocRef1 = doc(appForm3Collection, appForm3Doc.id); // Construct the reference using the document's ID
-
-    //     // const data = {
-    //     //   category: CategoriesName,
-    //     //   services: ServicesName,
-    //     //   SubCategories: SubCategories,
-    //     // };
-
-    //     // await addDoc(bookingRef, data);
-    //     // await setDoc(appForm3DocRef1, updatedTailoredServices);
-    //   //   await addDoc(bookingRef, updatedData);
-
-    //   //   console.log("Data updated in Firestore.");
-    //   // } else {
-    //   //   console.log("No or multiple documents found in appForm1.");
-    //   // }
-    // } catch (error) {
-    //   console.error("Error updating Firestore data:", error);
-    // }
   };
 
-  // const handleSubmission = () => {
-  //   // Create an object to hold main category names and their associated subcategories
-  //   const mainCategoryData = {};
-
-  //   selectedItems.forEach((selectedId) => {
-  //     for (const mainCategory of subCategoryItems) {
-  //       const subCategory = mainCategory.items.find((item) => item.id === selectedId);
-  //       if (subCategory) {
-  //         if (!mainCategoryData[mainCategory.name]) {
-  //           mainCategoryData[mainCategory.name] = [];
-  //         }
-  //         mainCategoryData[mainCategory.name].push(subCategory.name);
-  //       }
-  //     }
-  //   });
-
-  //   // Log the main category names and their associated subcategories to the console
-  //   for (const mainCategoryName in mainCategoryData) {
-  //     console.log(mainCategoryName + ": " + mainCategoryData[mainCategoryName].join(", "));
-  //   }
-  // };
 
   const updateSubCategoryItems = (selectedItems) => {
     let subCategories = [];
@@ -954,29 +779,29 @@ const ApplicationForm3 = () => {
           subCategories = subCategories.concat(dogTrainingItems);
           break;
         case 41:
-          subCategories = subCategories.concat(dogpetGroomingItems);
+          subCategories = subCategories.concat(petGroomingItems);
           break;
         case 42:
-          subCategories = subCategories.concat(catpetGroomingItems);
+          subCategories = subCategories.concat(petSittingItems);
           break;
-        case 43:
-          subCategories = subCategories.concat(birdpetGroomingItems);
-          break;
-        case 44:
-          subCategories = subCategories.concat(rabbitpetGroomingItems);
-          break;
-        case 45:
-          subCategories = subCategories.concat(dogpetSittingItems);
-          break;
-        case 46:
-          subCategories = subCategories.concat(catpetSittingItems);
-          break;
-        case 47:
-          subCategories = subCategories.concat(birdpetSittingItems);
-          break;
-        case 48:
-          subCategories = subCategories.concat(rabbitpetSittingItems);
-          break;
+        // case 43:
+        //   subCategories = subCategories.concat(birdpetGroomingItems);
+        //   break;
+        // case 44:
+        //   subCategories = subCategories.concat(rabbitpetGroomingItems);
+        //   break;
+        // case 45:
+        //   subCategories = subCategories.concat(dogpetSittingItems);
+        //   break;
+        // case 46:
+        //   subCategories = subCategories.concat(catpetSittingItems);
+        //   break;
+        // case 47:
+        //   subCategories = subCategories.concat(birdpetSittingItems);
+        //   break;
+        // case 48:
+        //   subCategories = subCategories.concat(rabbitpetSittingItems);
+        //   break;
         case 50:
           subCategories = subCategories.concat(gardenMaintenanceItems);
           break;
@@ -1099,58 +924,6 @@ const ApplicationForm3 = () => {
                   />
                 </View>
               </View>
-              {/* <View style={styles.enterParentFlexBox}>
-                <View style={styles.frameContainer}>
-                  <View style={styles.placeholderText}>
-                    <View style={styles.unstarted}>
-                      <View
-                        style={[styles.rectangle, styles.rectangleLayout]}
-                      />
-                    </View>
-                    <Text style={styles.standardCleaning}>
-                      Standard Cleaning
-                    </Text>
-                  </View>
-                  <View style={styles.placeholderText}>
-                    <View style={styles.completed}>
-                      <View
-                        style={[styles.rectangle1, styles.rectangleLayout]}
-                      />
-                      <Image
-                        style={styles.completedIcon}
-                        contentFit="cover"
-                        source={require("../assets/completed.png")}
-                      />
-                    </View>
-                    <Text style={styles.standardCleaning}>Deep Cleaning</Text>
-                  </View>
-                </View>
-                <View style={[styles.frameView, styles.frameFlexBox]}>
-                  <View style={styles.placeholderText}>
-                    <View style={styles.completed}>
-                      <View
-                        style={[styles.rectangle1, styles.rectangleLayout]}
-                      />
-                      <Image
-                        style={styles.completedIcon}
-                        contentFit="cover"
-                        source={require("../assets/completed1.png")}
-                      />
-                    </View>
-                    <Text style={styles.standardCleaning}>Pest Control</Text>
-                  </View>
-                  <View style={styles.placeholderText}>
-                    <View style={styles.unstarted}>
-                      <View
-                        style={[styles.rectangle, styles.rectangleLayout]}
-                      />
-                    </View>
-                    <Text style={styles.standardCleaning}>
-                      Electronic Appliance Cleaning
-                    </Text>
-                  </View>
-                </View>
-              </View> */}
             </View>
           </View>
           <View

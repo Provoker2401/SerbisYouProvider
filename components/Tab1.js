@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleProp, ViewStyle, Text, StyleSheet, View } from "react-native";
+import { Text, StyleSheet, View } from "react-native";
 import { FontSize, FontFamily, Color, Padding } from "../GlobalStyles";
 
 const Tab1 = ({ style }) => {

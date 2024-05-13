@@ -28,7 +28,6 @@ import PerformTheServiceHeader from "./components/PerformTheServiceHeader";
 import ConfirmServiceHeader from "./components/ConfirmServiceHeader";
 import NewBookingHeader from "./components/NewBookingHeader";
 import LogoutModal from "./components/LogoutModal";
-import Header31 from "./components/Header31";
 
 import AboutUsFrame from "./components/AboutUsFrame";
 import FAQsFrame from "./components/FAQsFrame";
@@ -55,7 +54,6 @@ import ActiveBookings from "./components/ActiveBookings";
 import CancelBookingPrompt from "./components/CancelBookingPrompt";
 import CountDownBooking from "./components/CountDownBooking";
 import BookingNotFound from "./components/BookingNotFound";
-import SwipeButton2 from "./components/SwipeButton2";
 import PerformServicePrompt from "./components/PerformServicePrompt";
 
 // Screens
@@ -73,7 +71,6 @@ import Homepage from "./screens/Homepage";
 import BookingsActive from "./screens/BookingsActive";
 import Notifications from "./screens/Notifications";
 import UserProfile from "./screens/UserProfile";
-import EditService from "./screens/EditService";
 
 import EditProfile from "./screens/EditProfile";
 import ChangePassword from "./screens/ChangePassword";
@@ -102,8 +99,6 @@ import ForgotPasswordConfirmation1 from "./screens/ForgotPasswordConfirmation1";
 import ForgotPasswordResendCode from "./screens/ForgotPasswordResendCode";
 import ForgotPasswordUpdated from "./screens/ForgotPasswordUpdated";
 import PaymentOptions from "./screens/PaymentOptions";
-
-import CalendarStrips from "./screens/CalendarStrips";
 
 import EReceipt from "./screens/EReceipt";
 
@@ -368,14 +363,6 @@ const App = () => {
                 })}
               />
               <Stack.Screen
-                name="EditService"
-                component={EditService}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="Application Form"/>,
-                })}
-              />
-              <Stack.Screen
                 name="CashOutBalance"
                 component={CashOutBalance}
                 options={({ route }) => ({
@@ -456,11 +443,6 @@ const App = () => {
               <Stack.Screen
                 name="ConfirmNavigation"
                 component={ConfirmNavigation}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="SwipeButton2"
-                component={SwipeButton2}
                 options={{ headerShown: false }}
               />
               <Stack.Screen
@@ -682,14 +664,6 @@ const App = () => {
                 })}
               />
               <Stack.Screen
-                name="CalendarStrips"
-                component={CalendarStrips}
-                options={(props) => ({
-                  headerShown: true,
-                  header: () => <Header31 />,
-                })}
-              />
-              <Stack.Screen
                 name="GoToCustomerHeader"
                 component={GoToCustomerHeader}
                 options={(props) => ({
@@ -719,14 +693,6 @@ const App = () => {
                 options={(props) => ({
                   headerShown: true,
                   header: () => <NewBookingHeader />,
-                })}
-              />
-              <Stack.Screen
-                name="Header31"
-                component={Header31}
-                options={(props) => ({
-                  headerShown: true,
-                  header: () => <Header31 />,
                 })}
               />
             </Stack.Navigator>

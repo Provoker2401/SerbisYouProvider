@@ -13,8 +13,6 @@ import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import { Color, FontSize, Padding, FontFamily } from "../GlobalStyles";
 
-
-
 const CashOutBalance = ({ route }) => {
   const navigation = useNavigation();
 

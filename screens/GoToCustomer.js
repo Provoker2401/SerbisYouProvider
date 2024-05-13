@@ -17,8 +17,6 @@ import { useNavigation } from "@react-navigation/native";
 import { Color, FontSize, Border, FontFamily, Padding } from "../GlobalStyles";
 import MapView, {
   Marker,
-  Circle,
-  enableLatestRenderer,
 } from "react-native-maps";
 import {
   getFirestore,
@@ -26,7 +24,7 @@ import {
   getDoc,
   updateDoc,
 } from "firebase/firestore"; // Updated imports
-import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import * as TaskManager from "expo-task-manager";
 import * as Location from "expo-location";
 
@@ -90,8 +88,6 @@ const GoToCustomer = ( {route} ) => {
                 longitude: longitude,
               },
             });
-
-
           }
         }
       } catch (error) {
@@ -103,15 +99,6 @@ const GoToCustomer = ( {route} ) => {
   useEffect(() => {
     updateLocation(); // Call the updateLocation function when component mounts
   }, []); // Empty dependency array ensures the effect is only run once after the initial render
-
-
-
-
-
-
-
-
-
 
   const updateLocation = async () => {
     try {

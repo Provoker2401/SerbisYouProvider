@@ -1,8 +1,6 @@
 import React, { useState, useCallback } from "react";
 import {
   View,
-  StyleProp,
-  ViewStyle,
   StyleSheet,
   Text,
   Pressable,

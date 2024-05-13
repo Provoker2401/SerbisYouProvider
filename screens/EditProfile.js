@@ -8,9 +8,7 @@ import {
   ScrollView,
   TextInput,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
-import { Datepicker as RNKDatepicker, Icon } from "@ui-kitten/components";
 import { Color, FontFamily, FontSize, Padding, Border } from "../GlobalStyles";
 import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
 import {
@@ -243,8 +241,8 @@ const EditProfile = () => {
         Toast.show({
           type: "success",
           position: "top",
-          text1: "Save Successfully ✅",
-          //text2: "You have successfully signed up✅",
+          text1: "Profile Updated Successfully✅",
+          text2: "Your profile information has been updated",
           visibilityTime: 3000,
         });
 
@@ -325,6 +323,14 @@ const EditProfile = () => {
         // Now you can use `downloadURL` to display or save the image URL in Firestore if needed.
         setImageURI(downloadURL);
 
+        Toast.show({
+          type: "success",
+          position: "top",
+          text1: "Profile Picture Updated Successfully✅",
+          text2: "Your profile picture has been updated",
+          visibilityTime: 3000,
+        });
+
         console.log("Image uploaded successfully:", downloadURL);
       } catch (error) {
         console.error("Error uploading image to Firebase Storage:", error);
@@ -392,16 +398,6 @@ const EditProfile = () => {
                 onChangeText={(text) => settextInputName(text)} // Update the state when the text input changes
               />
             </View>
-            <View style={styles.leftIconParent}>
-              <Image
-                style={styles.leftIcon}
-                contentFit="cover"
-                source={require("../assets/-left-icon.png")}
-              />
-              <Text style={styles.weAllWanna}>
-                We all wanna make money, let’s do this
-              </Text>
-            </View>
           </View>
           <View style={styles.singleLineInput1}>
             <View style={styles.nameWrapper}>
@@ -416,39 +412,7 @@ const EditProfile = () => {
                 onChangeText={(text) => settextInputEmail(text)} // Update the state when the text input changes
               />
             </View>
-            <View style={styles.leftIconParent}>
-              <Image
-                style={styles.leftIcon}
-                contentFit="cover"
-                source={require("../assets/-left-icon.png")}
-              />
-              <Text style={styles.weAllWanna}>
-                We all wanna make money, let’s do this
-              </Text>
-            </View>
           </View>
-          {/* <View style={styles.singleLineInput1}>
-            <View style={styles.nameWrapper}>
-              <Text style={[styles.name, styles.nameTypo]}>Address</Text>
-            </View>
-            <View style={[styles.field, styles.fieldSpaceBlock]}>
-              <TextInput
-                style={styles.addressInput}
-                placeholder="Nasipit, Talamban, Cebu City, Cebu"
-                placeholderTextColor="#c1c1c1"
-              />
-            </View>
-            <View style={styles.leftIconParent}>
-              <Image
-                style={styles.leftIcon}
-                contentFit="cover"
-                source={require("../assets/-left-icon.png")}
-              />
-              <Text style={styles.weAllWanna}>
-                We all wanna make money, let’s do this
-              </Text>
-            </View>
-          </View> */}
           <View style={styles.singleLineInput1}>
             <View style={styles.nameWrapper}>
               <Text style={[styles.name, styles.nameTypo]}>Contact Number</Text>
@@ -461,16 +425,6 @@ const EditProfile = () => {
                 value={textInputPhone}
                 onChangeText={(text) => settextInputPhone(text)} // Update the state when the text input changes
               />
-            </View>
-            <View style={styles.leftIconParent}>
-              <Image
-                style={styles.leftIcon}
-                contentFit="cover"
-                source={require("../assets/-left-icon.png")}
-              />
-              <Text style={styles.weAllWanna}>
-                We all wanna make money, let’s do this
-              </Text>
             </View>
           </View>
         </View>

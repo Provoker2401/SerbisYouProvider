@@ -21,10 +21,6 @@ import {
   doc,
   getDoc,
   updateDoc,
-  collection,
-  query,
-  where,
-  getDocs,
 } from "firebase/firestore";
 import messaging from '@react-native-firebase/messaging';
 
@@ -90,9 +86,7 @@ const SignIn = () => {
               }
             }
 
-            // Continue with navigation
             navigation.navigate("BottomTabsRoot", { screen: "Homepage" });
-            // navigation.navigate("ApplicationForm1")
           } else {
             // User's UID not found in providerProfiles
             console.error("User not found in providerProfiles");
@@ -245,26 +239,11 @@ const SignIn = () => {
                       <Pressable
                         style={[styles.signInButton1, styles.frameFlexBox]}
                         onPress={handleSignIn}
-                        // onPress={() => navigation.navigate("SignUp")}
                       >
                         <Text style={[styles.signIn3, styles.signTypo]}>
                           Sign In
                         </Text>
                       </Pressable>
-                      {/* <View style={[styles.frame6, styles.frameFlexBox]}>
-                        <View
-                          style={[styles.signInButton2, styles.frameFlexBox]}
-                        >
-                          <Image
-                            style={styles.signInButtonChild}
-                            contentFit="cover"
-                            source={require("../assets/rectangle-4375.png")}
-                          />
-                          <Text style={[styles.signIn4, styles.signTypo]}>
-                            Sign In
-                          </Text>
-                        </View>
-                      </View> */}
                     </View>
                   </View>
                   <View style={[styles.frameContainer, styles.frameFlexBox]}>

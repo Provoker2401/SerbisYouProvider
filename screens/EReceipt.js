@@ -9,21 +9,19 @@ import {
   TouchableOpacity,
   Animated,
   LayoutAnimation,
-  ActivityIndicator,
   Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { FontFamily, Padding, FontSize, Color, Border } from "../GlobalStyles";
 import { useState, useCallback, useRef, useEffect } from "react";
-//import { useReviewSummaryContext } from "../ReviewSummaryContext";
 import { toggleAnimation } from "../animations/toggleAnimation";
 import {
   getFirestore,
   doc,
   getDoc,
 } from "firebase/firestore"; // Updated imports
-import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import * as Clipboard from "expo-clipboard";
 
 const EReceipt = ({ route }) => {

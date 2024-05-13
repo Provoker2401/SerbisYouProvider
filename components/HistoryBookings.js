@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  StyleProp,
-  ViewStyle,
   StyleSheet,
   View,
   Text,
@@ -17,10 +15,7 @@ import { Padding, Color, FontSize, FontFamily, Border } from "../GlobalStyles";
 import {
   getFirestore,
   collection,
-  doc,
-  getDoc,
   getDocs,
-  setDoc,
   where,
   query,
   onSnapshot,
@@ -37,7 +32,6 @@ const HistoryBookings = ({ style }) => {
   const [customDatesStyles, setCustomDatesStyles] = useState([]);
   const [markedDates, setMarkedDates] = useState([]);
   const [startingDate, setStartingDate] = useState(moment());
-  const [bookingStatusByDate, setBookingStatusByDate] = useState({});
 
   useEffect(() => {
     // Whenever the selectedDate changes, update the startingDate
@@ -149,7 +143,6 @@ const HistoryBookings = ({ style }) => {
         style={styles.leftArrow}
         source={require("../assets/left-arrow-black.png")}
       />
-      {/* <Text style={styles.selectorText}>Prev</Text> */}
     </TouchableOpacity>
   );
 
@@ -161,7 +154,6 @@ const HistoryBookings = ({ style }) => {
         contentFit="cover"
         source={require("../assets/right-arrow-black.png")}
       />
-      {/* <Text style={styles.selectorText}>Next</Text> */}
     </TouchableOpacity>
   );
 

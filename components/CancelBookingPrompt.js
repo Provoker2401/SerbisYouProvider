@@ -3,7 +3,6 @@ import { View, StyleSheet, Text, Pressable, Modal } from "react-native";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import { Padding, Border, FontSize, FontFamily, Color } from "../GlobalStyles";
-//import NoProvidersFound from "./NoProvidersFound";
 
 const CancelBookingPrompt = ({ onClose, onYesPress }) => {
   const navigation = useNavigation();
