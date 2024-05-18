@@ -11,6 +11,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { PermissionsAndroid } from 'react-native'; // Import PermissionsAndroid for Android permissions
 import * as ImagePicker from "expo-image-picker";
 import { app, firebaseConfig } from "../App"; // Update the path as needed
+import Toast from "react-native-toast-message";
 
 import {
   getStorage,
@@ -30,10 +31,52 @@ const ApplicationForm2 = () => {
   const [provider, setProvider] = useState(null);
   const [imageURI, setImageURI] = useState(null);
   
-
+  const [isIdTypeSelected, setIsIdTypeSelected] = useState(false);
+  const [isFrontPhotoUploaded, setIsFrontPhotoUploaded] = useState(false);
+  const [isBackPhotoUploaded, setIsBackPhotoUploaded] = useState(false);
+  const [uploadedFrontImage, setUploadedFrontImage] = useState(null);
+  const [uploadedBackImage, setUploadedBackImage] = useState(null);
 
   const [selectedDocumentType, setSelectedDocumentType] = useState(null);
+  const [selectedLanguage, setSelectedLanguage] = useState();
+  
 
+  // const idTypeItems = [
+  //   {
+  //     name: "Driver's License",
+  //     id: 0,
+  //   },
+  //   {
+  //     name: "National I.D.",
+  //     id: 1,
+  //   },
+  //   {
+  //     name: "Passport",
+  //     id: 2,
+  //   },
+  //   {
+  //     name: "Other",
+  //     id: 3,
+  //   }
+  // ];
+
+  // const onSelectedItemsChange = (selectedItems) => {
+  //   setSelectedItems(selectedItems);
+  //   console.log("Selected Items:", selectedItems);
+
+  //   // Create an array to store the selected item names
+  //   const selectedNames = selectedItems.map((selectedId) => {
+  //     const selectedItem = idTypeItems.find(item => item.id === selectedId);
+  //     return selectedItem ? selectedItem.name : "";
+  //   });
+
+  //   updateSubCategoryItems(selectedItems);
+
+  //   // Log the selected item names to the console
+  //   console.log("Selected Item Names:", selectedNames);
+  // };
+
+  
   useEffect(() => {
     const auth = getAuth();
 
@@ -97,9 +140,11 @@ const ApplicationForm2 = () => {
 
 
   const handleDocumentTypeSelect = (documentType) => {
-    setIdType(documentType);
-    
-    //console.log(selectedDocumentType);
+    if (documentType && documentType.trim() !== "") {
+      setIdType(documentType);
+      setIsIdTypeSelected(true);
+      //console.log(selectedDocumentType);
+    }
   };
   
   console.log(idType); // Log the selected document type
@@ -158,6 +203,38 @@ const ApplicationForm2 = () => {
   };
 
   const saveChangesHandle = async () => {
+    if (!isIdTypeSelected) {
+      //showToast("Please choose an I.D. type and upload both Front and Back photos of your I.D.");
+
+      Toast.show({
+        type: 'error', // Changed from 'success' to 'error'
+        position: 'top',
+        text1: 'Please choose an I.D. Type', // Changed the text to reflect the error
+        visibilityTime: 3000,
+      });
+      return;
+    }
+
+    if(!isFrontPhotoUploaded){
+      Toast.show({
+        type: 'error', // Changed from 'success' to 'error'
+        position: 'top',
+        text1: 'Please upload your FRONT I.D. Picture', // Changed the text to reflect the error
+        visibilityTime: 3000,
+      });
+      return;
+    }
+
+    if(!isBackPhotoUploaded){
+      Toast.show({
+        type: 'error', // Changed from 'success' to 'error'
+        position: 'top',
+        text1: 'Please upload your BACK I.D. Picture', // Changed the text to reflect the error
+        visibilityTime: 3000,
+      });
+      return;
+    }
+
     try {
       // Create a reference to the Firestore database using your app instance
       const db = getFirestore();
@@ -186,7 +263,17 @@ const ApplicationForm2 = () => {
       // Handle the error, e.g., display an error message to the user
     }
   };
+  
   const pickImageFront = async () => {
+    if (!isIdTypeSelected) {
+      Toast.show({
+        type: 'error', // Changed from 'success' to 'error'
+        position: 'top',
+        text1: 'Please choose an I.D. Type', // Changed the text to reflect the error
+        visibilityTime: 3000,
+      });
+      return;
+    }
     
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -247,13 +334,25 @@ const ApplicationForm2 = () => {
         } else {
           console.error("No appForm2 document found for the current user.");
         }
+        setUploadedFrontImage(downloadURL);
+        setIsFrontPhotoUploaded(true);
       } catch (error) {
         console.error("Error uploading image to Firebase Storage:", error);
       }
     }
+    setIsFrontPhotoUploaded(true);
   };
 
   const pickImageBack = async () => {
+  if (!isIdTypeSelected) {
+    Toast.show({
+      type: 'error', // Changed from 'success' to 'error'
+      position: 'top',
+      text1: 'Please choose an I.D. Type', // Changed the text to reflect the error
+      visibilityTime: 3000,
+    });
+    return;
+  }
      
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -316,10 +415,13 @@ const ApplicationForm2 = () => {
         } else {
           console.error("No appForm2 document found for the current user.");
         }
+        setUploadedBackImage(downloadURL);
+        setIsBackPhotoUploaded(true);
       } catch (error) {
         console.error("Error uploading image to Firebase Storage:", error);
       }
     }
+    setIsBackPhotoUploaded(true);
   };
 
   return (
@@ -380,7 +482,7 @@ const ApplicationForm2 = () => {
               <Text
                 style={[styles.chooseDocumentType, styles.uploadIdProofTypo]}
               >
-                Choose Document Type
+                Choose ID Type
               </Text>
             </View>
             <View style={styles.frameGroup}>
@@ -446,6 +548,7 @@ const ApplicationForm2 = () => {
             </Pressable>
               </View>
             </View>
+  
           </View>
           <View style={styles.frameContainer}>
             <View style={styles.uploadIdProofParent}>
@@ -458,38 +561,77 @@ const ApplicationForm2 = () => {
             <View style={styles.frameView}>
               <View style={styles.componentsbuttonWrapper}>
                 <Pressable
-                  style={[styles.componentsbutton7, styles.componentsbuttonBg]}
+                  style={[styles.componentsbuttonBg, uploadedFrontImage ? styles.noPadding : styles.componentsbutton7]}
                   onPress={pickImageFront} // Open image picker for the front
                 >
-                  <View style={styles.componentsbuttonWrapper}>
+                  {uploadedFrontImage ? (
                     <Image
-                      style={styles.image2356Icon}
-                      contentFit="cover"
-                      source={require("../assets/image-2356.png")}
+                      style={styles.uploadedImage}
+                      source={{ uri: uploadedFrontImage }}
                     />
-                  </View>
-                  <View style={styles.frontWrapper}>
-                    <Text style={[styles.front, styles.viewTypo]}>Front</Text>
-                  </View>
+                  ) : (
+                    <View>
+                      <View style={styles.componentsbuttonWrapper}>
+                        <Image
+                          style={styles.image2356Icon}
+                          contentFit="cover"
+                          source={require("../assets/image-2356.png")}
+                        />
+                      </View>
+                      <View style={styles.frontWrapper}>
+                        <Text style={[styles.front, styles.viewTypo]}>Front</Text>
+                      </View>
+                    </View>
+                  )}
                 </Pressable>
               </View>
               <View style={styles.componentsbuttonContainer}>
                 <Pressable
-                  style={[styles.componentsbutton7, styles.componentsbuttonBg]}
+                  style={[styles.componentsbuttonBg, uploadedBackImage ? styles.noPadding : styles.componentsbutton7]}
                   onPress={pickImageBack} // Open image picker for the back
                 >
-                  <View style={styles.componentsbuttonWrapper}>
+                  {uploadedBackImage ? (
                     <Image
-                      style={styles.image2356Icon}
+                      style={styles.uploadedImage}
                       contentFit="cover"
-                      source={require("../assets/image-2356.png")}
+                      source={{ uri: uploadedBackImage }}
                     />
-                  </View>
-                  <View style={styles.frontWrapper}>
-                    <Text style={[styles.front, styles.viewTypo]}>Back</Text>
-                  </View>
+                  ) : (
+                    <View>
+                      <View style={styles.componentsbuttonWrapper}>
+                        <Image
+                          style={styles.image2356Icon}
+                          contentFit="cover"
+                          source={require("../assets/image-2356.png")}
+                        />
+                      </View>
+                      <View style={styles.frontWrapper}>
+                        <Text style={[styles.front, styles.viewTypo]}>Back</Text>
+                      </View>
+                    </View>
+                  )}
                 </Pressable>
               </View>
+            </View>
+            <View style={styles.uploadIdProofParent1}>
+              {uploadedFrontImage ? (
+                <View style={styles.textContainer}>
+                  <Text style={styles.uploadIdProofTypo}>Front</Text>
+                </View>
+              ) : (
+                <View style={styles.textContainer}>
+                  <Text style={styles.uploadIdProofTypo2}>Front</Text>
+                </View>
+              )}
+              {uploadedBackImage ? (
+                <View style={styles.textContainer}>
+                  <Text style={styles.uploadIdProofTypo}>Back</Text>
+                </View>
+              ) : (
+                <View style={styles.textContainer}>
+                  <Text style={styles.uploadIdProofTypo2}>Back</Text>
+                </View>
+              )}
             </View>
           </View>
           <View style={styles.componentsbuttonFrame}>
@@ -499,6 +641,7 @@ const ApplicationForm2 = () => {
                 styles.componentsbuttonSpaceBlock2,
               ]}
               onPress={saveChangesHandle}
+              // disabled={!isFrontPhotoUploaded || !isBackPhotoUploaded}
             >
               <Text style={[styles.viewAllServices7, styles.viewTypo]}>
                 Next
@@ -514,6 +657,23 @@ const ApplicationForm2 = () => {
 const styles = StyleSheet.create({
   header: {
     backgroundColor: "#1a244d",
+  },
+  uploadedImage: {
+    // width: 150, // Adjust these values based on your design preferences
+    // height: 200,
+    // borderRadius: 8, // Optional: add a border radius for rounded corners
+    // marginTop: 10, // Optional: add margin for spacing
+    paddingVertical: Padding.p_3xs,
+     width: 150, // Adjust these values based on your design preferences
+     height: 130,
+    // objectFit: 'cover', // Ensure the whole picture is visible while maintaining aspect ratio
+    borderRadius: 8, // Optional: add a border radius for rounded corners
+    // marginTop: -130, // Optional: add margin for spacing
+    alignSelf: "stretch"
+    
+  },
+  withPads: {
+    // paddingVertical: Padding.p_3xs,
   },
   frameScrollViewContent: {
     flexDirection: "column",
@@ -545,7 +705,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   viewTypo: {
-    color: Color.neutral01,
     letterSpacing: -0.1,
     textAlign: "center",
     fontFamily: FontFamily.title2Bold32,
@@ -561,6 +720,14 @@ const styles = StyleSheet.create({
     letterSpacing: -0.4,
     textAlign: "left",
     color: Color.neutral07,
+    fontFamily: FontFamily.levelSemibold14,
+    fontWeight: "600",
+    fontSize: FontSize.title3Bold20_size,
+  },
+  uploadIdProofTypo2: {
+    letterSpacing: -0.4,
+    textAlign: "left",
+    color: Color.m3White,
     fontFamily: FontFamily.levelSemibold14,
     fontWeight: "600",
     fontSize: FontSize.title3Bold20_size,
@@ -700,20 +867,41 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     alignItems: "center",
   },
+  uploadIdProofParent1: {
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%', // Make the parent container take up full width
+  },
+  textContainer: {
+    flex: 1, // Ensures the containers take up equal space
+    justifyContent: 'center', // Centers the text vertically
+    alignItems: 'center', // Centers the text horizontally
+  },
   image2356Icon: {
     borderRadius: Border.br_46xl,
     width: 142,
     height: 85,
   },
   componentsbuttonWrapper: {
-    alignItems: "center",
+    alignSelf: "stretch",
+  },
+  componentsbuttonWrapper1: {
+    alignSelf: "stretch",
   },
   front: {
     lineHeight: 15,
-    color: Color.neutral01,
+    color: Color.black,
     letterSpacing: -0.1,
     fontSize: FontSize.typographyTaglineSmallRegular_size,
     flex: 1,
+  },
+  front1: {
+    lineHeight: 15,
+    color: Color.black,
+    letterSpacing: -0.1,
+    fontSize: FontSize.typographyTaglineSmallRegular_size,
   },
   frontWrapper: {
     paddingBottom: Padding.p_3xs,
@@ -721,18 +909,35 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignSelf: "stretch",
   },
+  frontWrapper1: {
+    // paddingBottom: Padding.p_3xs,
+    flexDirection: "row",
+    justifyContent: "center",
+    // alignSelf: "stretch",
+    // alignItems: "stretch",
+  },
   componentsbutton7: {
+    alignSelf: "stretch",
     paddingVertical: Padding.p_3xs,
-    paddingHorizontal: 0,
+  },
+  noPadding: {
     alignSelf: "stretch",
   },
   componentsbuttonContainer: {
     marginLeft: 30,
-    alignItems: "center",
+    alignItems: "stretch",
+    alignSelf: "center",
   },
   frameView: {
     marginTop: 10,
     justifyContent: "center",
+    flexDirection: "row",
+    alignSelf: "stretch",
+    alignItems: "center",
+  },
+  frameView2: {
+    marginTop: 10,
+    justifyContent: "space-around",
     flexDirection: "row",
     alignSelf: "stretch",
     alignItems: "center",

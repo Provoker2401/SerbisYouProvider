@@ -28,6 +28,7 @@ const PerformTheService = ({route}) => {
   const {itemID, matchedBookingID, customerUID} = route.params;
   const [bookingName, setBookingName] = useState("");
   const [bookingPropertyType, setBookingPropertyType] = useState("");
+  const [propertyName, setPropertyName] = useState("");
   const [bookingTitle, setBookingTitle] = useState("");
   const [bookingCategory, setBookingCategory] = useState("");
   const [bookingServices, setBookingServices] = useState([]);
@@ -68,11 +69,35 @@ const PerformTheService = ({route}) => {
 
         if (docSnapshot.exists()) {
           const booking = docSnapshot.data();
+          const category = booking.category;
+          const title = booking.title;
           console.log("Booking Data: ", booking);
           const servicesData = booking.service.map((doc) => doc);
           console.log("Data Services: " ,servicesData);
+          if (title == "Gardening") {
+            setPropertyName("Garden Size");
+          } else if(category == "Dog Training"){
+            setPropertyName("Dog Type");
+          } else{
+            setPropertyName("Property Type");
+          } 
+          if (category == "Pet Grooming" || category == "Pet Sitting") {
+            // Check if there's only one pet type with a non-zero value
+            const nonZeroPets = booking.propertyType.filter(pet => Object.values(pet)[0] !== 0);
+            setPropertyName("Pet Type");
+
+            if (nonZeroPets.length === 1) {
+              const petType = Object.keys(nonZeroPets[0])[0];
+              const petCount = Object.values(nonZeroPets[0])[0];
+              setBookingPropertyType(`${petCount} ${petType}`);
+            } else {
+              // If there are multiple pet types or no pets with non-zero values
+              setBookingPropertyType("Multiple Pets");
+            }
+          } else {
+            setBookingPropertyType(booking.propertyType);
+          }
           setBookingName(booking.name);
-          setBookingPropertyType(booking.propertyType);
           setBookingTitle(booking.title);
           setBookingCategory(booking.category);
           setBookingServices(booking.service);
@@ -306,7 +331,7 @@ const PerformTheService = ({route}) => {
                     <Text
                       style={[styles.propertyType, styles.propertyTypeTypo]}
                     >
-                      Property Type
+                      {propertyName}
                     </Text>
                   </View>
                 </View>

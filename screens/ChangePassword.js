@@ -36,11 +36,41 @@ const ChangePassword = () => {
   const [textInputConfirmPass, settextInputConfirmPass] = React.useState("");
   const [textInputCurrentPass, settextInputCurrentPass] = React.useState("");
   const [errorMessageVisible, setErrorMessageVisible] = React.useState(false); // for current password
-  
 
   const newPassword = textInputNewPass;
   const confirmPassword = textInputConfirmPass;
   const currentPassword = textInputCurrentPass;
+
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  const eyeIconSourceConfirm = showConfirmPassword
+    ? require("../assets/hide-pass.png")
+    : require("../assets/-icon-eye-empty.png");
+
+  const [showNewPassword, setshowNewPassword] = useState(false);
+
+  const toggleNewPasswordVisibility = () => {
+    setshowNewPassword(!showNewPassword);
+  };
+
+  const eyeIconSourceNew = showNewPassword
+    ? require("../assets/hide-pass.png")
+    : require("../assets/-icon-eye-empty.png");
+
+
+  const [showCurrentPassword, setshowCurrentPassword] = useState(false);
+
+  const toggleCurrentPasswordVisibility = () => {
+    setshowCurrentPassword(!showCurrentPassword);
+  };
+
+  const eyeIconSourceCurrent = showCurrentPassword
+    ? require("../assets/hide-pass.png")
+    : require("../assets/-icon-eye-empty.png"); 
 
   //for password change
   const handleLengthPass = (text) => {
@@ -171,15 +201,20 @@ const ChangePassword = () => {
                   placeholder="Current Password"
                   placeholderTextColor="#d0d0d0"
                   value={textInputCurrentPass}
+                  secureTextEntry={!showCurrentPassword}
                   onChangeText={handleCurrentPass}
                 />
-                <View style={styles.eyeOffWrapper}>
-                  <Image
-                    style={styles.eyeOffIcon}
-                    contentFit="cover"
-                    source={require("../assets/eye-off.png")}
-                  />
-                </View>
+                <TouchableWithoutFeedback
+                  onPress={toggleCurrentPasswordVisibility}
+                >
+                  <View style={styles.eyeOffWrapper}>
+                    <Image
+                      style={styles.eyeOffIcon}
+                      contentFit="cover"
+                      source={eyeIconSourceCurrent}
+                    />
+                  </View>
+                </TouchableWithoutFeedback>
               </View>
               {errorMessageVisible && (
                 <View style={styles.doesNotMatchTheCurrentPasWrapper}>
@@ -196,15 +231,20 @@ const ChangePassword = () => {
                   placeholder="Enter Your New Password"
                   placeholderTextColor="#d0d0d0"
                   value={textInputNewPass}
+                  secureTextEntry={!showNewPassword}
                   onChangeText={handleLengthPass}
                 />
-                <View style={styles.eyeOffWrapper}>
-                  <Image
-                    style={styles.eyeOffIcon}
-                    contentFit="cover"
-                    source={require("../assets/eye-off.png")}
-                  />
-                </View>
+                <TouchableWithoutFeedback
+                  onPress={toggleNewPasswordVisibility}
+                >
+                  <View style={styles.eyeOffWrapper}>
+                    <Image
+                      style={styles.eyeOffIcon}
+                      contentFit="cover"
+                      source={eyeIconSourceNew}
+                    />
+                  </View>
+                </TouchableWithoutFeedback>
               </View>
               <View style={styles.doesNotMatchTheCurrentPasWrapper}>
                 {textInputNewPass.length < 8 ? (
@@ -220,16 +260,21 @@ const ChangePassword = () => {
                   style={styles.currentPasswordInput}
                   placeholder="Confirm New Password"
                   placeholderTextColor="#d0d0d0"
+                  secureTextEntry={!showConfirmPassword}
                   value={textInputConfirmPass}
                   onChangeText={(text) => settextInputConfirmPass(text)} // Update the state when the text input changes
                 />
-                <View style={styles.eyeOffWrapper}>
-                  <Image
-                    style={styles.eyeOffIcon}
-                    contentFit="cover"
-                    source={require("../assets/eye-off.png")}
-                  />
-                </View>
+                <TouchableWithoutFeedback
+                  onPress={toggleConfirmPasswordVisibility}
+                >
+                  <View style={styles.eyeOffWrapper}>
+                    <Image
+                      style={styles.eyeOffIcon}
+                      contentFit="cover"
+                      source={eyeIconSourceConfirm}
+                    />
+                  </View>
+                </TouchableWithoutFeedback>
               </View>
               <View style={styles.doesNotMatchTheCurrentPasWrapper}>
                 {newPassword !== confirmPassword && (
@@ -248,7 +293,6 @@ const ChangePassword = () => {
                 <Text style={styles.titleLabel}>Password Strength:</Text>
               </View>
               <View style={styles.weakParent}>
-              
               {
                 textInputNewPass.length >= 8 ? (
                   /[A-Z]/.test(textInputNewPass) ? (

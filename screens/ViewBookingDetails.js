@@ -31,6 +31,7 @@ const ViewBookingDetails = ({ route }) => {
   const [bookingAddress, setBookingAddress] = useState("");
   const [bookingAddressDetails, setBookingAddressDetails] = useState({});
   const [bookingProperty, setBookingProperty] = useState("");
+  const [propertyName, setPropertyName] = useState("");
   const [bookingMaterials, setBookingMaterials] = useState("");
   const [bookingCategory, setBookingCategory] = useState("");
   const [bookingTitle, setBookingTitle] = useState("");
@@ -92,7 +93,7 @@ const ViewBookingDetails = ({ route }) => {
     async function fetchNewBooking() {
       try {
         const db = getFirestore(); // Use getFirestore() to initialize Firestore
-  
+        console.log("From New Booking Fetched" );
         // Get the provider's UID 
         const auth = getAuth();
         const providerUID = auth.currentUser.uid;
@@ -109,12 +110,38 @@ const ViewBookingDetails = ({ route }) => {
 
         if (docSnapshot.exists()) {
           const booking = docSnapshot.data();
-
           const materials = booking.materials;
+          const category = booking.category;
+          const property = booking.propertyType;
+          const title = booking.title;
           console.log("Fetching data for booking:", booking);
+          console.log("Property Type: ", booking.propertyType);
           console.log("Services: ", booking.service);
           const servicesData = booking.service.map((doc) => doc);
           console.log("Data Services: ", servicesData);
+          if (title == "Gardening") {
+            setPropertyName("Garden Size");
+          } else if(category == "Dog Training"){
+            setPropertyName("Dog Type");
+          } else{
+            setPropertyName("Property Type");
+          } 
+          if (category == "Pet Grooming" || category == "Pet Sitting") {
+            // Check if there's only one pet type with a non-zero value
+            const nonZeroPets = booking.propertyType.filter(pet => Object.values(pet)[0] !== 0);
+            setPropertyName("Pet Type");
+
+            if (nonZeroPets.length === 1) {
+              const petType = Object.keys(nonZeroPets[0])[0];
+              const petCount = Object.values(nonZeroPets[0])[0];
+              setBookingProperty(`${petCount} ${petType}`);
+            } else {
+              // If there are multiple pet types or no pets with non-zero values
+              setBookingProperty("Multiple Pets");
+            }
+          } else {
+            setBookingProperty(booking.propertyType);
+          }
           if (materials == "useProviderMaterials") {
             setBookingMaterials("Supplied by Provider");
           } else {
@@ -126,10 +153,9 @@ const ViewBookingDetails = ({ route }) => {
           setBookingDate(booking.date);
           setBookingTime(booking.time);
           setBookingAddress(booking.address);
-          setBookingProperty(booking.propertyType);
           setBookingCategory(booking.category);
           setBookingTitle(booking.title);
-          setBookingServices(booking.service);
+          setBookingServices(servicesData);
           setBookingSubtotal(booking.subTotal);
           setBookingDistanceFee(booking.feeDistance);
           setBookingPaymentMethod(booking.paymentMethod);
@@ -168,7 +194,7 @@ const ViewBookingDetails = ({ route }) => {
     async function fetchActiveBookings() {
       try {
         const db = getFirestore(); // Use getFirestore() to initialize Firestore
-  
+        console.log("Active Bookings Fetched" );
         // Get the user's UID 
         const auth = getAuth();
         const providerUID = auth.currentUser.uid;
@@ -209,10 +235,36 @@ const ViewBookingDetails = ({ route }) => {
         if (docSnapshot.exists()) {
           const booking = docSnapshot.data();
           const materials = booking.materials;
+          const category = booking.category;
+          const title = booking.title;
           console.log("Fetching data for booking:", booking);
+          console.log("Property Type: ", booking.propertyType);
           console.log("Services: " , booking.service);
           const servicesData = booking.service.map((doc) => doc);
           console.log("Data Services: " ,servicesData);
+          if (title == "Gardening") {
+            setPropertyName("Garden Size");
+          } else if(category == "Dog Training"){
+            setPropertyName("Dog Type");
+          } else{
+            setPropertyName("Property Type");
+          } 
+          if (category == "Pet Grooming" || category == "Pet Sitting") {
+            // Check if there's only one pet type with a non-zero value
+            const nonZeroPets = booking.propertyType.filter(pet => Object.values(pet)[0] !== 0);
+            setPropertyName("Pet Type");
+
+            if (nonZeroPets.length === 1) {
+              const petType = Object.keys(nonZeroPets[0])[0];
+              const petCount = Object.values(nonZeroPets[0])[0];
+              setBookingProperty(`${petCount} ${petType}`);
+            } else {
+              // If there are multiple pet types or no pets with non-zero values
+              setBookingProperty("Multiple Pets");
+            }
+          } else {
+            setBookingProperty(booking.propertyType);
+          }
           if(materials == "useProviderMaterials"){
             setBookingMaterials("Supplied by Provider");
           }else{
@@ -224,10 +276,9 @@ const ViewBookingDetails = ({ route }) => {
           setBookingDate(booking.date);
           setBookingTime(booking.time);
           setBookingAddress(booking.address);
-          setBookingProperty(booking.propertyType);
           setBookingCategory(booking.category);
           setBookingTitle(booking.title);
-          setBookingServices(booking.service);
+          setBookingServices(servicesData);
           setBookingSubtotal(booking.subTotal);
           setBookingDistanceFee(booking.feeDistance);
           setBookingPaymentMethod(booking.paymentMethod);
@@ -557,7 +608,7 @@ const ViewBookingDetails = ({ route }) => {
                   <View style={styles.frameWrapper}>
                     <View style={styles.propertyTypeWrapper}>
                       <Text style={[styles.date, styles.dateClr]}>
-                        Property Type
+                        {propertyName}
                       </Text>
                     </View>
                   </View>

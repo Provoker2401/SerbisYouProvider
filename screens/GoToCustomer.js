@@ -800,7 +800,7 @@ const GoToCustomer = ( {route} ) => {
           onPress={() => handleArrival(itemID)}
         >
           <Text style={[styles.viewAllServices1, styles.viewTypo]}>
-            Arrived at the Customer
+            Arrive at the Customer
           </Text>
         </Pressable>
       </View>

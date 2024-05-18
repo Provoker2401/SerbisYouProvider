@@ -4,20 +4,40 @@ import { Image } from "expo-image";
 import { Padding, Border, FontFamily, FontSize, Color } from "../GlobalStyles";
 import { getAuth, signOut } from "firebase/auth";
 import { useNavigation } from '@react-navigation/native';
+import {
+  getFirestore,
+  doc,
+  updateDoc,
+  query,
+} from "firebase/firestore"; // Updated imports
 
 const LogoutModal = ({ onClose }) => {
-
   const navigation = useNavigation();
 
   const handleLogout = async () => {
-
+    const db = getFirestore();
     const auth = getAuth();
-    signOut(auth).then(() => {
+
+    if (!auth.currentUser) {
+      console.error('No user is currently logged in.');
+      return;
+    }
+
+    try {
+      const providerUID = auth.currentUser.uid;
+
+      const providerDocRef = doc(db, "providerProfiles", providerUID);
+      await updateDoc(providerDocRef, {
+        availability: "unavailable",
+      });
+
+      await signOut(auth);
+
       navigation.navigate('SignIn'); // Navigate to the SignIn screen
-    }).catch((error) => {
-      // An error happened.
+    } catch (error) {
+      // Handle error
       console.error(error);
-    });
+    }
   };
 
   return (

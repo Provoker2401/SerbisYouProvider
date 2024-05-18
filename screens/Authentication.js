@@ -121,10 +121,21 @@ const Authentication = ({ route }) => {
   const sendVerificationCode = async () => {
     console.log("Phone number is: ", phone);
     try {
+      // const response = await axios.post(
+      //   "https://us-central1-testingauth-9126f.cloudfunctions.net/sendOTP",
+      //   {
+      //     phoneNumber: phone,
+      //   },
+      //   {
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //   }
+      // );
       const response = await axios.post(
-        "https://us-central1-testingauth-9126f.cloudfunctions.net/sendOTP",
+        "https://us-central1-testingauth-9126f.cloudfunctions.net/sendVerificationSMS",
         {
-          phoneNumber: phone,
+          number: phone,
         },
         {
           headers: {
@@ -132,6 +143,7 @@ const Authentication = ({ route }) => {
           },
         }
       );
+      setrequestID(response.data);
       Toast.show({
         type: "success",
         position: "top",
@@ -156,12 +168,25 @@ const Authentication = ({ route }) => {
 
   const verifyCode = async () => {
     try {
-      const response = await axios.post(
-        "https://us-central1-testingauth-9126f.cloudfunctions.net/verifyOTP",
+      setLoading(true);
+      // const response = await axios.post(
+      //   "https://us-central1-testingauth-9126f.cloudfunctions.net/verifyOTP",
 
+      //   {
+      //     phoneNumber: phone,
+      //     otp: enteredOTP,
+      //   },
+      //   {
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //   }
+      // );
+      const response = await axios.post(
+        "https://us-central1-testingauth-9126f.cloudfunctions.net/checkVerificationCode",
         {
-          phoneNumber: phone,
-          otp: enteredOTP,
+          request_id: requestID,
+          code: enteredOTP,
         },
         {
           headers: {
@@ -179,7 +204,6 @@ const Authentication = ({ route }) => {
         
         const db = getFirestore();
         const querySnapshot = await getDocs(collection(db, "providerProfiles"));
-        setLoading(true);
         // Create the provider with email and password
         const providerCredential = await createUserWithEmailAndPassword(
           auth,
