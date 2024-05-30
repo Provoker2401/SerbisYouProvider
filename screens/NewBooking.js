@@ -34,11 +34,9 @@ import {
   getDoc,
   addDoc,
   updateDoc,
-  getDocs,
-  setDoc,
-  where,
   query,
   arrayUnion,
+  runTransaction,
 } from "firebase/firestore"; // Updated imports
 import { toggleAnimation } from "../animations/toggleAnimation";
 import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
@@ -165,98 +163,100 @@ const NewBooking = ({ route }) => {
     // Create references to the user's document and the appForm2 subcollection
     const providerDocRef = doc(db, "providerProfiles", providerUID);
 
-    // Get the document snapshot
-    const providerSnapshot = await getDoc(providerDocRef);
-    const providerBookingID = providerSnapshot.data().bookingID;
+    try {
+      await runTransaction(db, async (transaction) => {
+        // Get the provider's document snapshot
+        const providerSnapshot = await transaction.get(providerDocRef);
+        const providerBookingID = providerSnapshot.data().bookingID;
 
-    if(providerBookingID) {
-      console.log("BookingID is not blank");
-      try {
+        if (!providerBookingID) {
+          console.log("BookingID is blank");
+          setBookingNotFoundVisible(true); // set visible for error booking has been canceled/already booked
+          throw new Error("BookingID is blank");
+        }
+
+        console.log("BookingID is not blank");
+
         const activeBookings = collection(providerDocRef, "activeBookings");
         const serviceBookingsCollection = collection(db, "serviceBookings");
-  
+
         // Get the service booking document using userBookingID
-        const serviceBookingDocRef = doc(
-          serviceBookingsCollection,
-          userBookingID
-        );
-  
-        // Get the document snapshot
-        const serviceBookingSnapshot = await getDoc(serviceBookingDocRef);
-  
-        if (serviceBookingSnapshot.exists()) {
-          // Update the acceptedBy field within the service booking document
-          const updatedBookings = [...serviceBookingSnapshot.data().bookings];
-          updatedBookings[bookingIndex].acceptedBy = providerUID;
-          updatedBookings[bookingIndex].bookingAccepted = true;
-  
-          // Update the service booking document
-          await updateDoc(serviceBookingDocRef, {
-            bookings: updatedBookings,
-          });
-          console.log("acceptedBy field updated in serviceBookings document.");
-        } else {
+        const serviceBookingDocRef = doc(serviceBookingsCollection, userBookingID);
+        const serviceBookingSnapshot = await transaction.get(serviceBookingDocRef);
+
+        if (!serviceBookingSnapshot.exists()) {
           console.error("Service Booking document does not exist");
+          throw new Error("Service Booking document does not exist");
         }
-  
-        if (providerSnapshot.exists()) {
-          // Update the availability field within the provider document
-          await updateDoc(providerDocRef, {
-            availability: "busy",
-          });
-          console.log("Provider Status is now occupied");
-          const docRef = await addDoc(activeBookings, {
-            address: bookingAddress,
-            addressDetails: bookingAddressDetails,
-            customerUID: bookingCustomerUID,
-            bookingAccepted: bookingAccepted,
-            bookingAssigned: bookingAssigned,
-            bookingID: bookingID,
-            category: bookingCategory,
-            city: bookingCity,
-            coordinates: {
-              latitude: coordinates.latitude,
-              longitude: coordinates.longitude,
-            },
-            date: bookingDate,
-            distanceRadius: bookingDistanceRadius,
-            email: bookingEmail,
-            feeDistance: bookingFeeDistance,
-            materials: bookingMaterials,
-            name: bookingName,
-            paymentMethod: bookingPaymentMethod,
-            phone: bookingPhone,
-            propertyType: bookingPropertyType,
-            service: bookingServices,
-            subTotal: bookingSubTotal,
-            time: bookingTime,
-            title: bookingTitle,
-            totalPrice: bookingTotal,
-            status: "Upcoming",
-          });
-          setCountDownBookingVisible(false);
-          setCountDownBookingFlag(false);
-          // Get the unique ID of the newly added document
-          const newDocumentID = docRef.id;
-          console.log("Document added to 'activeBookings' successfully.");
-          navigation.navigate("ViewBookingDetails", {
-            newDocumentID: newDocumentID,
-            matchedBookingID: matchedBookingID,
-            providerLocation: providerLocation, // Include providerLocation in the route parameters
-          })
-        } else {
-          console.error("Provider Profile does not exists");
-        }
-      } catch (error) {
-        console.error("Error updating user data:", error);   // Handle the error, e.g., display an error message to the user
-      }
-    }else{
-      console.log("BookingID is blank");
-      setBookingNotFoundVisible(true);    // set visible for error booking has been canceled/already booked
+
+        // Update the acceptedBy field within the service booking document
+        const updatedBookings = [...serviceBookingSnapshot.data().bookings];
+        updatedBookings[bookingIndex].acceptedBy = providerUID;
+        updatedBookings[bookingIndex].bookingAccepted = true;
+
+        // Update the service booking document
+        transaction.update(serviceBookingDocRef, {
+          bookings: updatedBookings,
+        });
+        console.log("acceptedBy field updated in serviceBookings document.");
+
+        // Update the availability field within the provider document after the provider accepts a booking
+        transaction.update(providerDocRef, {
+          // availability: "busy",
+          availability: "available",
+          bookingID: "",
+          bookingIndex: "",
+          bookingMatched: false,
+        });
+        console.log("Provider Status is now occupied");
+
+        const newBookingData = {
+          address: bookingAddress,
+          addressDetails: bookingAddressDetails,
+          customerUID: bookingCustomerUID,
+          bookingAccepted: bookingAccepted,
+          bookingAssigned: bookingAssigned,
+          bookingID: bookingID,
+          category: bookingCategory,
+          city: bookingCity,
+          coordinates: {
+            latitude: coordinates.latitude,
+            longitude: coordinates.longitude,
+          },
+          date: bookingDate,
+          distanceRadius: bookingDistanceRadius,
+          email: bookingEmail,
+          feeDistance: bookingFeeDistance,
+          materials: bookingMaterials,
+          name: bookingName,
+          paymentMethod: bookingPaymentMethod,
+          phone: bookingPhone,
+          propertyType: bookingPropertyType,
+          service: bookingServices,
+          subTotal: bookingSubTotal,
+          time: bookingTime,
+          title: bookingTitle,
+          totalPrice: bookingTotal,
+          status: "Upcoming",
+        };
+
+        const docRef = await addDoc(activeBookings, newBookingData);
+        setCountDownBookingVisible(false);
+        setCountDownBookingFlag(false);
+
+        // Get the unique ID of the newly added document
+        const newDocumentID = docRef.id;
+        console.log("Document added to 'activeBookings' successfully.");
+        navigation.navigate("ViewBookingDetails", {
+          newDocumentID: newDocumentID,
+          matchedBookingID: matchedBookingID,
+          providerLocation: providerLocation, // Include providerLocation in the route parameters
+        });
+      });
+    } catch (error) {
+      console.error("Error updating user data:", error); // Handle the error, e.g., display an error message to the user
     }
-
   };
-
   const declineBooking = async () => {
     console.log("Decline Booking");
 

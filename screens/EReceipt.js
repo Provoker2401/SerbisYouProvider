@@ -598,7 +598,7 @@ const styles = StyleSheet.create({
   },
   titleLabel: {
     lineHeight: 24,
-    colorGray_1000: "#19191a",
+    color: "#19191a",
     fontFamily: "Inter-SemiBold",
     fontWeight: "600",
     textAlign: "left",

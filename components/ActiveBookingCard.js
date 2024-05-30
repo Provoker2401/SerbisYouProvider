@@ -3,6 +3,7 @@ import { TouchableOpacity, Text, StyleSheet, View, Linking, Pressable} from "rea
 import { Image } from "expo-image";
 import { FontSize, FontFamily, Color, Border, Padding } from "../GlobalStyles";
 import { useNavigation } from "@react-navigation/native";
+import moment from 'moment';
 
 // Define a function to map the status to the corresponding style
 const getStatusStyle = (status) => {
@@ -45,12 +46,22 @@ const getButtonText = (status) => {
     }
   };
   
-const ActiveBookingCard = ({status, date, time, location, serviceName, matchedBookingID, phone, customerName, customerUID, id}) => {
+const ActiveBookingCard = ({status, date, time, location, serviceName, matchedBookingID, phone, customerName, customerUID, id, onOpenCancelModal}) => {
 const navigation = useNavigation();
   const statusStyle = getStatusStyle(status);
   const cardBackgroundColor = getCardBackgroundColor(status);
 
   const handleButton =  () => {
+    const currentDateTime = moment();
+    const bookingDateTime = moment(`${date} ${time}`, "MMM D YYYY h:mm A");
+    const timeDiff = bookingDateTime.diff(currentDateTime, 'minutes');
+
+    if (status === 'Upcoming' && (currentDateTime.format("MMM D YYYY") !== date || timeDiff > 60)) {
+      // Add a restriction message or disable the button
+      alert("You cannot go to the customer yet. Please check the date and time of the booking.");
+      return;
+    }
+
     if (status === 'Upcoming') {
       navigation.navigate("ConfirmNavigation", { itemID: id, matchedBookingID: matchedBookingID, customerUID: customerUID});
     } else if (status === 'In Transit') {
@@ -58,6 +69,12 @@ const navigation = useNavigation();
     } else if (status === 'In Progress') {
       navigation.navigate("ConfirmService", { itemID: id, matchedBookingID: matchedBookingID, customerUID: customerUID });
     }
+  };
+
+  // When the 'Cancel Booking' button is pressed
+  const onCancelPress = () => {
+    // This will call the openCancelModal function passed as a prop from the parent component
+    onOpenCancelModal();
   };
 
   const messageProvider = ()=>{
@@ -151,15 +168,25 @@ const navigation = useNavigation();
           </View>
         </View>
         <View style={[styles.buttonsFrame, styles.frameSpaceBlock]}>
+          {status === "Upcoming" && (
+            <Pressable
+            style={[styles.buttonContainer, styles.cancelBookingBtn2]}
+            onPress={onCancelPress}
+            >
+              <Text style={[styles.cancelBooking2, styles.viewDetailsTypo]}>
+                Cancel
+              </Text>
+            </Pressable>
+          )}
           <Pressable
-            style={styles.cancelBookingBtn}
+            style={[styles.buttonContainer, styles.cancelBookingBtn]}
             onPress={() => handleButton()}
           >
             <Text style={[styles.cancelBooking, styles.viewDetailsTypo]}>
                 {getButtonText(status)}
             </Text>
           </Pressable>
-          <Pressable style={styles.viewBorder} onPress={() => viewBookingDetails()}>
+          <Pressable style={[styles.buttonContainer, styles.viewBorder]} onPress={() => viewBookingDetails()}>
             <Text style={[styles.viewDetails, styles.viewDetailsTypo]}>
               View Details
             </Text>
@@ -250,7 +277,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.1,
   },
   viewBorder: {
-    marginLeft: 26,
+    marginHorizontal: 0,
     backgroundColor: Color.colorSteelblue,
     borderWidth: 1.6,
     borderColor: Color.colorSteelblue,
@@ -398,6 +425,9 @@ const styles = StyleSheet.create({
   cancelBooking: {
     color: Color.colorSteelblue,
   },
+  cancelBooking2: {
+    color: Color.colorFirebrick_300,
+  },
   cancelBookingBtn: {
     borderWidth: 1.6,
     borderColor: Color.colorSteelblue,
@@ -408,6 +438,19 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     backgroundColor: Color.m3White,
+    marginHorizontal: 5,
+  },
+  cancelBookingBtn2: {
+    borderWidth: 1.6,
+    borderColor: Color.colorFirebrick_300,
+    borderStyle: "solid",
+    borderRadius: Border.br_xs,
+    justifyContent: "center",
+    flexDirection: "row",
+    flex: 1,
+    alignItems: "center",
+    backgroundColor: Color.colorMistyrose,
+    marginHorizontal: 0,
   },
   viewDetails: {
     color: Color.m3White,

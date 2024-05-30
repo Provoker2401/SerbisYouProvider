@@ -28,6 +28,8 @@ import PerformTheServiceHeader from "./components/PerformTheServiceHeader";
 import ConfirmServiceHeader from "./components/ConfirmServiceHeader";
 import NewBookingHeader from "./components/NewBookingHeader";
 import LogoutModal from "./components/LogoutModal";
+import MultipleLocationModal from "./components/MultipleLocationModal";
+import EditAddressModal from "./components/EditAddressModal";
 
 import AboutUsFrame from "./components/AboutUsFrame";
 import FAQsFrame from "./components/FAQsFrame";
@@ -99,8 +101,14 @@ import ForgotPasswordConfirmation1 from "./screens/ForgotPasswordConfirmation1";
 import ForgotPasswordResendCode from "./screens/ForgotPasswordResendCode";
 import ForgotPasswordUpdated from "./screens/ForgotPasswordUpdated";
 import PaymentOptions from "./screens/PaymentOptions";
-
 import EReceipt from "./screens/EReceipt";
+
+// Locations
+import EditAddressIconComplete from "./screens/EditAddressIconComplete";
+import AddNewAddress from "./screens/AddNewAddress";
+
+import { AddAddressProvider } from "./AddAddressContext";
+import { AddressSelectedProvider } from "./AddressSelectedContext";
 
 enableLatestRenderer();
 const firebaseConfig = {
@@ -290,416 +298,440 @@ const App = () => {
     <>
       <IconRegistry icons={[MaterialIconsPack]} />
       <ApplicationProvider {...eva} theme={eva.light}>
-        <NavigationContainer>
-          {hideSplashScreen ? (
-            <Stack.Navigator
-              initialRouteName="Onboarding1"
-              screenOptions={{ headerShown: false }}
-            >
-              <Stack.Screen name="BottomTabsRoot" component={BottomTabsRoot} />
-              <Stack.Screen
-                name="Onboarding1"
-                component={Onboarding1}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Segment4"
-                component={Segment4}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="LogoutModal"
-                component={LogoutModal}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="ProfileHeader"
-                component={ProfileHeader}
-                options={(props) => ({
-                  headerShown: true,
-                  header: () => <ProfileHeader />,
-                })}
-              />
-              <Stack.Screen
-                name="AboutUsFrame"
-                component={AboutUsFrame}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="FAQsFrame"
-                component={FAQsFrame}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="EditProfile"
-                component={EditProfile}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="Edit Profile"/>,
-                })}
-              />
-              <Stack.Screen
-                name="AccountHeader"
-                component={AccountHeader}
-                options={(props) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader />,
-                })}
-              />
-              <Stack.Screen
-                name="ChangePasswordUpdated"
-                component={ChangePasswordUpdated}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="Change Password"/>,
-                })}
-              />
-              <Stack.Screen
-                name="ChangePassword"
-                component={ChangePassword}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="Change Password"/>,
-                })}
-              />
-              <Stack.Screen
-                name="CashOutBalance"
-                component={CashOutBalance}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="Cash out"/>,
-                })}
-              />
-              <Stack.Screen
-                name="Wallet"
-                component={Wallet}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="Wallet"/>,
-                })}
-              />
-              <Stack.Screen
-                name="NotificationsSettings"
-                component={NotificationsSettings}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="Notifications"/>,
-                })}
-              />
-              <Stack.Screen
-                name="HelpCenterFAQ"
-                component={HelpCenterFAQ}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="Help Center"/>,
-                })}
-              />
-              <Stack.Screen
-                name="PrivacyPolicy"
-                component={PrivacyPolicy}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="Privacy Policy"/>,
-                })}
-              />
-              <Stack.Screen
-                name="Segment41"
-                component={Segment41}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Segment3"
-                component={Segment3}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Segment31"
-                component={Segment31}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Segment2"
-                component={Segment2}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Tab2"
-                component={Tab2}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="HistoryBookings"
-                component={HistoryBookings}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="EReceipt"
-                component={EReceipt}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="E-Receipt"/>,
-                })}
-              />
-              <Stack.Screen
-                name="ConfirmNavigation"
-                component={ConfirmNavigation}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="PerformServicePrompt"
-                component={PerformServicePrompt}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Tab21"
-                component={Tab21}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Tab1"
-                component={Tab1}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="ActiveBookings"
-                component={ActiveBookings}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Tab11"
-                component={Tab11}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Segment21"
-                component={Segment21}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Segment1"
-                component={Segment1}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Segment11"
-                component={Segment11}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Onboarding2"
-                component={Onboarding2}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Splash"
-                component={Splash}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="CurrentLocationheader"
-                component={CurrentLocationheader}
-                options={(props) => ({
-                  headerShown: true,
-                  header: () => <CurrentLocationheader />,
-                })}
-              />
-              <Stack.Screen
-                name="ApplicationForm3"
-                component={ApplicationForm3}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="Application Form"/>,
-                })}
-              />
-              <Stack.Screen
-                name="ApplicationForm2"
-                component={ApplicationForm2}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="Application Form"/>,
-                })}
-              />
-              <Stack.Screen
-                name="ApplicationForm1"
-                component={ApplicationForm1}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="Application Form"/>,
-                })}
-              />
-              <Stack.Screen
-                name="SignUp"
-                component={SignUp}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="SignIn"
-                component={SignIn}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Onboarding3"
-                component={Onboarding3}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="ViewBookingDetails"
-                component={ViewBookingDetails}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="ConfirmService"
-                component={ConfirmService}
-                options={(props) => ({
-                  headerShown: true,
-                  header: () => <ConfirmServiceHeader />,
-                })}
-              />
-              <Stack.Screen
-                name="PerformTheService"
-                component={PerformTheService}
-                options={(props) => ({
-                  headerShown: true,
-                  header: () => <PerformTheServiceHeader />,
-                })}
-              />
-              <Stack.Screen
-                name="GoToCustomer"
-                component={GoToCustomer}
-                options={(props) => ({
-                  headerShown: true,
-                  header: () => <GoToCustomerHeader />,
-                })}
-              />
-              <Stack.Screen
-                name="NewBooking"
-                component={NewBooking}
-                options={(props) => ({
-                  headerShown: true,
-                  header: () => <NewBookingHeader />,
-                })}
-              />
-              <Stack.Screen
-                name="CancelBookingPrompt"
-                component={CancelBookingPrompt}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="CountDownBooking"
-                component={CountDownBooking}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="BookingNotFound"
-                component={BookingNotFound}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="TermsAndConditions"
-                component={TermsAndConditions}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="Terms and Conditions"/>,
-                })}
-              />
-              <Stack.Screen
-                name="Authentication"
-                component={Authentication}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="AddCard"
-                component={AddCard}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="Add Card"/>,
-                })}
-              />
-              <Stack.Screen
-                name="ForgotPasswordCode"
-                component={ForgotPasswordCode}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="Forgot Password"/>,
-                })}
-              />
-              <Stack.Screen
-                name="ForgotPasswordConfirmation"
-                component={ForgotPasswordConfirmation}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="Forgot Password"/>,
-                })}
-              />
-              <Stack.Screen
-                name="ForgotPasswordConfirmation1"
-                component={ForgotPasswordConfirmation1}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="Forgot Password"/>,
-                })}
-              />
-              <Stack.Screen
-                name="ForgotPasswordResendCode"
-                component={ForgotPasswordResendCode}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="Forgot Password"/>,
-                })}
-              />
-              <Stack.Screen
-                name="ForgotPasswordUpdated"
-                component={ForgotPasswordUpdated}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="Forgot Password"/>,
-                })}
-              />
-              <Stack.Screen
-                name="PaymentOptions"
-                component={PaymentOptions}
-                options={({ route }) => ({
-                  headerShown: true,
-                  header: () => <AccountHeader title="Payment Options"/>,
-                })}
-              />
-              <Stack.Screen
-                name="GoToCustomerHeader"
-                component={GoToCustomerHeader}
-                options={(props) => ({
-                  headerShown: true,
-                  header: () => <GoToCustomerHeader />,
-                })}
-              />
-              <Stack.Screen
-                name="PerformTheServiceHeader"
-                component={PerformTheServiceHeader}
-                options={(props) => ({
-                  headerShown: true,
-                  header: () => <PerformTheServiceHeader />,
-                })}
-              />
-              <Stack.Screen
-                name="ConfirmServiceHeader"
-                component={ConfirmServiceHeader}
-                options={(props) => ({
-                  headerShown: true,
-                  header: () => <ConfirmServiceHeader />,
-                })}
-              />
-              <Stack.Screen
-                name="NewBookingHeader"
-                component={NewBookingHeader}
-                options={(props) => ({
-                  headerShown: true,
-                  header: () => <NewBookingHeader />,
-                })}
-              />
-            </Stack.Navigator>
-          ) : (
-            <Splash />
-          )}
-        </NavigationContainer>
+        <AddAddressProvider>
+          <AddressSelectedProvider>
+            <NavigationContainer>
+              {hideSplashScreen ? (
+                <Stack.Navigator
+                  initialRouteName="Onboarding1"
+                  screenOptions={{ headerShown: false }}
+                >
+                  <Stack.Screen name="BottomTabsRoot" component={BottomTabsRoot} />
+                  <Stack.Screen
+                    name="Onboarding1"
+                    component={Onboarding1}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="Segment4"
+                    component={Segment4}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="LogoutModal"
+                    component={LogoutModal}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="ProfileHeader"
+                    component={ProfileHeader}
+                    options={(props) => ({
+                      headerShown: true,
+                      header: () => <ProfileHeader />,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="AboutUsFrame"
+                    component={AboutUsFrame}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="FAQsFrame"
+                    component={FAQsFrame}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="EditProfile"
+                    component={EditProfile}
+                    options={({ route }) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader title="Edit Profile"/>,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="AccountHeader"
+                    component={AccountHeader}
+                    options={(props) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader />,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="EditAddressIconComplete"
+                    component={EditAddressIconComplete}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="EditAddressModal"
+                    component={EditAddressModal}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="AddNewAddress"
+                    component={AddNewAddress}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="MultipleLocationModal"
+                    component={MultipleLocationModal}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="ChangePasswordUpdated"
+                    component={ChangePasswordUpdated}
+                    options={({ route }) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader title="Change Password"/>,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="ChangePassword"
+                    component={ChangePassword}
+                    options={({ route }) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader title="Change Password"/>,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="CashOutBalance"
+                    component={CashOutBalance}
+                    options={({ route }) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader title="Cash out"/>,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="Wallet"
+                    component={Wallet}
+                    options={({ route }) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader title="Wallet"/>,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="NotificationsSettings"
+                    component={NotificationsSettings}
+                    options={({ route }) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader title="Notifications"/>,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="HelpCenterFAQ"
+                    component={HelpCenterFAQ}
+                    options={({ route }) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader title="Help Center"/>,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="PrivacyPolicy"
+                    component={PrivacyPolicy}
+                    options={({ route }) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader title="Privacy Policy"/>,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="Segment41"
+                    component={Segment41}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="Segment3"
+                    component={Segment3}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="Segment31"
+                    component={Segment31}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="Segment2"
+                    component={Segment2}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="Tab2"
+                    component={Tab2}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="HistoryBookings"
+                    component={HistoryBookings}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="EReceipt"
+                    component={EReceipt}
+                    options={({ route }) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader title="E-Receipt"/>,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="ConfirmNavigation"
+                    component={ConfirmNavigation}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="PerformServicePrompt"
+                    component={PerformServicePrompt}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="Tab21"
+                    component={Tab21}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="Tab1"
+                    component={Tab1}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="ActiveBookings"
+                    component={ActiveBookings}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="Tab11"
+                    component={Tab11}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="Segment21"
+                    component={Segment21}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="Segment1"
+                    component={Segment1}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="Segment11"
+                    component={Segment11}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="Onboarding2"
+                    component={Onboarding2}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="Splash"
+                    component={Splash}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="CurrentLocationheader"
+                    component={CurrentLocationheader}
+                    options={(props) => ({
+                      headerShown: true,
+                      header: () => <CurrentLocationheader />,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="ApplicationForm3"
+                    component={ApplicationForm3}
+                    options={({ route }) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader title="Application Form"/>,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="ApplicationForm2"
+                    component={ApplicationForm2}
+                    options={({ route }) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader title="Application Form"/>,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="ApplicationForm1"
+                    component={ApplicationForm1}
+                    options={({ route }) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader title="Application Form"/>,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="SignUp"
+                    component={SignUp}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="SignIn"
+                    component={SignIn}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="Onboarding3"
+                    component={Onboarding3}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="ViewBookingDetails"
+                    component={ViewBookingDetails}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="ConfirmService"
+                    component={ConfirmService}
+                    options={(props) => ({
+                      headerShown: true,
+                      header: () => <ConfirmServiceHeader />,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="PerformTheService"
+                    component={PerformTheService}
+                    options={(props) => ({
+                      headerShown: true,
+                      header: () => <PerformTheServiceHeader />,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="GoToCustomer"
+                    component={GoToCustomer}
+                    options={(props) => ({
+                      headerShown: true,
+                      header: () => <GoToCustomerHeader />,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="NewBooking"
+                    component={NewBooking}
+                    options={(props) => ({
+                      headerShown: true,
+                      header: () => <NewBookingHeader />,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="CancelBookingPrompt"
+                    component={CancelBookingPrompt}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="CountDownBooking"
+                    component={CountDownBooking}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="BookingNotFound"
+                    component={BookingNotFound}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="TermsAndConditions"
+                    component={TermsAndConditions}
+                    options={({ route }) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader title="Terms and Conditions"/>,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="Authentication"
+                    component={Authentication}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="AddCard"
+                    component={AddCard}
+                    options={({ route }) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader title="Add Card"/>,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="ForgotPasswordCode"
+                    component={ForgotPasswordCode}
+                    options={({ route }) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader title="Forgot Password"/>,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="ForgotPasswordConfirmation"
+                    component={ForgotPasswordConfirmation}
+                    options={({ route }) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader title="Forgot Password"/>,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="ForgotPasswordConfirmation1"
+                    component={ForgotPasswordConfirmation1}
+                    options={({ route }) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader title="Forgot Password"/>,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="ForgotPasswordResendCode"
+                    component={ForgotPasswordResendCode}
+                    options={({ route }) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader title="Forgot Password"/>,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="ForgotPasswordUpdated"
+                    component={ForgotPasswordUpdated}
+                    options={({ route }) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader title="Forgot Password"/>,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="PaymentOptions"
+                    component={PaymentOptions}
+                    options={({ route }) => ({
+                      headerShown: true,
+                      header: () => <AccountHeader title="Payment Options"/>,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="GoToCustomerHeader"
+                    component={GoToCustomerHeader}
+                    options={(props) => ({
+                      headerShown: true,
+                      header: () => <GoToCustomerHeader />,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="PerformTheServiceHeader"
+                    component={PerformTheServiceHeader}
+                    options={(props) => ({
+                      headerShown: true,
+                      header: () => <PerformTheServiceHeader />,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="ConfirmServiceHeader"
+                    component={ConfirmServiceHeader}
+                    options={(props) => ({
+                      headerShown: true,
+                      header: () => <ConfirmServiceHeader />,
+                    })}
+                  />
+                  <Stack.Screen
+                    name="NewBookingHeader"
+                    component={NewBookingHeader}
+                    options={(props) => ({
+                      headerShown: true,
+                      header: () => <NewBookingHeader />,
+                    })}
+                  />
+                </Stack.Navigator>
+              ) : (
+                <Splash />
+              )}
+            </NavigationContainer>
+          </AddressSelectedProvider>
+        </AddAddressProvider>
         <Toast ref={(ref) => Toast.setRef(ref)} />
       </ApplicationProvider>
     </>

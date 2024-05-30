@@ -98,7 +98,7 @@ const Onboarding1 = () => {
               <Pressable
                 style={styles.nextBtn}
                 onPress={() =>
-                  navigation.navigate("ApplicationForm2")
+                  navigation.navigate("ApplicationForm1")
                 }
               >
                 <Image

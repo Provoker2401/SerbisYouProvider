@@ -12,7 +12,7 @@ import { PermissionsAndroid } from 'react-native'; // Import PermissionsAndroid 
 import * as ImagePicker from "expo-image-picker";
 import { app, firebaseConfig } from "../App"; // Update the path as needed
 import Toast from "react-native-toast-message";
-
+import { SelectList } from 'react-native-dropdown-select-list'
 import {
   getStorage,
   ref,
@@ -39,7 +39,16 @@ const ApplicationForm2 = () => {
 
   const [selectedDocumentType, setSelectedDocumentType] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState();
+
+  const [selected, setSelected] = useState('');
   
+  const data = [
+      {key:'1', value:"Driver's License"},
+      {key:'2', value:"National I.D."},
+      {key:'3', value:"Passport"},
+      {key:'4', value: "Birth Certificate"},
+  ]
+
 
   // const idTypeItems = [
   //   {
@@ -117,7 +126,7 @@ const ApplicationForm2 = () => {
             // Assuming that there's only one document in 'appForm2'
             const appForm2Data = appForm2Snapshot.docs[0].data();
             const appForm2Id = appForm2Snapshot.docs[0].id;
-            setIdType(appForm2Data.idType);
+            setSelected(appForm2Data.idType);
             setIdProofimgFront(appForm2Data.idProofimgFront);
             setIdProofimgBack(appForm2Data.idProofimgBack);
 
@@ -151,57 +160,6 @@ const ApplicationForm2 = () => {
   
   
   //setIdType(id);
-  const fetchProviderData = async () => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, async (currentProvider) => {
-      if (!currentProvider) {
-        setLoading(false);
-        return;
-      }
-
-      setProvider(currentProvider);
-
-      try {
-        const email = currentProvider.email;
-        //setEmail(email);
-
-        // Fetch the user's profile image based on their UID
-       // fetchProfileImage(currentUser.uid);
-
-        const db = getFirestore();
-        const providerProfilesCollection = collection(db, "providerProfiles");
-        const providerDocRef = doc(providerProfilesCollection, currentProvider.uid);
-        const providerDocSnapshot = await getDoc(providerDocRef);
-
-        if (providerDocSnapshot.exists()) {
-          const providerData = providerDocSnapshot.data();
-          const appForm2Ref = collection(providerDocRef, 'appForm2');
-          const appForm2Snapshot = await getDocs(appForm2Ref);
-
-          if (!appForm2Snapshot.empty) {
-            // Assuming that there's only one document in 'appForm2'
-            const appForm2Data = appForm2Snapshot.docs[0].data();
-            const appForm2Id = appForm2Snapshot.docs[0].id;
-            setIdType(appForm2Data.idType);
-            setIdProofimgFront(appForm2Data.idProofimgFront);
-            setIdProofimgBack(appForm2Data.idProofimgBack);
-
-          }
-          setLoading(false);
-          // console.log("User UID:", currentUser.uid);
-        } else {
-          console.log("No user data found for the given UID.");
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error("Error retrieving user data:", error);
-        setLoading(false);
-      }
-    });
-
-    return unsubscribe;
-  };
-
   const saveChangesHandle = async () => {
     if (!isIdTypeSelected) {
       //showToast("Please choose an I.D. type and upload both Front and Back photos of your I.D.");
@@ -250,10 +208,10 @@ const ApplicationForm2 = () => {
       if (appForm2Doc) {
         // Update the idType field within the appForm2 document
         await updateDoc(appForm2Doc.ref, {
-          idType: idType,
+          idType: selected,
         });
 
-        console.log('idType updated successfully:', idType);
+        console.log('idType updated successfully:', selected);
       } else {
         console.error('No appForm2 document found for the current user.');
       }
@@ -486,69 +444,30 @@ const ApplicationForm2 = () => {
               </Text>
             </View>
             <View style={styles.frameGroup}>
-              <View style={styles.chooseDocumentTypeWrapper}>
-              <Pressable
-              
-              style={[
-                
-                styles.componentsbuttonSpaceBlock,
-                idType === "Driver's License"
-               
-                  ? styles.componentsbutton4
-                  : null
-              ]}
-              onPress={() => handleDocumentTypeSelect("Driver's License")}
-            >
-              <Text style={[styles.viewAllServices3, styles.viewTypo]}>
-                Driver’s License
-              </Text>
-            </Pressable>
-            <Pressable
-              style={[
-                
-                styles.componentsbuttonSpaceBlock69,
-                idType === "NationalID"
-                  ? styles.componentsbutton69
-                  : null
-              ]}
-              onPress={() => handleDocumentTypeSelect("NationalID")}
-            >
-              <Text style={[styles.viewAllServices3, styles.viewTypo]}>
-                National I.D.
-              </Text>
-            </Pressable>
-          </View>
-          <View style={styles.componentsbuttonGroup}>
-            <Pressable
-              style={[
-                styles.componentsbuttonSpaceBlock,
-                idType === "Passport"
-                  ? styles.componentsbutton4
-                  : null
-              ]}
-              onPress={() => handleDocumentTypeSelect("Passport")}
-            >
-              <Text style={[styles.viewAllServices3, styles.viewTypo]}>
-                Passport
-              </Text>
-            </Pressable>
-            <Pressable
-              style={[
-               
-                styles.componentsbuttonSpaceBlock69,
-                idType === "Other"
-                  ? styles.componentsbutton69
-                  : null
-              ]}
-              onPress={() => handleDocumentTypeSelect("Other")}
-            >
-              <Text style={[styles.viewAllServices3, styles.viewTypo]}>
-                Other
-              </Text>
-            </Pressable>
-              </View>
+              <SelectList 
+                  setSelected={(val) => {setSelected(val); setIsIdTypeSelected(true);}} 
+                  data={data} 
+                  save="value"
+                  search={false} 
+                  boxStyles={{
+                    borderRadius: 8, 
+                    backgroundColor: '#f0f0f0', // Light grey background
+                    borderColor: '#ccc', // Light grey border
+                    borderWidth: 1,
+                  }}
+                  dropdownStyles={{
+                    backgroundColor: '#ffffff', // White background for dropdown
+                    borderColor: '#ccc', // Light grey border
+                    borderWidth: 1,
+                  }}
+                  dropdownItemStyles={{
+                    backgroundColor: '#f9f9f9', // Slightly darker grey for items
+                    padding: 10, 
+                    borderBottomColor: '#eee', // Light grey border between items
+                    borderBottomWidth: 1,
+                  }}
+              />
             </View>
-  
           </View>
           <View style={styles.frameContainer}>
             <View style={styles.uploadIdProofParent}>
@@ -815,7 +734,7 @@ const styles = StyleSheet.create({
   },
   viewAllServices3: {
     lineHeight: 24,
-    color: Color.neutral01,
+    color: Color.black,
     letterSpacing: -0.1,
     fontSize: FontSize.typographyTaglineSmallRegular_size,
     flex: 1,
@@ -858,7 +777,6 @@ const styles = StyleSheet.create({
   },
   putYourDocument: {
     textAlign: "justify",
-    width: 320,
     marginTop: 20,
     fontSize: FontSize.paragraphMedium15_size,
   },
@@ -885,7 +803,9 @@ const styles = StyleSheet.create({
     height: 85,
   },
   componentsbuttonWrapper: {
+    justifyContent: "center",
     alignSelf: "stretch",
+    alignItems: "center",
   },
   componentsbuttonWrapper1: {
     alignSelf: "stretch",
@@ -925,11 +845,12 @@ const styles = StyleSheet.create({
   },
   componentsbuttonContainer: {
     marginLeft: 30,
-    alignItems: "stretch",
-    alignSelf: "center",
+    justifyContent: "center",
+    alignSelf: "stretch",
+    alignItems: "center",
   },
   frameView: {
-    marginTop: 10,
+    marginTop: 20,
     justifyContent: "center",
     flexDirection: "row",
     alignSelf: "stretch",
@@ -961,7 +882,7 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
   },
   componentsbuttonFrame: {
-    paddingTop: 91,
+    paddingTop: 50,
     marginTop: 20,
     justifyContent: "center",
     alignSelf: "stretch",
