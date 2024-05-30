@@ -7,6 +7,7 @@ import {
   View,
   Pressable,
   Linking,
+  BackHandler,
 } from "react-native";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -43,6 +44,20 @@ const ViewBookingDetails = ({ route }) => {
   const [bookingCoordinates, setBookingCoordinates] = useState("");
   const [providerCurrentCoordinates, setProviderCurrentCoordinates] = useState("");
   const [phoneUser, setphoneUser] = useState("");
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate("BottomTabsRoot", { screen: "Homepage" });
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [navigation]);
 
   useEffect(() => {
     async function fetchData() {

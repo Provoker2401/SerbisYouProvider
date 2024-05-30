@@ -282,32 +282,6 @@ const FAQsFrame = ({ style }) => {
             </View>
           </Pressable>
         </ScrollView>
-        <View style={[styles.textFieldSearch, styles.firstSpaceBlock]}>
-          <View style={styles.textField}>
-            <View style={[styles.stateLayer, styles.stateLayerPosition]}>
-              <View style={[styles.leadingIcon, styles.frameFlexBox]}>
-                <View style={[styles.container, styles.containerParentFlexBox]}>
-                  <View
-                    style={[styles.stateLayer1, styles.containerParentFlexBox]}
-                  >
-                    <Image
-                      style={styles.iconssearch24px}
-                      contentFit="cover"
-                      source={require("../assets/iconssearch-24px.png")}
-                    />
-                  </View>
-                </View>
-              </View>
-              <View style={styles.content}>
-                <View style={styles.containerParentFlexBox}>
-                  <Text style={[styles.labelText1, styles.labelLayout]}>
-                    {`Search `}
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </View>
-        </View>
         {category === "General" &&
           inquiry.map((item, index) => {
             return (
