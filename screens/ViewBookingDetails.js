@@ -1,28 +1,29 @@
-import React, { useState, useEffect } from "react";
-import {
-  StatusBar,
-  StyleSheet,
-  ScrollView,
-  Text,
-  View,
-  Pressable,
-  Linking,
-} from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { useNavigation } from "@react-navigation/native";
-import { Padding, Color, Border, FontFamily, FontSize } from "../GlobalStyles";
+import { getAuth } from "firebase/auth";
 import {
-  getFirestore,
   doc,
   getDoc,
+  getFirestore,
 } from "firebase/firestore"; // Updated imports
-import { getAuth } from "firebase/auth";
+import React, { useEffect, useState } from "react";
+import {
+  BackHandler,
+  Linking,
+  Pressable,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View
+} from "react-native";
+import { Border, Color, FontFamily, FontSize, Padding } from "../GlobalStyles";
 
 const ViewBookingDetails = ({ route }) => {
   const navigation = useNavigation();
 
-  const {newDocumentID, matchedBookingID, providerLocation, itemID } = route.params;
+  const { newDocumentID, matchedBookingID, providerLocation, itemID } = route.params;
   const [bookingName, setBookingName] = useState("");
   const [bookingEmail, setBookingEmail] = useState("");
   const [bookingRadius, setBookingRadius] = useState("");
@@ -45,6 +46,20 @@ const ViewBookingDetails = ({ route }) => {
   const [phoneUser, setphoneUser] = useState("");
 
   useEffect(() => {
+    const backAction = () => {
+      navigation.navigate("BottomTabsRoot", { screen: "Homepage" });
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [navigation]);
+
+  useEffect(() => {
     async function fetchData() {
       try {
         const db = getFirestore(); // Use getFirestore() to initialize Firestore
@@ -52,7 +67,7 @@ const ViewBookingDetails = ({ route }) => {
         // Get the provider's UID
         const auth = getAuth();
         const providerUID = auth.currentUser.uid;
-        console.log("Provider UID: " ,providerUID);
+        console.log("Provider UID: ", providerUID);
         console.log("Item Id: ", itemID);
 
         const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
@@ -61,7 +76,7 @@ const ViewBookingDetails = ({ route }) => {
         if (docSnapshot.exists()) {
           const booking = docSnapshot.data();
           console.log("Booking Data: ", booking);
-  
+
           setBookingName(booking.name);
           setBookingDate(booking.date);
           setBookingTime(booking.time);
@@ -72,11 +87,11 @@ const ViewBookingDetails = ({ route }) => {
           });
           // setBookingAddressInstruction(booking.totalPrice);
 
-          console.log("Name: " ,bookingName);
-          console.log("Date: " ,bookingDate);
-          console.log("Time: " ,bookingTime);
-          console.log("Address: " ,bookingAddress);
-          console.log("Coordinates: " , bookingCoordinates);
+          console.log("Name: ", bookingName);
+          console.log("Date: ", bookingDate);
+          console.log("Time: ", bookingTime);
+          console.log("Address: ", bookingAddress);
+          console.log("Coordinates: ", bookingCoordinates);
           // console.log("Address: " , bookingAddress);
         } else {
           console.log("No such document!");
@@ -85,19 +100,19 @@ const ViewBookingDetails = ({ route }) => {
         console.error("Error retrieving data:", error);
       }
     }
-  
+
     fetchData(); // Call the fetchData function immediately
-  }, []); 
+  }, []);
 
   useEffect(() => {
     async function fetchNewBooking() {
       try {
         const db = getFirestore(); // Use getFirestore() to initialize Firestore
-        console.log("From New Booking Fetched" );
+        console.log("From New Booking Fetched");
         // Get the provider's UID 
         const auth = getAuth();
         const providerUID = auth.currentUser.uid;
-        console.log("Provider UID: " ,providerUID);
+        console.log("Provider UID: ", providerUID);
 
         const userBookingDocRef = doc(
           db,
@@ -121,11 +136,11 @@ const ViewBookingDetails = ({ route }) => {
           console.log("Data Services: ", servicesData);
           if (title == "Gardening") {
             setPropertyName("Garden Size");
-          } else if(category == "Dog Training"){
+          } else if (category == "Dog Training") {
             setPropertyName("Dog Type");
-          } else{
+          } else {
             setPropertyName("Property Type");
-          } 
+          }
           if (category == "Pet Grooming" || category == "Pet Sitting") {
             // Check if there's only one pet type with a non-zero value
             const nonZeroPets = booking.propertyType.filter(pet => Object.values(pet)[0] !== 0);
@@ -167,13 +182,13 @@ const ViewBookingDetails = ({ route }) => {
           });
           setphoneUser(booking.phone);
 
-          console.log("Date: " ,bookingDate);
-          console.log("Time: " ,bookingTime);
-          console.log("Address: " ,bookingAddress);
-          console.log("Materials: " ,bookingMaterials);
-          console.log("Category: " ,bookingCategory);
-          console.log("Services: " ,bookingServices);
-          console.log("Total Price: " ,bookingTotal);
+          console.log("Date: ", bookingDate);
+          console.log("Time: ", bookingTime);
+          console.log("Address: ", bookingAddress);
+          console.log("Materials: ", bookingMaterials);
+          console.log("Category: ", bookingCategory);
+          console.log("Services: ", bookingServices);
+          console.log("Total Price: ", bookingTotal);
 
           console.log("Date: ", bookingDate);
           console.log("Time: ", bookingTime);
@@ -194,11 +209,11 @@ const ViewBookingDetails = ({ route }) => {
     async function fetchActiveBookings() {
       try {
         const db = getFirestore(); // Use getFirestore() to initialize Firestore
-        console.log("Active Bookings Fetched" );
+        console.log("Active Bookings Fetched");
         // Get the user's UID 
         const auth = getAuth();
         const providerUID = auth.currentUser.uid;
-        console.log("Provider UID: " ,providerUID);
+        console.log("Provider UID: ", providerUID);
         console.log("Item Id: ", itemID);
 
         const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
@@ -207,30 +222,30 @@ const ViewBookingDetails = ({ route }) => {
         const providerProfilesCollection = doc(db, "providerProfiles", providerUID);
 
         getDoc(providerProfilesCollection)
-        .then(async (docSnapshot) => {
-          if (docSnapshot.exists()) {
-            const providerData = docSnapshot.data();
-            const coordinates = providerData.coordinates;
+          .then(async (docSnapshot) => {
+            if (docSnapshot.exists()) {
+              const providerData = docSnapshot.data();
+              const coordinates = providerData.coordinates;
 
-            console.log("Provider data: ", providerData);
-            console.log("Provider Coordinates: ", coordinates);
-            console.log("Provider Coordinates Latitude: ", coordinates.latitude);
-            console.log("Provider Coordinates Latitude: ", coordinates.longitude);
+              console.log("Provider data: ", providerData);
+              console.log("Provider Coordinates: ", coordinates);
+              console.log("Provider Coordinates Latitude: ", coordinates.latitude);
+              console.log("Provider Coordinates Latitude: ", coordinates.longitude);
 
-            if (providerData) {
-              const latitude = parseFloat(coordinates.latitude);
-              const longitude = parseFloat(coordinates.longitude);
-              setProviderCurrentCoordinates({latitude: latitude, longitude: longitude});
+              if (providerData) {
+                const latitude = parseFloat(coordinates.latitude);
+                const longitude = parseFloat(coordinates.longitude);
+                setProviderCurrentCoordinates({ latitude: latitude, longitude: longitude });
+              } else {
+                console.log("Provider Data is empty!");
+              }
             } else {
-              console.log("Provider Data is empty!");
+              console.log("No such document!");
             }
-          } else {
-            console.log("No such document!");
-          }
-        })
-        .catch((error) => {
-          console.error("Error getting document:", error);
-        })
+          })
+          .catch((error) => {
+            console.error("Error getting document:", error);
+          })
 
         if (docSnapshot.exists()) {
           const booking = docSnapshot.data();
@@ -239,16 +254,16 @@ const ViewBookingDetails = ({ route }) => {
           const title = booking.title;
           console.log("Fetching data for booking:", booking);
           console.log("Property Type: ", booking.propertyType);
-          console.log("Services: " , booking.service);
+          console.log("Services: ", booking.service);
           const servicesData = booking.service.map((doc) => doc);
-          console.log("Data Services: " ,servicesData);
+          console.log("Data Services: ", servicesData);
           if (title == "Gardening") {
             setPropertyName("Garden Size");
-          } else if(category == "Dog Training"){
+          } else if (category == "Dog Training") {
             setPropertyName("Dog Type");
-          } else{
+          } else {
             setPropertyName("Property Type");
-          } 
+          }
           if (category == "Pet Grooming" || category == "Pet Sitting") {
             // Check if there's only one pet type with a non-zero value
             const nonZeroPets = booking.propertyType.filter(pet => Object.values(pet)[0] !== 0);
@@ -265,9 +280,9 @@ const ViewBookingDetails = ({ route }) => {
           } else {
             setBookingProperty(booking.propertyType);
           }
-          if(materials == "useProviderMaterials"){
+          if (materials == "useProviderMaterials") {
             setBookingMaterials("Supplied by Provider");
-          }else{
+          } else {
             setBookingMaterials("Customer-Provided");
           }
           setBookingName(booking.name);
@@ -290,13 +305,13 @@ const ViewBookingDetails = ({ route }) => {
           });
           setphoneUser(booking.phone);
 
-          console.log("Date: " ,bookingDate);
-          console.log("Time: " ,bookingTime);
-          console.log("Address: " ,bookingAddress);
-          console.log("Materials: " ,bookingMaterials);
-          console.log("Category: " ,bookingCategory);
-          console.log("Services: " ,bookingServices);
-          console.log("Total Price: " ,bookingTotal);
+          console.log("Date: ", bookingDate);
+          console.log("Time: ", bookingTime);
+          console.log("Address: ", bookingAddress);
+          console.log("Materials: ", bookingMaterials);
+          console.log("Category: ", bookingCategory);
+          console.log("Services: ", bookingServices);
+          console.log("Total Price: ", bookingTotal);
           // console.log("Address: " , bookingAddress);
 
         } else {
@@ -306,10 +321,10 @@ const ViewBookingDetails = ({ route }) => {
         console.error("Error retrieving data:", error);
       }
     }
-  
-    if(matchedBookingID && providerLocation){
+
+    if (matchedBookingID && providerLocation) {
       fetchNewBooking();
-    }else if(itemID){
+    } else if (itemID) {
       fetchActiveBookings();
     }
   }, [matchedBookingID, providerLocation, itemID]); // Dependency Array
@@ -329,7 +344,7 @@ const ViewBookingDetails = ({ route }) => {
   };
 
   const getServiceImageSource = (category, service) => {
-    if(category === "Plumbing") {
+    if (category === "Plumbing") {
       switch (service) {
         case "Installation":
           return require("../assets/plumbing-installation.png");
@@ -338,7 +353,7 @@ const ViewBookingDetails = ({ route }) => {
         default:
           return require("../assets/plumbing-installation.png");
       }
-    }else if(category === "Electrical") {
+    } else if (category === "Electrical") {
       switch (service) {
         case "Installation":
           return require("../assets/electrical-installation.png");
@@ -347,7 +362,7 @@ const ViewBookingDetails = ({ route }) => {
         default:
           return require("../assets/electrical-installation.png");
       }
-    }else if(category === "Carpentry") {
+    } else if (category === "Carpentry") {
       switch (service) {
         case "Installation":
           return require("../assets/carpentry-installation.png");
@@ -358,7 +373,7 @@ const ViewBookingDetails = ({ route }) => {
         default:
           return require("../assets/carpentry-installation.png");
       }
-    }else if(category === "Cleaning" || category === "Pet Care" || category === "Gardening"){
+    } else if (category === "Cleaning" || category === "Pet Care" || category === "Gardening") {
       switch (service) {
         case "Standard Cleaning":
           return require("../assets/standard-cleaning.png");
@@ -403,8 +418,8 @@ const ViewBookingDetails = ({ route }) => {
   const handleGetDirections = () => {
     const customerLocation = bookingCoordinates;
 
-    console.log("Customer Location: " , customerLocation);
-    console.log("Provider Location: " , providerLocation);
+    console.log("Customer Location: ", customerLocation);
+    console.log("Provider Location: ", providerLocation);
 
     const data = {
       source: providerLocation || providerCurrentCoordinates,
@@ -708,7 +723,7 @@ const ViewBookingDetails = ({ route }) => {
                     styles.dateFrameSpaceBlock,
                   ]}
                 >
-    
+
                   {bookingServices.map((item, index) => {
                     const { name, service, totalPrice, value } = item;
                     return (
@@ -852,27 +867,119 @@ const ViewBookingDetails = ({ route }) => {
                   </View>
                 </View>
               </View>
-              { bookingAddressDetails.note ? (
+              {bookingAddressDetails.note ? (
                 <View style={styles.dateAndTimeFrameWrapper2}>
-                  { (bookingAddressDetails.floor || bookingAddressDetails.house || bookingAddressDetails.street) ? (
-                  <View style={styles.dateAndTimeFrameWrapper}>
-                    <Text
-                      style={[
-                        styles.customerAdditionalInstructio,
-                        styles.pleaseMeetMeLayout,
-                      ]}
-                    >
-                      Customer Additional Instructions
-                    </Text>
-                    {bookingAddressDetails.label? (
-                    <View>
-                      <View style={styles.noteStyle}>
-                        <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
-                          {bookingAddressDetails.label && 
-                            <Text style={[styles.pleaseMeetMe2, styles.pleaseMeetMeLayout]}>
-                              ({bookingAddressDetails.label}){' '}
+                  {(bookingAddressDetails.floor || bookingAddressDetails.house || bookingAddressDetails.street) ? (
+                    <View style={styles.dateAndTimeFrameWrapper}>
+                      <Text
+                        style={[
+                          styles.customerAdditionalInstructio,
+                          styles.pleaseMeetMeLayout,
+                        ]}
+                      >
+                        Customer Additional Instructions
+                      </Text>
+                      {bookingAddressDetails.label ? (
+                        <View>
+                          <View style={styles.noteStyle}>
+                            <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                              {bookingAddressDetails.label &&
+                                <Text style={[styles.pleaseMeetMe2, styles.pleaseMeetMeLayout]}>
+                                  ({bookingAddressDetails.label}){' '}
+                                </Text>
+                              }
+                              {
+                                [
+                                  bookingAddressDetails.street,
+                                  bookingAddressDetails.house,
+                                  bookingAddressDetails.floor
+                                ].filter(Boolean).join(', ')
+                              }
                             </Text>
-                          }
+                          </View>
+                          <View style={styles.noteStyle}>
+                            <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                              Note: {bookingAddressDetails.note}
+                            </Text>
+                          </View>
+                        </View>
+                      ) : (
+                        <View>
+                          <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                            {
+                              [
+                                bookingAddressDetails.street,
+                                bookingAddressDetails.house,
+                                bookingAddressDetails.floor
+                              ].filter(Boolean).join(', ')
+                            }
+                          </Text>
+                          <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                            Note: {bookingAddressDetails.note}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  ) : (
+                    <View style={styles.dateAndTimeFrameWrapper}>
+                      <Text
+                        style={[
+                          styles.customerAdditionalInstructio,
+                          styles.pleaseMeetMeLayout,
+                        ]}
+                      >
+                        Customer Additional Instructions
+                      </Text>
+                      {bookingAddressDetails.label ? (
+                        <View style={styles.noteStyle}>
+                          <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                            {bookingAddressDetails.label &&
+                              <Text style={[styles.pleaseMeetMe2, styles.pleaseMeetMeLayout]}>
+                                {bookingAddressDetails.label ? `(${bookingAddressDetails.label}) ` : ''}
+                              </Text>
+                            }
+                            {' '}{bookingAddressDetails.note}
+                          </Text>
+                        </View>
+                      ) : (
+                        <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                          {bookingAddressDetails.note}
+                        </Text>
+                      )}
+                    </View>
+                  )}
+                </View>
+              ) : (
+                <View style={styles.dateAndTimeFrameWrapper2}>
+                  {(bookingAddressDetails.floor || bookingAddressDetails.houseNumber || bookingAddressDetails.street) ? (
+                    <View style={styles.dateAndTimeFrameWrapper}>
+                      <Text
+                        style={[
+                          styles.customerAdditionalInstructio,
+                          styles.pleaseMeetMeLayout,
+                        ]}
+                      >
+                        Customer Additional Instructions
+                      </Text>
+                      {bookingAddressDetails.label ? (
+                        <View style={styles.noteStyle}>
+                          <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                            {bookingAddressDetails.label &&
+                              <Text style={[styles.pleaseMeetMe2, styles.pleaseMeetMeLayout]}>
+                                ({bookingAddressDetails.label}){' '}
+                              </Text>
+                            }
+                            {
+                              [
+                                bookingAddressDetails.street,
+                                bookingAddressDetails.house,
+                                bookingAddressDetails.floor
+                              ].filter(Boolean).join(', ')
+                            }
+                          </Text>
+                        </View>
+                      ) : (
+                        <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
                           {
                             [
                               bookingAddressDetails.street,
@@ -881,104 +988,12 @@ const ViewBookingDetails = ({ route }) => {
                             ].filter(Boolean).join(', ')
                           }
                         </Text>
-                      </View>
-                      <View style={styles.noteStyle}>
-                        <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
-                          Note: {bookingAddressDetails.note}
-                        </Text>
-                      </View>
-                    </View>
-                    ) : (
-                    <View>
-                      <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
-                        {
-                          [
-                            bookingAddressDetails.street,
-                            bookingAddressDetails.house,
-                            bookingAddressDetails.floor
-                          ].filter(Boolean).join(', ')
-                        }
-                      </Text>
-                      <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
-                        Note: {bookingAddressDetails.note}
-                      </Text>
-                    </View>
-                    )}
-                  </View>
-                  ): (
-                  <View style={styles.dateAndTimeFrameWrapper}>
-                    <Text
-                      style={[
-                        styles.customerAdditionalInstructio,
-                        styles.pleaseMeetMeLayout,
-                      ]}
-                    >
-                      Customer Additional Instructions
-                    </Text>
-                    {bookingAddressDetails.label? (
-                      <View style={styles.noteStyle}>
-                        <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
-                          {bookingAddressDetails.label && 
-                            <Text style={[styles.pleaseMeetMe2, styles.pleaseMeetMeLayout]}>
-                              {bookingAddressDetails.label ? `(${bookingAddressDetails.label}) ` : ''}
-                            </Text>
-                          }
-                          {' '}{bookingAddressDetails.note}
-                        </Text>
-                      </View>
-                      ) : (
-                      <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
-                        {bookingAddressDetails.note}
-                      </Text>
-                    )}
-                  </View>
-                  )}
-                </View>
-              ) : (
-                <View style={styles.dateAndTimeFrameWrapper2}>
-                  { (bookingAddressDetails.floor || bookingAddressDetails.houseNumber || bookingAddressDetails.street) ? (
-                  <View style={styles.dateAndTimeFrameWrapper}>
-                  <Text
-                    style={[
-                      styles.customerAdditionalInstructio,
-                      styles.pleaseMeetMeLayout,
-                    ]}
-                  >
-                    Customer Additional Instructions
-                  </Text>
-                  {bookingAddressDetails.label? (
-                    <View style={styles.noteStyle}>
-                      <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
-                        {bookingAddressDetails.label && 
-                          <Text style={[styles.pleaseMeetMe2, styles.pleaseMeetMeLayout]}>
-                            ({bookingAddressDetails.label}){' '}
-                          </Text>
-                        }
-                        {
-                          [
-                            bookingAddressDetails.street,
-                            bookingAddressDetails.house,
-                            bookingAddressDetails.floor
-                          ].filter(Boolean).join(', ')
-                        }
-                      </Text>
+                      )}
                     </View>
                   ) : (
-                    <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
-                      {
-                        [
-                          bookingAddressDetails.street,
-                          bookingAddressDetails.house,
-                          bookingAddressDetails.floor
-                        ].filter(Boolean).join(', ')
-                      }
-                    </Text>
+                    <View style={styles.dateAndTimeFrameWrapper1}>
+                    </View>
                   )}
-                </View>
-                ): (
-                <View style={styles.dateAndTimeFrameWrapper1}>
-                </View>
-                )}
                 </View>
               )}
             </View>
