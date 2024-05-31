@@ -60,6 +60,12 @@ const navigation = useNavigation();
       return;
     }
 
+
+    if (!bookingDateTime.isValid()) {
+      alert("Invalid booking date and time. Please check the booking details.");
+      return;
+    }
+
     const timeDiff = bookingDateTime.diff(currentDateTime, 'minutes');
 
     // Check if the booking date is in the past
