@@ -54,11 +54,22 @@ const navigation = useNavigation();
   const handleButton =  () => {
     const currentDateTime = moment();
     const bookingDateTime = moment(`${date} ${time}`, "MMM D YYYY h:mm A");
+
+    if (!bookingDateTime.isValid()) {
+      alert("Invalid booking date and time. Please check the booking details.");
+      return;
+    }
+
     const timeDiff = bookingDateTime.diff(currentDateTime, 'minutes');
 
-    if (status === 'Upcoming' && (currentDateTime.format("MMM D YYYY") !== date || timeDiff > 60)) {
-      // Add a restriction message or disable the button
-      alert("You cannot go to the customer yet. Please check the date and time of the booking.");
+    // Check if the booking date is in the past
+    if (bookingDateTime.isBefore(currentDateTime)) {
+      alert("The booking date is already past. Please contact the customer before you cancel.");
+      return;
+    }
+
+    if (status === 'Upcoming' && timeDiff > 60) {
+      alert("You can only go to the customer 1 hour before the schedule. Please check the date and time of the booking.");
       return;
     }
 
