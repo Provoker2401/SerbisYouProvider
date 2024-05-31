@@ -741,19 +741,19 @@ const GoToCustomer = ( {route} ) => {
         </View>
       </View>
     </ScrollView>
-            <View
-            style={[
-              styles.bookingDetailsLabelContainer,
-              styles.bookingFlexBox,
-            ]}
-          >
+            {/* <View
+              style={[
+                styles.bookingDetailsLabelContainer,
+                styles.bookingFlexBox,
+              ]}
+            >
               <View style={styles.bookingDetailsLabel4}>
                 <Text
                   style={[styles.arriveAt, styles.amClr]}
                 >{`Arrive at `}</Text>
                 <Text style={[styles.am, styles.amClr]}>9:30 AM</Text>
               </View>
-            </View>
+            </View> */}
             <View style={[styles.mapContainer]}>
               <MapView
                 ref={mapRef}

@@ -7,6 +7,7 @@ import {
   Text,
   ScrollView,
   TextInput,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";

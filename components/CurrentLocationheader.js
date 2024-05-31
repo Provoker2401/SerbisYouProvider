@@ -255,6 +255,24 @@ const CurrentLocationheader = ({ style }) => {
             }
           }
         }
+
+        try{
+          const db = getFirestore();
+          const auth = getAuth();
+          const providerUID = auth.currentUser.uid;
+          const providerProfilesCollection = doc(db, "providerProfiles", providerUID);
+
+          const currentLocation = await Location.getCurrentPositionAsync({});
+
+          await updateDoc(providerProfilesCollection, {
+            realTimeCoordinates: {
+              latitude: currentLocation.coords.latitude,
+              longitude: currentLocation.coords.longitude,
+            },
+          });
+        }catch (osmError) {
+          console.error("Error updating location:", osmError);
+        };
       })();
     }
   }, []);
