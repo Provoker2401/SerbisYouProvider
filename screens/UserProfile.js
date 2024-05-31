@@ -358,6 +358,14 @@ const UserProfile = () => {
               </View>
             </View>
           </Pressable>
+          <View style={[styles.btnFlexBox1]}>
+            <Text style={[styles.editProfile, styles.editProfileFlexBox1]}>
+              Version 1.0
+            </Text>
+            <Text style={[styles.editProfile, styles.editProfileFlexBox1]}>
+              © 2023-2024 SerbisYou Team. Icons by Icons8 and FlatIcons
+            </Text>
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -392,6 +400,10 @@ const styles = StyleSheet.create({
     textAlign: "left",
     color: Color.colorGray90,
   },
+  editProfileFlexBox1: {
+    textAlign: "center",
+    color: Color.colorGray90,
+  },
   badgePosition: {
     zIndex: 1,
     position: "absolute",
@@ -401,6 +413,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   btnFlexBox: {
+    padding: Padding.p_xs,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    alignSelf: "stretch",
+    backgroundColor: Color.m3White,
+  },
+  btnFlexBox1: {
     padding: Padding.p_xs,
     justifyContent: "center",
     alignItems: "center",
