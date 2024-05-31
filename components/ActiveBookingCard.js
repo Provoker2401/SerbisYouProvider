@@ -55,6 +55,7 @@ const navigation = useNavigation();
     const currentDateTime = moment();
     const bookingDateTime = moment(`${date} ${time}`, "MMM D YYYY h:mm A");
 
+      
     if (!bookingDateTime.isValid()) {
       alert("Invalid booking date and time. Please check the booking details.");
       return;
