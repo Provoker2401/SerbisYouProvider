@@ -15,15 +15,17 @@ import {
   getFirestore,
   doc,
   getDoc,
-  updateDoc,
   runTransaction,
   writeBatch,
   getDocs,
+  setDoc,
   collection,
+  updateDoc,
   where,
   query,
+  serverTimestamp,
 } from "firebase/firestore"; // Updated imports
-import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import * as ImagePicker from "expo-image-picker";
 import {
   getStorage,
@@ -51,6 +53,8 @@ const ConfirmService = ({route}) => {
   const [imageFlag, setImageFlag] = useState(false);
   const [ID, setID] = useState("");
   const [isServiceCompleted, setIsServiceCompleted] = useState(false);
+  const [category, setCategory] = useState("");
+  const [title, setTitle] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -82,6 +86,8 @@ const ConfirmService = ({route}) => {
           setBookingID(booking.bookingID);
           setBookingPaymentMethod(booking.paymentMethod);
           setBookingTotal(booking.totalPrice);
+          setTitle(booking.title);
+          setCategory(booking.category);
 
           console.log("Booking ID: " , bookingID);
           console.log("Payment Method: " , bookingPaymentMethod);
@@ -97,26 +103,6 @@ const ConfirmService = ({route}) => {
   
     fetchData(); // Call the fetchData function immediately
   }, []); 
-
-  const fetchProfileImage = async (uid) => {
-    const storage = getStorage();
-    const imageRef = ref(storage, `ProviderProof/${uid}`);
-    const defaultImage = ref(
-      storage,
-      "ProfilePictures/serviceProviderIcon.png"
-    );
-
-    try {
-      const imageUrl = await getDownloadURL(imageRef);
-      setProfileImage(imageUrl);
-    } catch (error) {
-      //console.error("Error fetching profile image:", error);
-      // Set a default image URL if the image doesn't exist
-      const imageUrl = await getDownloadURL(defaultImage);
-
-      setProfileImage(imageUrl);
-    }
-  };
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -184,6 +170,86 @@ const ConfirmService = ({route}) => {
   };
 
   const handleCompletedService = async () => {
+    const currentDate = new Date();
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    const formattedDate = `${
+      monthNames[currentDate.getMonth()]
+    } ${currentDate.getDate()}`;
+
+    console.log("Booking ID: ", bookingID);
+    console.log("Payment Method: ", bookingPaymentMethod);
+    console.log("Total: ", bookingTotal);
+    console.log(`${title} ${category}`);
+
+    try {
+      const db = getFirestore();
+      const auth = getAuth();
+      const providerUID = auth.currentUser.uid;
+
+      // Construct a reference to the "userWallet" collection under the provider's profile
+      const userWalletCollectionRef = collection(
+        db,
+        "providerProfiles",
+        providerUID,
+        "userWallet"
+      );
+
+      // Get all documents in the "userWallet" collection
+      const querySnapshot = await getDocs(userWalletCollectionRef);
+
+      if (!querySnapshot.empty && bookingPaymentMethod !== "Cash") {
+        // Access the reference to the first document
+        const firstDocumentRef = querySnapshot.docs[0].ref;
+
+        // Get the current data of the first document
+        const firstDocumentData = querySnapshot.docs[0].data();
+
+        // Initialize an empty array if "transactions" doesn't exist in the first document's data
+        const transactions = firstDocumentData.transactions || [];
+        console.log("First Transactions: " + transactions);
+
+        const wallet = firstDocumentData.wallet || 0;
+        console.log("Wallet: " + wallet);
+
+        const newWalletValue = wallet + bookingTotal;
+        console.log("New Wallet Value: " + newWalletValue);
+
+        await updateDoc(firstDocumentRef, { wallet: newWalletValue });
+
+        // Add your new transaction object to the transactions array
+        const newTransaction = {
+          bookingID: bookingID,
+          amount: bookingTotal,
+          service: `${getFormattedServiceName()}`,
+          timestamp: formattedDate,
+        };
+        transactions.push(newTransaction);
+        console.log("New Transactions: " + transactions);
+
+        // Update the "transactions" array in the first document
+        await updateDoc(firstDocumentRef, { transactions });
+
+        console.log("New transaction added successfully.");
+      } else {
+        console.log("No documents found under userWallet.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+    
     try {
       const db = getFirestore();
       const auth = getAuth();
@@ -214,10 +280,10 @@ const ConfirmService = ({route}) => {
         // Update the provider profile
         const providerDocRef = doc(db, 'providerProfiles', providerUID);
         transaction.update(providerDocRef, {
-          bookingID: '',
-          bookingIndex: '',
-          bookingMatched: '',
-          availability: false,
+          availability: "available",
+          bookingID: "",
+          bookingIndex: null,
+          bookingMatched: false,
         });
         console.log("Provider booking completed and moved to historyBookings");
       });
@@ -249,11 +315,152 @@ const ConfirmService = ({route}) => {
       await batch.commit();
       console.log("User Booking completed and moved to historyBookings");
 
+      const notifDocRef = doc(db, "userProfiles", customerUID);
+      const notifCollection = collection(notifDocRef, "notifications");
+
+      const today = new Date();
+      const options = {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      };
+      const formattedDate = today.toLocaleDateString("en-US", options); // Adjust locale as needed
+
+      const bookingDataNotif = {
+        // Using bookingID as the key for the map inside the document
+        [`${matchedBookingID}3`]: {
+          subTitle: `Your ${getFormattedServiceName()} Service has been successfully completed`,
+          title: `Service Completed!`,
+          createdAt: serverTimestamp(),
+        },
+        date: serverTimestamp(),
+      };
+
+      const notificationDocRef = doc(notifCollection, formattedDate);
+
+      try {
+        const notificationDoc = await getDoc(notificationDocRef);
+        if (notificationDoc.exists()) {
+          // Document exists, update it
+          await setDoc(notificationDocRef, bookingDataNotif, {
+            merge: true,
+          });
+          console.log("Notification updated successfully!");
+        } else {
+          // Document doesn't exist, create it
+          await setDoc(notificationDocRef, bookingDataNotif);
+          console.log("New notification document created!");
+        }
+      } catch (error) {
+        console.error("Error updating notification:", error);
+      }
+
+      Toast.show({
+        type: "success",
+        position: "top",
+        text1: "Service Successfully Completed✅",
+        visibilityTime: 3000,
+      });
+
       // Navigate to PerformTheService screen with itemId
       // navigation.navigate("BottomTabsRoot", { screen: "Homepage" });
       setIsServiceCompleted(true);
+
+      // Wait for the delay
+      console.log("Still waiting for 10 seconds...");
+      await new Promise(resolve => setTimeout(resolve, 10 * 1000));
+
+      const notifDocRef2 = doc(db, "providerProfiles", providerUID);
+      const notifCollection2 = collection(notifDocRef2, "notifications");
+
+      if(bookingPaymentMethod !== "Cash"){
+        const bookingDataNotif = {
+          // Using bookingID as the key for the map inside the document
+          [generateRandomBookingIDWithNumbers()]: {
+            subTitle: `Your ${bookingPaymentMethod} has been charged ₱${bookingTotal}.00 for booking ${matchedBookingID}`,
+            title: `Payment Charged Successfully`,
+            createdAt: serverTimestamp(),
+          },
+          date: serverTimestamp(),
+        };
+  
+        const notificationDocRef = doc(notifCollection, formattedDate);
+
+        console.log("Setting up Payment notification!");
+  
+        try {
+          const notificationDoc = await getDoc(notificationDocRef);
+          if (notificationDoc.exists()) {
+            // Document exists, update it
+            await setDoc(notificationDocRef, bookingDataNotif, {
+              merge: true,
+            });
+            console.log("Notification updated successfully!");
+          } else {
+            // Document doesn't exist, create it
+            await setDoc(notificationDocRef, bookingDataNotif);
+            console.log("New notification document created!");
+          }
+        } catch (error) {
+          console.error("Error updating notification:", error);
+        }
+        const bookingDataNotif2 = {
+          // Using bookingID as the key for the map inside the document
+          [generateRandomBookingIDWithNumbers()]: {
+            subTitle: `Your wallet has been credited ₱${bookingTotal}.00 for booking ${matchedBookingID} via ${bookingPaymentMethod}`,
+            title: `Wallet Credited`,
+            createdAt: serverTimestamp(),
+          },
+          date: serverTimestamp(),
+        };
+  
+        const notificationDocRef2 = doc(notifCollection2, formattedDate);
+
+        console.log("Setting up Payment notification!");
+  
+        try {
+          const notificationDoc = await getDoc(notificationDocRef2);
+          if (notificationDoc.exists()) {
+            // Document exists, update it
+            await setDoc(notificationDocRef2, bookingDataNotif2, {
+              merge: true,
+            });
+            console.log("Notification updated successfully!");
+          } else {
+            // Document doesn't exist, create it
+            await setDoc(notificationDocRef2, bookingDataNotif2);
+            console.log("New notification document created!");
+          }
+        } catch (error) {
+          console.error("Error updating notification:", error);
+        }
+      }
     } catch (error) {
     console.error("Error completing service:", error);
+    }
+  };
+
+  function generateRandomBookingIDWithNumbers(length = 8) {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let bookingID = "";
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      bookingID += characters.charAt(randomIndex);
+    }
+    return bookingID;
+  }
+
+  const getFormattedServiceName = () => {
+    if (!title || !category) {
+      return 'Service'; // Default text or handle as needed
+    }
+
+    // Check if the title is "Pet Care" or "Gardening"
+    if (title === "Pet Care" || title === "Gardening" || title === "Cleaning") {
+      return category;
+    } else {
+      // If not, concatenate the title and category
+      return `${title} ${category}`;
     }
   };
 
@@ -344,133 +551,6 @@ const ConfirmService = ({route}) => {
               </View>
               )}
               <View style={styles.subcategoriesFrame}>
-                {/* <View
-                  style={[
-                    styles.dateAndTimeFrame,
-                    styles.dateAndTimeFrameFlexBox,
-                  ]}
-                >
-                  <View style={styles.bookingDetailsLabel2}>
-                    <View style={styles.frameParent}>
-                      <View
-                        style={[styles.frameWrapper, styles.frameSpaceBlock]}
-                      >
-                        <View style={styles.wrapper}>
-                          <View style={styles.frameWrapper2}>
-                            <View style={styles.bookingDetailsLabel2}>
-                              <Text style={[styles.text1, styles.text1Text]}>
-                                2
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-                      </View>
-                      <View
-                        style={[
-                          styles.frameFrame,
-                          styles.frameWrapperSpaceBlock,
-                        ]}
-                      >
-                        <View style={styles.bookingDetailsLabel2}>
-                          <Text style={[styles.toiletSystem, styles.text1Text]}>
-                            Toilet System
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={[styles.frameParent1, styles.frameFlexBox]}>
-                      <View
-                        style={[styles.frameWrapper, styles.frameSpaceBlock]}
-                      >
-                        <View style={styles.wrapper}>
-                          <View style={styles.frameWrapper2}>
-                            <View style={styles.bookingDetailsLabel2}>
-                              <Text style={[styles.text1, styles.text1Text]}>
-                                2
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-                      </View>
-                      <View
-                        style={[
-                          styles.frameFrame,
-                          styles.frameWrapperSpaceBlock,
-                        ]}
-                      >
-                        <View style={styles.bookingDetailsLabel2}>
-                          <Text style={[styles.toiletSystem, styles.text1Text]}>
-                            Septic Tank Cleaning
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={[styles.frameParent1, styles.frameFlexBox]}>
-                      <View
-                        style={[styles.frameWrapper, styles.frameSpaceBlock]}
-                      >
-                        <View style={styles.wrapper}>
-                          <View style={styles.frameWrapper2}>
-                            <View style={styles.bookingDetailsLabel2}>
-                              <Text style={[styles.text1, styles.text1Text]}>
-                                2
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-                      </View>
-                      <View
-                        style={[
-                          styles.frameWrapper10,
-                          styles.frameWrapperSpaceBlock,
-                        ]}
-                      >
-                        <View style={styles.bookingDetailsLabel2}>
-                          <Text style={[styles.toiletSystem, styles.text1Text]}>
-                            Cage or Habitat Cleaning
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={[styles.frameParent1, styles.frameFlexBox]}>
-                      <View
-                        style={[styles.frameWrapper, styles.frameSpaceBlock]}
-                      >
-                        <View style={styles.wrapper}>
-                          <View style={styles.frameWrapper2}>
-                            <View style={styles.bookingDetailsLabel2}>
-                              <Text style={[styles.text1, styles.text1Text]}>
-                                2
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-                      </View>
-                      <View
-                        style={[
-                          styles.frameFrame,
-                          styles.frameWrapperSpaceBlock,
-                        ]}
-                      >
-                        <View style={styles.bookingDetailsLabel2}>
-                          <Text style={[styles.toiletSystem, styles.text1Text]}>
-                            Toilet System
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                  <View
-                    style={[
-                      styles.frameWrapper15,
-                      styles.frameWrapperSpaceBlock,
-                    ]}
-                  >
-                    <View style={styles.frame4}>
-                      <Text style={styles.text5}>₱2000.00</Text>
-                    </View>
-                  </View>
-                </View> */}
                 <View style={[styles.dateAndTimeFrame1, styles.viewFlexBox]}>
                   <View style={styles.collectCashFromCustomerWrapper}>
                     <View style={styles.frame5}>
@@ -505,11 +585,6 @@ completed service`}</Text>
                       </Pressable>
                     </View>
                   )}
-                  {/* <View style={[styles.dateAndTimeFrame2, styles.frameFlexBox]}>
-                    <Pressable style={styles.frame7}>
-                      <Text style={styles.addPhoto}>Add Photo</Text>
-                    </Pressable>
-                  </View> */}
                 </View>
               </View>
             </View>

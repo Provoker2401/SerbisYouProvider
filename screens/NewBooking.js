@@ -34,14 +34,13 @@ import {
   getDoc,
   addDoc,
   updateDoc,
-  getDocs,
-  setDoc,
-  where,
   query,
   arrayUnion,
+  runTransaction,
 } from "firebase/firestore"; // Updated imports
 import { toggleAnimation } from "../animations/toggleAnimation";
 import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
+import BookingNotFound from "../components/BookingNotFound";
 import CancelBookingPrompt from "../components/CancelBookingPrompt";
 import CountDownBooking from "../components/CountDownBooking";
 
@@ -50,7 +49,7 @@ const NewBooking = ({ route }) => {
   const mapRef = useRef(null);
 
   const [isInputFocused, setIsInputFocused] = useState(false);
-  const { name, userBookingID, bookingIndex, providerCoordinates } =
+  const { name, userBookingID, matchedBookingID, bookingIndex, providerCoordinates } =
     route.params;
   const [bookingAccepted, setBookingAccepted] = useState(false);
   const [bookingAssigned, setBookingAssigned] = useState(false);
@@ -62,6 +61,8 @@ const NewBooking = ({ route }) => {
   const [bookingPhone, setBookingPhone] = useState("");
   const [bookingPropertyType, setBookingPropertyTime] = useState("");
   const [bookingAddress, setBookingAddress] = useState("");
+  const [bookingAddressDetails, setBookingAddressDetails] = useState({});
+  const [bookingCustomerUID, setBookingCustomerUID] = useState("");
   const [bookingMaterials, setBookingMaterials] = useState("");
   const [bookingCategory, setBookingCategory] = useState("");
   const [bookingCity, setBookingCity] = useState("");
@@ -73,8 +74,8 @@ const NewBooking = ({ route }) => {
   const [bookingSubTotal, setBookingSubTotal] = useState(0);
   const [bookingTotal, setBookingTotal] = useState("");
   const [coordinates, setCoordinates] = useState({
-    latitude: null,
-    longitude: null,
+    latitude: 10.336641527084641,
+    longitude: 123.91533800644042,
   });
   const [isMapReady, setIsMapReady] = useState(false);
 
@@ -96,6 +97,8 @@ const NewBooking = ({ route }) => {
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
 
   const [CountDownBookingVisible, setCountDownBookingVisible] = useState(false);
+  const [CountDownBookingFlag, setCountDownBookingFlag] = useState(true);
+  const [BookingNotFoundVisible, setBookingNotFoundVisible] = useState(false);
   const [countdown, setCountdown] = useState(60); // Initial countdown value in seconds
   const intervalRef = useRef(null);
 
@@ -109,10 +112,11 @@ const NewBooking = ({ route }) => {
   }, []);
 
   useEffect(() => {
-    if (countdown === 15) {
+    if (countdown === 15 && CountDownBookingFlag) {
       setCountDownBookingVisible(true);
     } else if (countdown === 0) {
       declineBooking();
+      setCountDownBookingVisible(false);
     }
   }, [countdown]);
 
@@ -150,97 +154,223 @@ const NewBooking = ({ route }) => {
   };
 
   const acceptBooking = async () => {
+    // Create a reference to the Firestore database using your app instance
+    const db = getFirestore();
+    // Get the user's UID
+    const auth = getAuth();
+    const providerUID = auth.currentUser.uid;
+
+    // Create references to the user's document and the appForm2 subcollection
+    const providerDocRef = doc(db, "providerProfiles", providerUID);
+
     try {
-      // Create a reference to the Firestore database using your app instance
-      const db = getFirestore();
-      // Get the user's UID
-      const auth = getAuth();
-      const providerUID = auth.currentUser.uid;
+      await runTransaction(db, async (transaction) => {
+        // Get the provider's document snapshot
+        const providerSnapshot = await transaction.get(providerDocRef);
+        const providerBookingID = providerSnapshot.data().bookingID;
 
-      // Create references to the user's document and the appForm2 subcollection
-      const providerDocRef = doc(db, "providerProfiles", providerUID);
+        if (!providerBookingID) {
+          console.log("BookingID is blank");
+          setBookingNotFoundVisible(true); // set visible for error booking has been canceled/already booked
+          throw new Error("BookingID is blank");
+        }
 
-      // Get the document snapshot
-      const providerSnapshot = await getDoc(providerDocRef);
-      const activeBookings = collection(providerDocRef, "activeBookings");
+        console.log("BookingID is not blank");
 
-      const serviceBookingsCollection = collection(db, "serviceBookings");
+        const activeBookings = collection(providerDocRef, "activeBookings");
+        const serviceBookingsCollection = collection(db, "serviceBookings");
 
-      // Get the service booking document using userBookingID
-      const serviceBookingDocRef = doc(
-        serviceBookingsCollection,
-        userBookingID
-      );
+        // Get the service booking document using userBookingID
+        const serviceBookingDocRef = doc(serviceBookingsCollection, userBookingID);
+        const serviceBookingSnapshot = await transaction.get(serviceBookingDocRef);
 
-      // Get the document snapshot
-      const serviceBookingSnapshot = await getDoc(serviceBookingDocRef);
-
-      if (serviceBookingSnapshot.exists()) {
+        if (!serviceBookingSnapshot.exists()) {
+          console.error("Service Booking document does not exist");
+          return;
+          throw new Error("Service Booking document does not exist");
+        }else{
+          
         // Update the acceptedBy field within the service booking document
         const updatedBookings = [...serviceBookingSnapshot.data().bookings];
-        updatedBookings[bookingIndex].acceptedBy = providerUID;
-        updatedBookings[bookingIndex].bookingAccepted = true;
 
-        // Update the service booking document
-        await updateDoc(serviceBookingDocRef, {
-          bookings: updatedBookings,
-        });
-        console.log("acceptedBy field updated in serviceBookings document.");
-      } else {
-        console.error("Service Booking document does not exist");
-      }
-
-      if (providerSnapshot.exists()) {
-        // Update the availability field within the provider document
-        await updateDoc(providerDocRef, {
-          availability: "busy",
-        });
-        console.log("Provider Status is now occupied");
-        const docRef = await addDoc(activeBookings, {
-          address: bookingAddress,
-          bookingAccepted: bookingAccepted,
-          bookingAssigned: bookingAssigned,
-          bookingID: bookingID,
-          category: bookingCategory,
-          city: bookingCity,
-          coordinates: {
-            latitude: coordinates.latitude,
-            longitude: coordinates.longitude,
-          },
-          date: bookingDate,
-          distanceRadius: bookingDistanceRadius,
-          email: bookingEmail,
-          feeDistance: bookingFeeDistance,
-          materials: bookingMaterials,
-          name: bookingName,
-          paymentMethod: bookingPaymentMethod,
-          phone: bookingPhone,
-          propertyType: bookingPropertyType,
-          service: bookingServices,
-          subTotal: bookingSubTotal,
-          time: bookingTime,
-          title: bookingTitle,
-          totalPrice: bookingTotal,
-          status: "Upcoming",
-        });
-        // Get the unique ID of the newly added document
-        const newDocumentID = docRef.id;
-        console.log("Document added to 'activeBookings' successfully.");
-        navigation.navigate("ViewBookingDetails", {
-          newDocumentID: newDocumentID,
-          matchedBookingID: matchedBookingID,
-          providerLocation: providerLocation, // Include providerLocation in the route parameters
-        })
-        setCountDownBookingVisible(false);
-      } else {
-        console.error("Provider Profile does not exists");
-      }
+        // Check if the booking has already been accepted
+        if (updatedBookings[bookingIndex].bookingAccepted || updatedBookings[bookingIndex].acceptedBy) {
+          console.error("Booking has already been accepted by another provider.");
+          setBookingNotFoundVisible(true);    // set visible for error booking has already been accepted
+          return;
+          throw new Error("Booking has already been accepted by another provider.");
+        }else{
+          updatedBookings[bookingIndex].acceptedBy = providerUID;
+          updatedBookings[bookingIndex].bookingAccepted = true;
+  
+          // Update the service booking document
+          transaction.update(serviceBookingDocRef, {
+            bookings: updatedBookings,
+          });
+          console.log("acceptedBy field updated in serviceBookings document.");
+  
+          // Update the availability field within the provider document after the provider accepts a booking
+          transaction.update(providerDocRef, {
+            // availability: "busy",
+            availability: "available",
+            bookingID: "",
+            bookingIndex: "",
+            bookingMatched: false,
+          });
+          console.log("Provider Status is now occupied");
+  
+          const newBookingData = {
+            address: bookingAddress,
+            addressDetails: bookingAddressDetails,
+            customerUID: bookingCustomerUID,
+            bookingAccepted: bookingAccepted,
+            bookingAssigned: bookingAssigned,
+            bookingID: bookingID,
+            category: bookingCategory,
+            city: bookingCity,
+            coordinates: {
+              latitude: coordinates.latitude,
+              longitude: coordinates.longitude,
+            },
+            date: bookingDate,
+            distanceRadius: bookingDistanceRadius,
+            email: bookingEmail,
+            feeDistance: bookingFeeDistance,
+            materials: bookingMaterials,
+            name: bookingName,
+            paymentMethod: bookingPaymentMethod,
+            phone: bookingPhone,
+            propertyType: bookingPropertyType,
+            service: bookingServices,
+            subTotal: bookingSubTotal,
+            time: bookingTime,
+            title: bookingTitle,
+            totalPrice: bookingTotal,
+            status: "Upcoming",
+          };
+  
+          const docRef = await addDoc(activeBookings, newBookingData);
+          setCountDownBookingVisible(false);
+          setCountDownBookingFlag(false);
+  
+          // Get the unique ID of the newly added document
+          const newDocumentID = docRef.id;
+          console.log("Document added to 'activeBookings' successfully.");
+          navigation.navigate("ViewBookingDetails", {
+            newDocumentID: newDocumentID,
+            matchedBookingID: matchedBookingID,
+            providerLocation: providerLocation, // Include providerLocation in the route parameters
+          });
+        }
+        }
+      });
     } catch (error) {
-      console.error("Error updating user data:", error);
-      // Handle the error, e.g., display an error message to the user
+      console.error("Error updating user data:", error); // Handle the error, e.g., display an error message to the user
+      setBookingNotFoundVisible(true);   
     }
   };
 
+  // const acceptBooking = async () => {
+  //   // Create a reference to the Firestore database using your app instance
+  //   const db = getFirestore();
+  //   // Get the user's UID
+  //   const auth = getAuth();
+  //   const providerUID = auth.currentUser.uid;
+
+  //   // Create references to the user's document and the appForm2 subcollection
+  //   const providerDocRef = doc(db, "providerProfiles", providerUID);
+
+  //   // Get the document snapshot
+  //   const providerSnapshot = await getDoc(providerDocRef);
+  //   const providerBookingID = providerSnapshot.data().bookingID;
+
+  //   if(providerBookingID) {
+  //     console.log("BookingID is not blank");
+  //     try {
+  //       const activeBookings = collection(providerDocRef, "activeBookings");
+  //       const serviceBookingsCollection = collection(db, "serviceBookings");
+  
+  //       // Get the service booking document using userBookingID
+  //       const serviceBookingDocRef = doc(
+  //         serviceBookingsCollection,
+  //         userBookingID
+  //       );
+  
+  //       // Get the document snapshot
+  //       const serviceBookingSnapshot = await getDoc(serviceBookingDocRef);
+  
+  //       if (serviceBookingSnapshot.exists()) {
+  //         // Update the acceptedBy field within the service booking document
+  //         const updatedBookings = [...serviceBookingSnapshot.data().bookings];
+  //         updatedBookings[bookingIndex].acceptedBy = providerUID;
+  //         updatedBookings[bookingIndex].bookingAccepted = true;
+  
+  //         // Update the service booking document
+  //         await updateDoc(serviceBookingDocRef, {
+  //           bookings: updatedBookings,
+  //         });
+  //         console.log("acceptedBy field updated in serviceBookings document.");
+  //       } else {
+  //         console.error("Service Booking document does not exist");
+  //       }
+  
+  //       if (providerSnapshot.exists()) {
+  //         // Update the availability field within the provider document
+  //         await updateDoc(providerDocRef, {
+  //           availability: "busy",
+  //         });
+  //         console.log("Provider Status is now occupied");
+  //         const docRef = await addDoc(activeBookings, {
+  //           address: bookingAddress,
+  //           addressDetails: bookingAddressDetails,
+  //           customerUID: bookingCustomerUID,
+  //           bookingAccepted: bookingAccepted,
+  //           bookingAssigned: bookingAssigned,
+  //           bookingID: bookingID,
+  //           category: bookingCategory,
+  //           city: bookingCity,
+  //           coordinates: {
+  //             latitude: coordinates.latitude,
+  //             longitude: coordinates.longitude,
+  //           },
+  //           date: bookingDate,
+  //           distanceRadius: bookingDistanceRadius,
+  //           email: bookingEmail,
+  //           feeDistance: bookingFeeDistance,
+  //           materials: bookingMaterials,
+  //           name: bookingName,
+  //           paymentMethod: bookingPaymentMethod,
+  //           phone: bookingPhone,
+  //           propertyType: bookingPropertyType,
+  //           service: bookingServices,
+  //           subTotal: bookingSubTotal,
+  //           time: bookingTime,
+  //           title: bookingTitle,
+  //           totalPrice: bookingTotal,
+  //           status: "Upcoming",
+  //         });
+  //         setCountDownBookingVisible(false);
+  //         setCountDownBookingFlag(false);
+  //         // Get the unique ID of the newly added document
+  //         const newDocumentID = docRef.id;
+  //         console.log("Document added to 'activeBookings' successfully.");
+  //         navigation.navigate("ViewBookingDetails", {
+  //           newDocumentID: newDocumentID,
+  //           matchedBookingID: matchedBookingID,
+  //           providerLocation: providerLocation, // Include providerLocation in the route parameters
+  //         })
+  //       } else {
+  //         console.error("Provider Profile does not exists");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error updating user data:", error);   // Handle the error, e.g., display an error message to the user
+  //     }
+  //   }else{
+  //     console.log("BookingID is blank");
+  //     setBookingNotFoundVisible(true);    // set visible for error booking has been canceled/already booked
+  //   }
+
+  // };
   const declineBooking = async () => {
     console.log("Decline Booking");
 
@@ -301,6 +431,8 @@ const NewBooking = ({ route }) => {
           bookingMatched: false,
           blackListed: arrayUnion(bookingID),
         });
+        setCountDownBookingVisible(false);
+        setCountDownBookingFlag(false);
 
         navigation.navigate("BottomTabsRoot", {
           screen: "Homepage",
@@ -352,6 +484,92 @@ const NewBooking = ({ route }) => {
     //   markerPosition.latitude,
     //   markerPosition.longitude
     // );
+  };
+
+  const getFormattedServiceName = () => {
+    if (!bookingTitle || !bookingCategory) {
+      return 'Service'; // Default text or handle as needed
+    }
+
+    // Check if the title is "Pet Care" or "Gardening"
+    if (bookingTitle === "Pet Care" || bookingTitle === "Gardening" || bookingTitle === "Cleaning") {
+      return bookingCategory;
+    } else {
+      // If not, concatenate the title and category
+      return `${bookingTitle} ${bookingCategory}`;
+    }
+  };
+
+  const getServiceImageSource = (category, service) => {
+    if(category === "Plumbing") {
+      switch (service) {
+        case "Installation":
+          return require("../assets/plumbing-installation.png");
+        case "Repairs/Replacement":
+          return require("../assets/plumbing-repair.png");
+        default:
+          return require("../assets/plumbing-installation.png");
+      }
+    }else if(category === "Electrical") {
+      switch (service) {
+        case "Installation":
+          return require("../assets/electrical-installation.png");
+        case "Repairs/Replacement":
+          return require("../assets/electrical-repair.png");
+        default:
+          return require("../assets/electrical-installation.png");
+      }
+    }else if(category === "Carpentry") {
+      switch (service) {
+        case "Installation":
+          return require("../assets/carpentry-installation.png");
+        case "Repairs/Replacement":
+          return require("../assets/carpentry-repair.png");
+        case "Furniture Assembly And Disassembly":
+          return require("../assets/furniture-assembly-and-disassembly.png");
+        default:
+          return require("../assets/carpentry-installation.png");
+      }
+    }else if(category === "Cleaning" || category === "Pet Care" || category === "Gardening"){
+      switch (service) {
+        case "Standard Cleaning":
+          return require("../assets/standard-cleaning.png");
+        case "Deep Cleaning":
+          return require("../assets/deep-cleaning.png");
+        case "Electronic Appliance Cleaning":
+          return require("../assets/electronic-appliance-cleaning.png");
+        case "Pest Control":
+          return require("../assets/pest-control.png");
+        case "Dog Training":
+          return require("../assets/dog-training.png");
+        case "Dog Pet Grooming":
+          return require("../assets/pet-grooming.png");
+        case "Cat Pet Grooming":
+          return require("../assets/pet-grooming.png");
+        case "Bird Pet Grooming":
+          return require("../assets/pet-grooming.png");
+        case "Rabbit Pet Grooming":
+          return require("../assets/pet-grooming.png");
+        case "Dog Pet Sitting":
+          return require("../assets/pet-sitting.png");
+        case "Cat Pet Sitting":
+          return require("../assets/pet-sitting.png");
+        case "Bird Pet Sitting":
+          return require("../assets/pet-sitting.png");
+        case "Rabbit Pet Sitting":
+          return require("../assets/pet-sitting.png");
+        case "Garden Maintenance":
+          return require("../assets/garden-maintenance.png");
+        case "Landscape Design and Planning":
+          return require("../assets/landscape-design-and-planning.png");
+        case "Irrigation System Installation/Repairs":
+          return require("../assets/irrigation-system.png");
+        case "Pest and Disease Management":
+          return require("../assets/pest-and-disease-management.png");
+        default:
+          return require("../assets/standard-cleaning.png");
+      }
+    }
   };
 
   const fetchReverseGeolocation = async (latitude, longitude) => {
@@ -539,51 +757,20 @@ const NewBooking = ({ route }) => {
             Array.isArray(bookingData.bookings) &&
             bookingData.bookings.length > 0
           ) {
-            // bookingData.bookings.forEach((booking) => {
-            //   if (!booking.bookingAccepted) {
-            //     // Fetch data and display through console.log
-            //     console.log("Fetching data for booking:", booking);
-            //   }
-            // });
-            // bookingLoop: for (const booking of bookingData.bookings) {
-            //   if (!booking.bookingAccepted) {
-            //     // Fetch data and display through console.log
-            //     console.log("Fetching data for booking:", booking);
-            //     console.log("Services: " , booking.service);
-            //     const servicesData = booking.service.map((doc) => doc);
-            //     console.log("Data Services: " ,servicesData);
-            //     setBookingDate(booking.date);
-            //     setBookingTime(booking.time);
-            //     setBookingAddress(booking.address);
-            //     setBookingMaterials(booking.materials);
-            //     setBookingCategory(booking.category);
-            //     setBookingServices(booking.service);
-            //     setBookingTotal(booking.totalPrice);
-            //     setCoordinates({
-            //       latitude: booking.coordinates.latitude,
-            //       longitude: booking.coordinates.longitude,
-            //     });
-
-            //     console.log("Date: " ,bookingDate);
-            //     console.log("Time: " ,bookingTime);
-            //     console.log("Address: " ,bookingAddress);
-            //     console.log("Materials: " ,bookingMaterials);
-            //     console.log("Category: " ,bookingCategory);
-            //     console.log("Services: " ,bookingServices);
-            //     console.log("Total Price: " ,bookingTotal);
-            //     console.log("Coordinates: " ,coordinates);
-
-            //     // Use 'break' with the label to exit the loop after processing the desired booking
-            //     break bookingLoop;
-            //   }
             const indexToFetch = bookingIndex; // Set the desired index here
             const matchingBooking = bookingData.bookings[indexToFetch];
             if (matchingBooking) {
               // Fetch data and display through console.log
+              const materials = matchingBooking.materials;
               console.log("Fetching data for booking:", matchingBooking);
               console.log("Services: ", matchingBooking.service);
               const servicesData = matchingBooking.service.map((doc) => doc);
               console.log("Data Services: ", servicesData);
+              if (materials == "useProviderMaterials") {
+                setBookingMaterials("Supplied by Provider");
+              } else {
+                setBookingMaterials("Customer-Provided");
+              }
               setBookingAccepted(matchingBooking.bookingAccepted);
               setBookingAssigned(matchingBooking.bookingAssigned);
               setBookingID(matchingBooking.bookingID);
@@ -601,7 +788,8 @@ const NewBooking = ({ route }) => {
               setBookingTime(matchingBooking.time);
               setBookingTitle(matchingBooking.title);
               setBookingAddress(matchingBooking.address);
-              setBookingMaterials(matchingBooking.materials);
+              setBookingAddressDetails(matchingBooking.addressDetails);
+              setBookingCustomerUID(matchingBooking.customerUID);
               setBookingCategory(matchingBooking.category);
               setBookingServices(matchingBooking.service);
               setCoordinates({
@@ -765,9 +953,6 @@ const NewBooking = ({ route }) => {
           />
         </TouchableOpacity>
       </View>
-      {/* </View> */}
-      {/* </View> */}
-
       <ScrollView
         style={styles.body}
         indicatorStyle="default"
@@ -777,47 +962,7 @@ const NewBooking = ({ route }) => {
         contentContainerStyle={styles.bodyScrollViewContent}
       >
         <View style={[styles.bodyInner, styles.frameFlexBox3]}>
-          {/* <MapView
-                ref={mapRef}
-                style={styles.map}
-                region={initialMapRegion}
-                onLayout={onMapLayout}
-                // onPress={handleMapPress}
-                // provider={PROVIDER_GOOGLE}
-              >
-                <Marker
-                  coordinate={markerPosition}
-                  title="Pinned Location"
-                  draggable={false}
-                  // onDragEnd={handleMarkerDragEnd}
-                  image={require("../assets/icons8location100-2-1.png")}
-                />
-              </MapView> */}
           <View style={styles.frameParent}>
-            {/* <View style={[styles.frameWrapper, styles.frameFlexBox2]}>
-              <ImageBackground
-                style={[styles.frameContainer, styles.frameFlexBox2]}
-                resizeMode="cover"
-                source={require("../assets/frame26085032.png")}
-              >
-             
-                <View
-                  style={[
-                    styles.icons8Location10021Wrapper,
-                    styles.icons8Position,
-                  ]}
-                >
-                  <Image
-                    style={[
-                      styles.icons8Location10021,
-                      styles.frameWrapper7Layout,
-                    ]}
-                    contentFit="cover"
-                    source={require("../assets/icons8location100-2-1.png")}
-                  />
-                </View>
-              </ImageBackground>
-            </View> */}
             <View
               style={[styles.bookingDetailsLabelWrapper, styles.parentFlexBox]}
             >
@@ -872,7 +1017,6 @@ const NewBooking = ({ route }) => {
                 <View style={styles.frameFrame}>
                   <View style={[styles.frame, styles.frameFlexBox3]}>
                     <Text style={[styles.august112023, styles.textTypo1]}>
-                      {/* December 11, 2023 */}
                       {bookingDate}
                     </Text>
                   </View>
@@ -896,7 +1040,6 @@ const NewBooking = ({ route }) => {
                 <View style={styles.frameFrame}>
                   <View style={[styles.frame, styles.frameFlexBox3]}>
                     <Text style={[styles.august112023, styles.textTypo1]}>
-                      {/* 7:30 AM */}
                       {bookingTime}
                     </Text>
                   </View>
@@ -920,7 +1063,6 @@ const NewBooking = ({ route }) => {
                 <View style={styles.frameFrame}>
                   <View style={styles.frame2}>
                     <Text style={[styles.august112023, styles.textTypo1]}>
-                      {/* University of San Carlos, Nasipit, Talamban, Cebu City */}
                       {bookingAddress}
                     </Text>
                   </View>
@@ -944,7 +1086,6 @@ const NewBooking = ({ route }) => {
                 <View style={styles.frameWrapper3}>
                   <View style={styles.frame2}>
                     <Text style={[styles.august112023, styles.textTypo1]}>
-                      {/* Customer-Provided/supplied by Provider */}
                       {bookingMaterials}
                     </Text>
                   </View>
@@ -965,7 +1106,7 @@ const NewBooking = ({ route }) => {
                   <Image
                     style={styles.plumbingInstallationPic}
                     contentFit="cover"
-                    source={require("../assets/plumbing-installation-pic1.png")}
+                    source={getServiceImageSource(bookingTitle, bookingCategory)}
                   />
                 </View>
                 <View style={styles.frameFrame}>
@@ -973,7 +1114,7 @@ const NewBooking = ({ route }) => {
                     <View style={styles.plumbingInstallationWrapper}>
                       <Text style={[styles.date, styles.dateTypo]}>
                         {/* Plumbing Installation */}
-                        {bookingTitle} {bookingCategory}
+                        {getFormattedServiceName()}
                       </Text>
                     </View>
                   </View>
@@ -1018,7 +1159,6 @@ const NewBooking = ({ route }) => {
                                   styles.septicTankTypo,
                                 ]}
                               >
-                                {/* Septic Tank */}
                                 {name}
                               </Text>
                             </View>
@@ -1038,25 +1178,12 @@ const NewBooking = ({ route }) => {
                               >
                                 <View style={styles.bookingDetailsLabel}>
                                   <Text style={[styles.text, styles.textTypo1]}>
-                                    {/* 1 */}
                                     {value}
                                   </Text>
                                 </View>
                               </View>
                             </View>
                           </View>
-                          {/* <View
-                          style={[
-                            styles.frameWrapper25,
-                            styles.frameWrapperFlexBox,
-                          ]}
-                        >
-                          <View style={styles.frame2}>
-                            <Text style={[styles.text6, styles.textTypo]}>
-                              ₱1500.00
-                            </Text>
-                          </View>
-                        </View> */}
                         </View>
                       );
                     })}
@@ -1064,36 +1191,6 @@ const NewBooking = ({ route }) => {
                 </View>
               )}
             </View>
-            {/* <View style={[styles.frameParent6, styles.parentFlexBox]}>
-              <View style={styles.frameParent7}>
-                <View style={styles.frameParent7}>
-                  <View style={styles.youWillEarnWrapper}>
-                    <Text style={styles.youWillEarn}>You will earn</Text>
-                  </View>
-                </View>
-                <View style={styles.frameFlexBox1}>
-                  <View style={styles.youWillEarnWrapper}>
-                    <Text style={styles.text15}>₱6000.00</Text>
-                  </View>
-                </View>
-              </View>
-              <View style={styles.trackBookingBtnParent}>
-                <Pressable style={[styles.trackBookingBtn, styles.btnFlexBox]}>
-                  <Text
-                    style={[styles.viewAllServices, styles.newBooking1Typo]}
-                  >
-                    Decline
-                  </Text>
-                </Pressable>
-                <Pressable style={[styles.viewTimelineBtn, styles.btnFlexBox]}>
-                  <Text
-                    style={[styles.viewAllServices, styles.newBooking1Typo]}
-                  >
-                    Accept
-                  </Text>
-                </Pressable>
-              </View>
-            </View> */}
           </View>
         </View>
       </ScrollView>
@@ -1107,7 +1204,7 @@ const NewBooking = ({ route }) => {
           <View style={styles.frameFlexBox1}>
             <View style={styles.youWillEarnWrapper}>
               <Text style={styles.text15}>
-                {/* ₱6000.00 */}₱{bookingTotal}.00
+                ₱{bookingTotal}.00
               </Text>
             </View>
           </View>
@@ -1131,7 +1228,6 @@ const NewBooking = ({ route }) => {
           </Pressable>
         </View>
       </View>
-
       <Modal animationType="fade" transparent visible={cancelModalVisible}>
         <View style={styles.logoutButtonOverlay}>
           <View style={styles.containerCancel}>
@@ -1156,6 +1252,21 @@ const NewBooking = ({ route }) => {
               // onClose={closeCountDownModal}
             />
             <CountDownBooking
+              onClose={closeCountDownModal}
+              //onYesPress={declineBooking}
+            />
+          </View>
+        </View>
+      </Modal>
+      <Modal animationType="fade" transparent visible={BookingNotFoundVisible}>
+        <View style={styles.logoutButtonOverlay}>
+          <View style={styles.containerCancel}>
+            <Pressable
+              style={styles.logoutButtonBg}
+              //onPress={closeCancelModal}
+              // onClose={closeCountDownModal}
+            />
+            <BookingNotFound
               onClose={closeCountDownModal}
               //onYesPress={declineBooking}
             />
@@ -1303,7 +1414,7 @@ const styles = StyleSheet.create({
     textAlign: "left",
   },
   textTypo1: {
-    textTransform: "capitalize",
+    // textTransform: "capitalize",
     fontSize: FontSize.paragraphMedium15_size,
     fontFamily: FontFamily.workSansRegular,
   },

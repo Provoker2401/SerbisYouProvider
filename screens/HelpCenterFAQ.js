@@ -1,10 +1,9 @@
-import * as React from "react";
+import React, { useState, useEffect } from 'react';
 import {
   StatusBar,
   StyleSheet,
-  Pressable,
   View,
-  Text,
+  Dimensions,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
@@ -20,14 +19,18 @@ import Tab2 from "../components/Tab2";
 import { Padding, Border, FontFamily, FontSize, Color } from "../GlobalStyles";
 
 const TopTab = createMaterialTopTabNavigator();
+const screenHeight = Dimensions.get('window').height;
+
 const HelpCenterFAQ = () => {
+  const [isNavigatorActive, setIsNavigatorActive] = useState(false);
   return (
-    <View style={styles.helpCenterFaq}>
+    <SafeAreaView style={styles.helpCenterFaq}>
       <StatusBar barStyle="default" />
       <ScrollView
         style={styles.body}
-        showsVerticalScrollIndicator={true}
-        showsHorizontalScrollIndicator={true}
+        scrollEnabled={isNavigatorActive}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       >
         <View style={[styles.activeTabs, styles.activeTabsSpaceBlock]}>
           <TopTab.Navigator
@@ -36,6 +39,17 @@ const HelpCenterFAQ = () => {
               const [activeItems] = React.useState([<Tab11 />, <Tab21 />]);
               const [normalItems] = React.useState([<Tab1 />, <Tab2 />]);
               const activeIndex = state.index;
+              console.log("Active Tab: " ,activeIndex);
+              
+              // Update the state based on tab navigator's activity
+              React.useEffect(() => {
+                if(activeIndex === 1){
+                  setIsNavigatorActive(activeIndex === 0); // Assuming index 1 is where the tab navigator is active
+                }else{
+                  setIsNavigatorActive(activeIndex === 1); // Assuming index 1 is where the tab navigator is active
+                }
+                
+              }, [activeIndex]);
               return (
                 <View style={styles.topTabBarStyle}>
                   {normalItems.map((item, index) => {
@@ -77,62 +91,7 @@ const HelpCenterFAQ = () => {
           </View>
         </View>
       </ScrollView>
-      {/* <View style={[styles.navigationBarHome, styles.stateLayerPosition]}>
-        <View style={styles.segment1}>
-          <View style={styles.iconContainerFlexBox}>
-            <View style={styles.stateFlexBox}>
-              <Image
-                style={styles.iconLayout}
-                contentFit="cover"
-                source={require("../assets/icon5.png")}
-              />
-            </View>
-          </View>
-          <Text style={[styles.labelText2, styles.labelTypo]}>Home</Text>
-        </View>
-        <View style={[styles.segment2, styles.segmentSpaceBlock]}>
-          <View style={styles.iconContainerFlexBox}>
-            <View style={styles.stateFlexBox}>
-              <Image
-                style={styles.icon2}
-                contentFit="cover"
-                source={require("../assets/icon6.png")}
-              />
-            </View>
-          </View>
-          <Text style={[styles.labelText3, styles.labelTypo]}>Bookings</Text>
-        </View>
-        <View style={styles.segmentSpaceBlock}>
-          <View style={styles.iconContainerFlexBox}>
-            <View style={styles.stateFlexBox}>
-              <Image
-                style={styles.iconLayout}
-                contentFit="cover"
-                source={require("../assets/icon7.png")}
-              />
-            </View>
-          </View>
-          <Text style={[styles.labelText3, styles.labelTypo]}>
-            Notifications
-          </Text>
-        </View>
-        <View style={styles.segment1}>
-          <View style={[styles.iconContainer3, styles.iconContainerFlexBox]}>
-            <View style={styles.stateFlexBox}>
-              <Image
-                style={[styles.icon4, styles.iconLayout]}
-                contentFit="cover"
-                source={require("../assets/icon8.png")}
-              />
-              <View style={[styles.badge, styles.badgePosition]}>
-                <Text style={styles.badgeLabel}>3</Text>
-              </View>
-            </View>
-          </View>
-          <Text style={[styles.labelText5, styles.labelTypo]}>Account</Text>
-        </View>
-      </View> */}
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -142,7 +101,7 @@ const styles = StyleSheet.create({
   },
   tabGroupToptabs: {
     width: "100%",
-    height: 745,
+    height: screenHeight * 0.92, // 80% of the screen height
   },
   topTabBarStyle: {
     alignSelf: "stretch",

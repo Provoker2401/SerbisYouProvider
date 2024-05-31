@@ -98,8 +98,7 @@ const Onboarding1 = () => {
               <Pressable
                 style={styles.nextBtn}
                 onPress={() =>
-                  // navigation.navigate("BottomTabsRoot", { screen: "Homepage" })
-                  navigation.navigate("SignUp")
+                  navigation.navigate("Onboarding2")
                 }
               >
                 <Image

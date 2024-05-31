@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  StyleProp,
-  ViewStyle,
   StyleSheet,
   View,
   Text,
@@ -17,10 +15,7 @@ import { Padding, Color, FontSize, FontFamily, Border } from "../GlobalStyles";
 import {
   getFirestore,
   collection,
-  doc,
-  getDoc,
   getDocs,
-  setDoc,
   where,
   query,
   onSnapshot,
@@ -37,7 +32,6 @@ const HistoryBookings = ({ style }) => {
   const [customDatesStyles, setCustomDatesStyles] = useState([]);
   const [markedDates, setMarkedDates] = useState([]);
   const [startingDate, setStartingDate] = useState(moment());
-  const [bookingStatusByDate, setBookingStatusByDate] = useState({});
 
   useEffect(() => {
     // Whenever the selectedDate changes, update the startingDate
@@ -118,7 +112,7 @@ const HistoryBookings = ({ style }) => {
 
   const datesBlacklistFunc = date => {
     // Convert moment date to start of day for accurate comparison
-    return date.isAfter(moment().startOf('day'));
+    return date.isAfter(moment(),'day');
   };
 
   const onDateSelected = date => {
@@ -149,7 +143,6 @@ const HistoryBookings = ({ style }) => {
         style={styles.leftArrow}
         source={require("../assets/left-arrow-black.png")}
       />
-      {/* <Text style={styles.selectorText}>Prev</Text> */}
     </TouchableOpacity>
   );
 
@@ -161,7 +154,6 @@ const HistoryBookings = ({ style }) => {
         contentFit="cover"
         source={require("../assets/right-arrow-black.png")}
       />
-      {/* <Text style={styles.selectorText}>Next</Text> */}
     </TouchableOpacity>
   );
 
@@ -265,7 +257,7 @@ const HistoryBookings = ({ style }) => {
 
   const getFormattedServiceName = (item) => {
     // Check if the title is "Pet Care" or "Gardening"
-    if (item.title === "Pet Care" || item.title === "Gardening") {
+    if (item.title === "Pet Care" || item.title === "Gardening" || item.title === "Cleaning") {
       return item.category;
     } else {
       // If not, concatenate the title and category
@@ -325,17 +317,16 @@ const HistoryBookings = ({ style }) => {
           // textAlign: "left",
           // fontFamily: FontFamily.levelSemibold14,
           // fontWeight: "600",
-          scrollable
-          calendarAnimation={{ type: 'sequence', duration: 30 }}
+          // scrollable
+          // calendarAnimation={{ type: 'sequence', duration: 30 }}
           daySelectionAnimation={{ type: 'background', duration: 300, highlightColor: '#007EA7' }}
           style={{ height: 100, width: '100%'}}
           calendarHeaderStyle={{ color: 'black', fontFamily: FontFamily.levelSemibold14 }}
           dateNameStyle={{ color: 'black', fontSize: 10}}
           dateNumberStyle={{ color: 'black', fontFamily: FontFamily.montserratMedium}}
-          dayContainerStyle={{flex: 1, alignItems: 'center', justifyContent: 'center', width: 60, height: 60, paddingVertical: 10}}
+          dayContainerStyle={{ alignItems: 'center', justifyContent: 'center', width: 46, height: 46, paddingVertical: 10}}
           calendarColor={'white'}
           iconContainer={{ flex: 0.1 }}
-          customDatesStyles={customDatesStyles}
           highlightDateNameStyle={{ color: 'white' }}
           highlightDateNumberStyle={{ color: 'white' }}
           highlightDateContainerStyle={{ backgroundColor: '#007EA7' }}
@@ -366,7 +357,7 @@ const HistoryBookings = ({ style }) => {
               </View>
               <View style={styles.frameWrapperFlexBox}>
                 <Text style={[styles.noUpcomingBookings, styles.bookingsTypo]}>
-                  No Upcoming Bookings
+                  No Past Bookings
                 </Text>
                 <Text
                   style={[
@@ -374,8 +365,7 @@ const HistoryBookings = ({ style }) => {
                     styles.viewAllServicesLayout,
                   ]}
                 >
-                  Currently you don’t have any upcoming booking. Track
-                  your booking from here.
+                  Your booking history is empty. View all completed appointments and past activities here.
                 </Text>
               </View>
               <View style={[styles.frameWrapper, styles.frameWrapperFlexBox]}>
@@ -414,13 +404,10 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
   },
   leftArrow: {
-    left: 0,
-    top: -48,
     width: 25,
     height: 25,
   },
   rightArrow: {
-    bottom: 48,
     width: 25,
     height: 25,
   },
@@ -652,10 +639,6 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     alignItems: "flex-end",
-  },
-  frameParent1: {
-    flexDirection: "row",
-    alignSelf: "stretch",
   },
   frameParent: {
     justifyContent: "center",
@@ -918,7 +901,7 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
   },
   frameParent1: {
-    paddingVertical: Padding.p_41xl,
+    paddingVertical: Padding.p_xl,
     paddingHorizontal: Padding.p_xl,
     borderRadius: Border.br_5xs,
     justifyContent: "center",

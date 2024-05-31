@@ -9,6 +9,7 @@ import {
   View,
   TextInput,
   Pressable,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
@@ -19,16 +20,24 @@ import {
   getFirestore,
   doc,
   getDoc,
-  collection,
-  query,
-  where,
-  getDocs,
+  updateDoc,
 } from "firebase/firestore";
+import messaging from '@react-native-firebase/messaging';
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const eyeIconSource = showPassword
+    ? require("../assets/hide-pass.png")
+    : require("../assets/-icon-eye-empty.png");
 
   const handleSignIn = () => {
     console.log("Sign In clicked");
@@ -48,37 +57,35 @@ const SignIn = () => {
         try {
           const docSnapshot = await getDoc(providerProfilesRef);
           if (docSnapshot.exists()) {
+            const providerProfileData = docSnapshot.data();
             // User's UID is found in providerProfiles
             console.log("Provider signed in");
             Toast.show({
               type: "success",
               position: "top",
-              text1: "Sign Up Successful",
-              text2: "You have successfully signed up✅",
+              text1: "Sign In Successful",
+              text2: "You have successfully signed in✅",
               visibilityTime: 3000,
             });
-            const userData = docSnapshot.data();
-            const appForm1Ref = collection(providerProfilesRef, "appForm1"); // Reference to the 'appForm1' subcollection
-            // Fetch all documents within 'appForm1' subcollection
-            const appForm1Snapshot = await getDocs(appForm1Ref);
+            
+            const authStatus = await messaging().requestPermission();
+            const enabled =
+              authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+              authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+          
+            if (enabled) {
+              console.log('Authorization status:', authStatus);
+              const fcmToken = await messaging().getToken();
+              if(providerProfileData.fcmToken !== fcmToken) {
+                await updateDoc(providerProfilesRef, {
+                  fcmToken: fcmToken,
+                });
+                console.log("Updated fcmToken for this user: ", fcmToken);
+              }else{
+                console.log("fcmToken is still the same");
+              }
+            }
 
-            // Check if there are documents in the 'appForm1' subcollection
-            // if (!appForm1Snapshot.empty) {
-            //   // Assuming that there's only one document in 'appForm1'
-            //   const appForm1Data = appForm1Snapshot.docs[0].data();
-            //   const appForm1Id = appForm1Snapshot.docs[0].id; // Get the document ID
-            //   const city = appForm1Data.city;
-
-            //   if (city === "") {
-            //     navigation.navigate("ApplicationForm1"); // Redirect to ApplicationForm1 if city is empty
-            //   } else {
-            //     navigation.navigate("BottomTabsRoot", { screen: "Homepage" }); // Redirect to HomeScreen if city has a value
-            //   }
-            // } else {
-            //   console.log("No documents found in appForm1 subcollection");
-            //   // Handle the case if no documents are found in the 'appForm1' subcollection
-            // }
-            // Continue with navigation
             navigation.navigate("BottomTabsRoot", { screen: "Homepage" });
           } else {
             // User's UID not found in providerProfiles
@@ -86,8 +93,8 @@ const SignIn = () => {
             Toast.show({
               type: "error",
               position: "top",
-              text1: "User not found",
-              text2: "Your authentication UID is not in providerProfiles❗",
+              text1: "Sign In error",
+              text2: "User not found❗",
               visibilityTime: 5000,
             });
           }
@@ -96,8 +103,8 @@ const SignIn = () => {
           Toast.show({
             type: "error",
             position: "top",
-            text1: "Firestore error",
-            text2: "Error while checking user profile❗",
+            text1: "Sign In error",
+            text2: "User not found❗",
             visibilityTime: 5000,
           });
         }
@@ -110,7 +117,7 @@ const SignIn = () => {
         Toast.show({
           type: "error",
           position: "top",
-          text1: errorMessage,
+          text1: "Sign In error",
           text2: "Wrong email or password❗",
           visibilityTime: 5000,
         });
@@ -193,18 +200,22 @@ const SignIn = () => {
                                   styles.signIn2Typo,
                                 ]}
                                 placeholder="Password"
-                                secureTextEntry={true}
+                                secureTextEntry={!showPassword}
                                 placeholderTextColor="#d1d3d4"
                                 value={password}
                                 onChangeText={(text) => setPassword(text)}
                               />
-                              <View style={styles.leftNumber}>
-                                <Image
-                                  style={styles.iconEyeEmpty}
-                                  contentFit="cover"
-                                  source={require("../assets/-icon-eye-empty.png")}
-                                />
-                              </View>
+                              <TouchableWithoutFeedback
+                                onPress={togglePasswordVisibility}
+                              >
+                                <View style={styles.leftNumber}>
+                                  <Image
+                                    style={styles.iconEyeEmpty}
+                                    contentFit="cover"
+                                    source={eyeIconSource}
+                                  />
+                                </View>
+                              </TouchableWithoutFeedback>
                             </View>
                           </View>
                         </View>
@@ -228,26 +239,11 @@ const SignIn = () => {
                       <Pressable
                         style={[styles.signInButton1, styles.frameFlexBox]}
                         onPress={handleSignIn}
-                        // onPress={() => navigation.navigate("SignUp")}
                       >
                         <Text style={[styles.signIn3, styles.signTypo]}>
                           Sign In
                         </Text>
                       </Pressable>
-                      {/* <View style={[styles.frame6, styles.frameFlexBox]}>
-                        <View
-                          style={[styles.signInButton2, styles.frameFlexBox]}
-                        >
-                          <Image
-                            style={styles.signInButtonChild}
-                            contentFit="cover"
-                            source={require("../assets/rectangle-4375.png")}
-                          />
-                          <Text style={[styles.signIn4, styles.signTypo]}>
-                            Sign In
-                          </Text>
-                        </View>
-                      </View> */}
                     </View>
                   </View>
                   <View style={[styles.frameContainer, styles.frameFlexBox]}>

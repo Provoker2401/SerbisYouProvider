@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
-// import { Switch as RNESwitch } from "@rneui/themed";
 import { FontSize, FontFamily, Padding, Border, Color } from "../GlobalStyles";
 import messaging from '@react-native-firebase/messaging';
 

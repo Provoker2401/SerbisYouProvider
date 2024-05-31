@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   StatusBar,
   StyleSheet,
@@ -39,13 +39,6 @@ const BookingsActive = () => {
         <View style={styles.bookings}>
           <View style={styles.tag} />
           <Text style={[styles.bookings1, styles.serbisyouTypo]}>Bookings</Text>
-          <Pressable style={[styles.searchBtn, styles.btnWrapperFlexBox]}>
-            <Image
-              style={styles.vectorIcon}
-              contentFit="cover"
-              source={require("../assets/vector4.png")}
-            />
-          </Pressable>
         </View>
         <View style={[styles.activeTabs, styles.activeFlexBox]}>
           <TopTab.Navigator
@@ -148,7 +141,6 @@ const styles = StyleSheet.create({
 
   },
   activeFlexBox: {
-    marginTop: 15,
     alignItems: "center",
     alignSelf: "stretch",
     backgroundColor: Color.m3White,

@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   frameParent: {
-    paddingHorizontal: Padding.p_xl,
+    paddingHorizontal: Padding.p_11xl,
     paddingVertical: 0,
     alignSelf: "stretch",
     alignItems: "center",

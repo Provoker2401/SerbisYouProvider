@@ -1,27 +1,75 @@
-import React, { useState, useCallback } from "react";
-import { View, StyleSheet, Text, Pressable, Modal } from "react-native";
+import React, { useState, useCallback, useEffect } from "react";
+import { View, StyleSheet, Text, Pressable } from "react-native";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import { Padding, Border, FontSize, FontFamily, Color } from "../GlobalStyles";
 import {
-    getFirestore,
-    collection,
-    doc,
-    getDoc,
-    updateDoc,
-    where,
-    getDocs,
-    query,
-  } from "firebase/firestore"; // Updated imports
-  import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
+  getFirestore,
+  collection,
+  doc,
+  getDoc,
+  updateDoc,
+  where,
+  getDocs,
+  setDoc,
+  query,
+  serverTimestamp,
+} from "firebase/firestore"; // Updated imports
+import { getAuth } from "firebase/auth";
+import * as TaskManager from "expo-task-manager";
+import * as Location from "expo-location";
 
 const PerformServicePrompt = ({ onClose, itemID, matchedBookingID, customerUID, onProgress}) => {
   const navigation = useNavigation();
+  const [bookingTitle, setBookingTitle] = useState("");
+  const [bookingCategory, setBookingCategory] = useState("");
   const [yesBtnVisible, setYesBtnVisible] = useState(false);
+
+  const getCurrentLocationTask = "background-location-task";
+
+  const stopUpdateLocation = async () => {
+    try {
+      await Location.stopLocationUpdatesAsync(getCurrentLocationTask);
+      console.log("Background location stopped");
+      await TaskManager.unregisterAllTasksAsync();
+      console.log("All tasks unregistered");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const db = getFirestore(); // Use getFirestore() to initialize Firestore
+  
+        // Get the user's UID 
+        const auth = getAuth();
+        const providerUID = auth.currentUser.uid;
+        const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
+        const docSnapshot = await getDoc(userBookingDocRef);
+
+        if (docSnapshot.exists()) {
+          const booking = docSnapshot.data();
+          console.log("Booking Data: ", booking);
+          setBookingTitle(booking.title);
+          setBookingCategory(booking.category);
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error("Error retrieving data:", error);
+      }
+    }
+  
+    fetchData(); // Call the fetchData function immediately
+  }, []); 
 
   const serviceIsPerformed = async (itemID) => {
     try {
       console.log("Item ID: " + itemID);
+
+      stopUpdateLocation();
 
       const db = getFirestore();
       const auth = getAuth();
@@ -46,6 +94,49 @@ const PerformServicePrompt = ({ onClose, itemID, matchedBookingID, customerUID, 
       await updateDoc(userBookingDocRef, {
         status: "In Progress"
       });
+
+      console.log("Booking Title: " ,bookingTitle);
+      console.log("Booking Category: " ,bookingCategory);
+
+      const notifDocRef = doc(db, "userProfiles", customerUID);
+      const notifCollection = collection(notifDocRef, "notifications");
+
+      const today = new Date();
+      const options = {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      };
+      const formattedDate = today.toLocaleDateString("en-US", options); // Adjust locale as needed
+
+      const bookingDataNotif = {
+        // Using bookingID as the key for the map inside the document
+        [`${matchedBookingID}2`]: {
+          subTitle: `Your ${getFormattedServiceName()} Service is currently being worked on by the service provider`,
+          title: `Service in Progress`,
+          createdAt: serverTimestamp(),
+        },
+        date: serverTimestamp(),
+      };
+
+      const notificationDocRef = doc(notifCollection, formattedDate);
+
+      try {
+        const notificationDoc = await getDoc(notificationDocRef);
+        if (notificationDoc.exists()) {
+          // Document exists, update it
+          await setDoc(notificationDocRef, bookingDataNotif, {
+            merge: true,
+          });
+          console.log("Notification updated successfully!");
+        } else {
+          // Document doesn't exist, create it
+          await setDoc(notificationDocRef, bookingDataNotif);
+          console.log("New notification document created!");
+        }
+      } catch (error) {
+        console.error("Error updating notification:", error);
+      }
   
       console.log("Status updated to 'In Progress'");
   
@@ -53,6 +144,22 @@ const PerformServicePrompt = ({ onClose, itemID, matchedBookingID, customerUID, 
       onProgress();
     } catch (error) {
       console.error("Error updating status:", error);
+    }
+  };
+
+  const getFormattedServiceName = () => {
+    console.log("Booking Title: " ,bookingTitle);
+    console.log("Booking Category: " ,bookingCategory);
+    if (!bookingTitle || !bookingCategory) {
+      return 'Service'; // Default text or handle as needed
+    }
+
+    // Check if the title is "Pet Care" or "Gardening"
+    if (bookingTitle === "Pet Care" || bookingTitle === "Gardening" || bookingTitle === "Cleaning") {
+      return bookingCategory;
+    } else {
+      // If not, concatenate the title and category
+      return `${bookingTitle} ${bookingCategory}`;
     }
   };
 

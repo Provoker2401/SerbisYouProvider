@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StatusBar,
   StyleSheet,
@@ -7,6 +7,7 @@ import {
   View,
   Pressable,
   Linking,
+  BackHandler,
 } from "react-native";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -14,48 +15,56 @@ import { useNavigation } from "@react-navigation/native";
 import { Padding, Color, Border, FontFamily, FontSize } from "../GlobalStyles";
 import {
   getFirestore,
-  collection,
   doc,
   getDoc,
-  getDocs,
-  setDoc,
-  where,
-  query,
 } from "firebase/firestore"; // Updated imports
-import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
 const ViewBookingDetails = ({ route }) => {
   const navigation = useNavigation();
 
-
   const {newDocumentID, matchedBookingID, providerLocation, itemID } = route.params;
-  const [bookingAccepted, setBookingAccepted] = useState("");
-  const [bookingAssigned, setBookingAssigned] = useState("");
   const [bookingName, setBookingName] = useState("");
   const [bookingEmail, setBookingEmail] = useState("");
   const [bookingRadius, setBookingRadius] = useState("");
   const [bookingDate, setBookingDate] = useState("");
   const [bookingTime, setBookingTime] = useState("");
   const [bookingAddress, setBookingAddress] = useState("");
+  const [bookingAddressDetails, setBookingAddressDetails] = useState({});
   const [bookingProperty, setBookingProperty] = useState("");
+  const [propertyName, setPropertyName] = useState("");
   const [bookingMaterials, setBookingMaterials] = useState("");
   const [bookingCategory, setBookingCategory] = useState("");
+  const [bookingTitle, setBookingTitle] = useState("");
   const [bookingServices, setBookingServices] = useState([]);
   const [bookingPaymentMethod, setBookingPaymentMethod] = useState("");
   const [bookingSubtotal, setBookingSubtotal] = useState("");
   const [bookingDistanceFee, setBookingDistanceFee] = useState("");
   const [bookingTotal, setBookingTotal] = useState("");
-
-  // const [bookingCoordinates, setBookingCoordinates] = useState({ latitude: null, longitude: null });
   const [bookingCoordinates, setBookingCoordinates] = useState("");
+  const [providerCurrentCoordinates, setProviderCurrentCoordinates] = useState("");
   const [phoneUser, setphoneUser] = useState("");
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate("BottomTabsRoot", { screen: "Homepage" });
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [navigation]);
 
   useEffect(() => {
     async function fetchData() {
       try {
         const db = getFirestore(); // Use getFirestore() to initialize Firestore
 
-        // Get the user's UID
+        // Get the provider's UID
         const auth = getAuth();
         const providerUID = auth.currentUser.uid;
         console.log("Provider UID: " ,providerUID);
@@ -84,7 +93,6 @@ const ViewBookingDetails = ({ route }) => {
           console.log("Address: " ,bookingAddress);
           console.log("Coordinates: " , bookingCoordinates);
           // console.log("Address: " , bookingAddress);
-
         } else {
           console.log("No such document!");
         }
@@ -100,7 +108,7 @@ const ViewBookingDetails = ({ route }) => {
     async function fetchNewBooking() {
       try {
         const db = getFirestore(); // Use getFirestore() to initialize Firestore
-  
+        console.log("From New Booking Fetched" );
         // Get the provider's UID 
         const auth = getAuth();
         const providerUID = auth.currentUser.uid;
@@ -117,12 +125,38 @@ const ViewBookingDetails = ({ route }) => {
 
         if (docSnapshot.exists()) {
           const booking = docSnapshot.data();
-
           const materials = booking.materials;
+          const category = booking.category;
+          const property = booking.propertyType;
+          const title = booking.title;
           console.log("Fetching data for booking:", booking);
+          console.log("Property Type: ", booking.propertyType);
           console.log("Services: ", booking.service);
           const servicesData = booking.service.map((doc) => doc);
           console.log("Data Services: ", servicesData);
+          if (title == "Gardening") {
+            setPropertyName("Garden Size");
+          } else if(category == "Dog Training"){
+            setPropertyName("Dog Type");
+          } else{
+            setPropertyName("Property Type");
+          } 
+          if (category == "Pet Grooming" || category == "Pet Sitting") {
+            // Check if there's only one pet type with a non-zero value
+            const nonZeroPets = booking.propertyType.filter(pet => Object.values(pet)[0] !== 0);
+            setPropertyName("Pet Type");
+
+            if (nonZeroPets.length === 1) {
+              const petType = Object.keys(nonZeroPets[0])[0];
+              const petCount = Object.values(nonZeroPets[0])[0];
+              setBookingProperty(`${petCount} ${petType}`);
+            } else {
+              // If there are multiple pet types or no pets with non-zero values
+              setBookingProperty("Multiple Pets");
+            }
+          } else {
+            setBookingProperty(booking.propertyType);
+          }
           if (materials == "useProviderMaterials") {
             setBookingMaterials("Supplied by Provider");
           } else {
@@ -134,14 +168,14 @@ const ViewBookingDetails = ({ route }) => {
           setBookingDate(booking.date);
           setBookingTime(booking.time);
           setBookingAddress(booking.address);
-          setBookingProperty(booking.propertyType);
           setBookingCategory(booking.category);
-          setBookingServices(booking.service);
+          setBookingTitle(booking.title);
+          setBookingServices(servicesData);
           setBookingSubtotal(booking.subTotal);
           setBookingDistanceFee(booking.feeDistance);
           setBookingPaymentMethod(booking.paymentMethod);
           setBookingTotal(booking.totalPrice);
-
+          setBookingAddressDetails(booking.addressDetails);
           setBookingCoordinates({
             latitude: booking.coordinates.latitude,
             longitude: booking.coordinates.longitude,
@@ -175,7 +209,7 @@ const ViewBookingDetails = ({ route }) => {
     async function fetchActiveBookings() {
       try {
         const db = getFirestore(); // Use getFirestore() to initialize Firestore
-  
+        console.log("Active Bookings Fetched" );
         // Get the user's UID 
         const auth = getAuth();
         const providerUID = auth.currentUser.uid;
@@ -185,13 +219,67 @@ const ViewBookingDetails = ({ route }) => {
         const userBookingDocRef = doc(db, "providerProfiles", providerUID, "activeBookings", itemID);
         const docSnapshot = await getDoc(userBookingDocRef);
 
+        const providerProfilesCollection = doc(db, "providerProfiles", providerUID);
+
+        getDoc(providerProfilesCollection)
+        .then(async (docSnapshot) => {
+          if (docSnapshot.exists()) {
+            const providerData = docSnapshot.data();
+            const coordinates = providerData.coordinates;
+
+            console.log("Provider data: ", providerData);
+            console.log("Provider Coordinates: ", coordinates);
+            console.log("Provider Coordinates Latitude: ", coordinates.latitude);
+            console.log("Provider Coordinates Latitude: ", coordinates.longitude);
+
+            if (providerData) {
+              const latitude = parseFloat(coordinates.latitude);
+              const longitude = parseFloat(coordinates.longitude);
+              setProviderCurrentCoordinates({latitude: latitude, longitude: longitude});
+            } else {
+              console.log("Provider Data is empty!");
+            }
+          } else {
+            console.log("No such document!");
+          }
+        })
+        .catch((error) => {
+          console.error("Error getting document:", error);
+        })
+
         if (docSnapshot.exists()) {
           const booking = docSnapshot.data();
           const materials = booking.materials;
+          const category = booking.category;
+          const title = booking.title;
           console.log("Fetching data for booking:", booking);
+          console.log("Property Type: ", booking.propertyType);
           console.log("Services: " , booking.service);
           const servicesData = booking.service.map((doc) => doc);
           console.log("Data Services: " ,servicesData);
+          if (title == "Gardening") {
+            setPropertyName("Garden Size");
+          } else if(category == "Dog Training"){
+            setPropertyName("Dog Type");
+          } else{
+            setPropertyName("Property Type");
+          } 
+          if (category == "Pet Grooming" || category == "Pet Sitting") {
+            // Check if there's only one pet type with a non-zero value
+            const nonZeroPets = booking.propertyType.filter(pet => Object.values(pet)[0] !== 0);
+            setPropertyName("Pet Type");
+
+            if (nonZeroPets.length === 1) {
+              const petType = Object.keys(nonZeroPets[0])[0];
+              const petCount = Object.values(nonZeroPets[0])[0];
+              setBookingProperty(`${petCount} ${petType}`);
+            } else {
+              // If there are multiple pet types or no pets with non-zero values
+              setBookingProperty("Multiple Pets");
+            }
+          } else {
+            setBookingProperty(booking.propertyType);
+          }
           if(materials == "useProviderMaterials"){
             setBookingMaterials("Supplied by Provider");
           }else{
@@ -203,13 +291,14 @@ const ViewBookingDetails = ({ route }) => {
           setBookingDate(booking.date);
           setBookingTime(booking.time);
           setBookingAddress(booking.address);
-          setBookingProperty(booking.propertyType);
           setBookingCategory(booking.category);
-          setBookingServices(booking.service);
+          setBookingTitle(booking.title);
+          setBookingServices(servicesData);
           setBookingSubtotal(booking.subTotal);
           setBookingDistanceFee(booking.feeDistance);
           setBookingPaymentMethod(booking.paymentMethod);
           setBookingTotal(booking.totalPrice);
+          setBookingAddressDetails(booking.addressDetails);
           setBookingCoordinates({
             latitude: booking.coordinates.latitude,
             longitude: booking.coordinates.longitude,
@@ -238,22 +327,111 @@ const ViewBookingDetails = ({ route }) => {
     }else if(itemID){
       fetchActiveBookings();
     }
-  }, [matchedBookingID, providerLocation, itemID]); // Add userID as a dependency
+  }, [matchedBookingID, providerLocation, itemID]); // Dependency Array
+
+  const getFormattedServiceName = () => {
+    if (!bookingTitle || !bookingCategory) {
+      return 'Service'; // Default text or handle as needed
+    }
+
+    // Check if the title is "Pet Care" or "Gardening"
+    if (bookingTitle === "Pet Care" || bookingTitle === "Gardening" || bookingTitle === "Cleaning") {
+      return bookingCategory;
+    } else {
+      // If not, concatenate the title and category
+      return `${bookingTitle} ${bookingCategory}`;
+    }
+  };
+
+  const getServiceImageSource = (category, service) => {
+    if(category === "Plumbing") {
+      switch (service) {
+        case "Installation":
+          return require("../assets/plumbing-installation.png");
+        case "Repairs/Replacement":
+          return require("../assets/plumbing-repair.png");
+        default:
+          return require("../assets/plumbing-installation.png");
+      }
+    }else if(category === "Electrical") {
+      switch (service) {
+        case "Installation":
+          return require("../assets/electrical-installation.png");
+        case "Repairs/Replacement":
+          return require("../assets/electrical-repair.png");
+        default:
+          return require("../assets/electrical-installation.png");
+      }
+    }else if(category === "Carpentry") {
+      switch (service) {
+        case "Installation":
+          return require("../assets/carpentry-installation.png");
+        case "Repairs/Replacement":
+          return require("../assets/carpentry-repair.png");
+        case "Furniture Assembly And Disassembly":
+          return require("../assets/furniture-assembly-and-disassembly.png");
+        default:
+          return require("../assets/carpentry-installation.png");
+      }
+    }else if(category === "Cleaning" || category === "Pet Care" || category === "Gardening"){
+      switch (service) {
+        case "Standard Cleaning":
+          return require("../assets/standard-cleaning.png");
+        case "Deep Cleaning":
+          return require("../assets/deep-cleaning.png");
+        case "Electronic Appliance Cleaning":
+          return require("../assets/electronic-appliance-cleaning.png");
+        case "Pest Control":
+          return require("../assets/pest-control.png");
+        case "Dog Training":
+          return require("../assets/dog-training.png");
+        case "Dog Pet Grooming":
+          return require("../assets/pet-grooming.png");
+        case "Cat Pet Grooming":
+          return require("../assets/pet-grooming.png");
+        case "Bird Pet Grooming":
+          return require("../assets/pet-grooming.png");
+        case "Rabbit Pet Grooming":
+          return require("../assets/pet-grooming.png");
+        case "Dog Pet Sitting":
+          return require("../assets/pet-sitting.png");
+        case "Cat Pet Sitting":
+          return require("../assets/pet-sitting.png");
+        case "Bird Pet Sitting":
+          return require("../assets/pet-sitting.png");
+        case "Rabbit Pet Sitting":
+          return require("../assets/pet-sitting.png");
+        case "Garden Maintenance":
+          return require("../assets/garden-maintenance.png");
+        case "Landscape Design and Planning":
+          return require("../assets/landscape-design-and-planning.png");
+        case "Irrigation System Installation/Repairs":
+          return require("../assets/irrigation-system.png");
+        case "Pest and Disease Management":
+          return require("../assets/pest-and-disease-management.png");
+        default:
+          return require("../assets/standard-cleaning.png");
+      }
+    }
+  };
 
   const handleGetDirections = () => {
     const customerLocation = bookingCoordinates;
 
+    console.log("Customer Location: " , customerLocation);
+    console.log("Provider Location: " , providerLocation);
+
     const data = {
-      source: providerLocation,
+      source: providerLocation || providerCurrentCoordinates,
       destination: customerLocation,
       params: [
         {
           key: "travelmode",
-          value: "driving", // could be "walking", "bicycling" or "transit" as well
+          value: "driving",
         },
         {
           key: "dir_action",
-          value: "navigate", // this launches navigation directly
+          value: "navigate",
         },
       ],
     };
@@ -369,7 +547,7 @@ const ViewBookingDetails = ({ route }) => {
                   </View>
                   <View style={styles.frameWrapper}>
                     <View style={[styles.frame, styles.frameFlexBox1]}>
-                      <Text style={[styles.august112023, styles.amFlexBox]}>
+                      <Text style={[styles.timeStyle, styles.amFlexBox]}>
                         {bookingTime}
                       </Text>
                     </View>
@@ -439,13 +617,13 @@ const ViewBookingDetails = ({ route }) => {
                     <Image
                       style={styles.btnLayout}
                       contentFit="cover"
-                      source={require("../assets/gps-2.png")}
+                      source={require("../assets/town.png")}
                     />
                   </View>
                   <View style={styles.frameWrapper}>
                     <View style={styles.propertyTypeWrapper}>
                       <Text style={[styles.date, styles.dateClr]}>
-                        Property Type
+                        {propertyName}
                       </Text>
                     </View>
                   </View>
@@ -490,7 +668,7 @@ const ViewBookingDetails = ({ route }) => {
                       <Image
                         style={styles.plumbingInstallationPic}
                         contentFit="cover"
-                        source={require("../assets/plumbing-installation-pic.png")}
+                        source={getServiceImageSource(bookingTitle, bookingCategory)}
                       />
                     </View>
                   </View>
@@ -504,7 +682,7 @@ const ViewBookingDetails = ({ route }) => {
                   <View style={styles.frameWrapper6}>
                     <View style={styles.frame2}>
                       <Text style={[styles.august112023, styles.amFlexBox]}>
-                        {bookingCategory}
+                        {getFormattedServiceName()}
                       </Text>
                     </View>
                   </View>
@@ -597,7 +775,6 @@ const ViewBookingDetails = ({ route }) => {
                       </View>
                     );
                   })}
-                
                 </View>
                 <View
                   style={[styles.vectorWrapper, styles.dateFrameSpaceBlock]}
@@ -690,19 +867,135 @@ const ViewBookingDetails = ({ route }) => {
                   </View>
                 </View>
               </View>
-              <View style={styles.dateAndTimeFrameWrapper}>
-                <Text
-                  style={[
-                    styles.customerAdditionalInstructio,
-                    styles.pleaseMeetMeLayout,
-                  ]}
-                >
-                  Customer Additional Instructions
-                </Text>
-                <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
-                  Please meet me at Room 6969, Hotel Sogo
-                </Text>
-              </View>
+              { bookingAddressDetails.note ? (
+                <View style={styles.dateAndTimeFrameWrapper2}>
+                  { (bookingAddressDetails.floor || bookingAddressDetails.house || bookingAddressDetails.street) ? (
+                  <View style={styles.dateAndTimeFrameWrapper}>
+                    <Text
+                      style={[
+                        styles.customerAdditionalInstructio,
+                        styles.pleaseMeetMeLayout,
+                      ]}
+                    >
+                      Customer Additional Instructions
+                    </Text>
+                    {bookingAddressDetails.label? (
+                    <View>
+                      <View style={styles.noteStyle}>
+                        <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                          {bookingAddressDetails.label && 
+                            <Text style={[styles.pleaseMeetMe2, styles.pleaseMeetMeLayout]}>
+                              ({bookingAddressDetails.label}){' '}
+                            </Text>
+                          }
+                          {
+                            [
+                              bookingAddressDetails.street,
+                              bookingAddressDetails.house,
+                              bookingAddressDetails.floor
+                            ].filter(Boolean).join(', ')
+                          }
+                        </Text>
+                      </View>
+                      <View style={styles.noteStyle}>
+                        <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                          Note: {bookingAddressDetails.note}
+                        </Text>
+                      </View>
+                    </View>
+                    ) : (
+                    <View>
+                      <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                        {
+                          [
+                            bookingAddressDetails.street,
+                            bookingAddressDetails.house,
+                            bookingAddressDetails.floor
+                          ].filter(Boolean).join(', ')
+                        }
+                      </Text>
+                      <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                        Note: {bookingAddressDetails.note}
+                      </Text>
+                    </View>
+                    )}
+                  </View>
+                  ): (
+                  <View style={styles.dateAndTimeFrameWrapper}>
+                    <Text
+                      style={[
+                        styles.customerAdditionalInstructio,
+                        styles.pleaseMeetMeLayout,
+                      ]}
+                    >
+                      Customer Additional Instructions
+                    </Text>
+                    {bookingAddressDetails.label? (
+                      <View style={styles.noteStyle}>
+                        <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                          {bookingAddressDetails.label && 
+                            <Text style={[styles.pleaseMeetMe2, styles.pleaseMeetMeLayout]}>
+                              {bookingAddressDetails.label ? `(${bookingAddressDetails.label}) ` : ''}
+                            </Text>
+                          }
+                          {' '}{bookingAddressDetails.note}
+                        </Text>
+                      </View>
+                      ) : (
+                      <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                        {bookingAddressDetails.note}
+                      </Text>
+                    )}
+                  </View>
+                  )}
+                </View>
+              ) : (
+                <View style={styles.dateAndTimeFrameWrapper2}>
+                  { (bookingAddressDetails.floor || bookingAddressDetails.houseNumber || bookingAddressDetails.street) ? (
+                  <View style={styles.dateAndTimeFrameWrapper}>
+                  <Text
+                    style={[
+                      styles.customerAdditionalInstructio,
+                      styles.pleaseMeetMeLayout,
+                    ]}
+                  >
+                    Customer Additional Instructions
+                  </Text>
+                  {bookingAddressDetails.label? (
+                    <View style={styles.noteStyle}>
+                      <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                        {bookingAddressDetails.label && 
+                          <Text style={[styles.pleaseMeetMe2, styles.pleaseMeetMeLayout]}>
+                            ({bookingAddressDetails.label}){' '}
+                          </Text>
+                        }
+                        {
+                          [
+                            bookingAddressDetails.street,
+                            bookingAddressDetails.house,
+                            bookingAddressDetails.floor
+                          ].filter(Boolean).join(', ')
+                        }
+                      </Text>
+                    </View>
+                  ) : (
+                    <Text style={[styles.pleaseMeetMe, styles.pleaseMeetMeLayout]}>
+                      {
+                        [
+                          bookingAddressDetails.street,
+                          bookingAddressDetails.house,
+                          bookingAddressDetails.floor
+                        ].filter(Boolean).join(', ')
+                      }
+                    </Text>
+                  )}
+                </View>
+                ): (
+                <View style={styles.dateAndTimeFrameWrapper1}>
+                </View>
+                )}
+                </View>
+              )}
             </View>
           </View>
         </LinearGradient>
@@ -728,6 +1021,10 @@ const styles = StyleSheet.create({
   btnLayout: {
     height: 40,
     width: 40,
+  },
+  btnLayout1: {
+    height: 43,
+    width: 43,
   },
   btnWrapperPosition: {
     top: 0,
@@ -919,6 +1216,11 @@ const styles = StyleSheet.create({
   august112023: {
     fontFamily: FontFamily.workSansRegular,
     textTransform: "capitalize",
+    fontSize: FontSize.buttonBold15_size,
+    flex: 1,
+  },
+  timeStyle: {
+    fontFamily: FontFamily.workSansRegular,
     fontSize: FontSize.buttonBold15_size,
     flex: 1,
   },
@@ -1229,16 +1531,42 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     backgroundColor: Color.m3White,
   },
+  dateAndTimeFrameWrapper2: {
+    justifyContent: "center",
+    alignSelf: "stretch",
+    backgroundColor: Color.m3White,
+  },
+  noteStyle: {
+    alignSelf: "stretch",
+    alignItems: "center",
+    flexDirection: "row",
+    flex: 1,
+  },
+  dateAndTimeFrameWrapper1: {
+    marginTop: 15,
+    justifyContent: "center",
+    alignSelf: "stretch",
+    backgroundColor: Color.m3White,
+    display: "none",
+  },
   customerAdditionalInstructio: {
-    fontFamily: FontFamily.levelSemibold14,
+    fontFamily: FontFamily.workSansBold,
     color: Color.colorGray_300,
     lineHeight: 15,
-    fontSize: FontSize.levelSemibold14_size,
+    fontSize: FontSize.bodyLgBodyLgRegular_size,
     fontWeight: "600",
   },
   pleaseMeetMe: {
     fontFamily: FontFamily.montserratMedium,
-    color: "#6d6d6d",
+    color: Color.colorGray_300,
+    fontSize: FontSize.m3LabelMedium_size,
+    lineHeight: 15,
+    marginTop: 3,
+    fontWeight: "500",
+  },
+  pleaseMeetMe2: {
+    fontFamily: FontFamily.levelSemibold14,
+    color: Color.colorGray_300,
     fontSize: FontSize.m3LabelMedium_size,
     lineHeight: 15,
     marginTop: 3,

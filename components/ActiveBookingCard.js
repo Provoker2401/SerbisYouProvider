@@ -3,7 +3,7 @@ import { TouchableOpacity, Text, StyleSheet, View, Linking, Pressable} from "rea
 import { Image } from "expo-image";
 import { FontSize, FontFamily, Color, Border, Padding } from "../GlobalStyles";
 import { useNavigation } from "@react-navigation/native";
-import { getFirestore, getAuth, collection, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
+import moment from 'moment';
 
 // Define a function to map the status to the corresponding style
 const getStatusStyle = (status) => {
@@ -46,61 +46,54 @@ const getButtonText = (status) => {
     }
   };
   
-
-const ActiveBookingCard = ({status, date, time, location, serviceName, matchedBookingID, phone, customerName, customerUID, id}) => {
+const ActiveBookingCard = ({status, date, time, location, serviceName, matchedBookingID, phone, customerName, customerUID, id, onOpenCancelModal}) => {
 const navigation = useNavigation();
   const statusStyle = getStatusStyle(status);
   const cardBackgroundColor = getCardBackgroundColor(status);
 
   const handleButton =  () => {
+    const currentDateTime = moment();
+    const bookingDateTime = moment(`${date} ${time}`, "MMM D YYYY h:mm A");
+
+    if (!bookingDateTime.isValid()) {
+      alert("Invalid booking date and time. Please check the booking details.");
+      return;
+    }
+
+
+    if (!bookingDateTime.isValid()) {
+      alert("Invalid booking date and time. Please check the booking details.");
+      return;
+    }
+
+    const timeDiff = bookingDateTime.diff(currentDateTime, 'minutes');
+
+    // Check if the booking date is in the past
+    if (bookingDateTime.isBefore(currentDateTime)) {
+      alert("The booking date is already past. Please contact the customer before you cancel.");
+      return;
+    }
+
+    if (status === 'Upcoming' && timeDiff > 60) {
+      // Add a restriction message or disable the button
+      alert("You can only go to the customer 1 hour before the schedule. Please check the date and time of the booking.");
+      return;
+    }
+
     if (status === 'Upcoming') {
-      console.log("item ID" , id);
-      console.log("matched Booking ID" , matchedBookingID);
-      console.log("customer UID" , customerUID);
-
       navigation.navigate("ConfirmNavigation", { itemID: id, matchedBookingID: matchedBookingID, customerUID: customerUID});
-      // Construct a reference to the Firestore collection
-      // const db = getFirestore();
-      // const bookingRef = collection(db, "serviceBookings", customerUID, "activeBookings");
-      
-      // // Create a query against the collection to find the booking with the matchedBookingID
-      // const q = query(bookingRef, where("bookingID", "==", matchedBookingID));
-
-      // try {
-      //   // Execute the query
-      //   // const querySnapshot = await getDocs(q);
-      //   // querySnapshot.forEach(async (doc) => {
-      //   //   // For each document in the query result, update the status to "In Transit"
-      //   //   await updateDoc(doc.ref, { status: "In Transit" });
-      //   // });
-
-      //   // After the update, navigate to the GoToCustomer screen
-      //   navigation.navigate("ConfirmNavigation");
-      //   //navigation.navigate("ConfirmNavigation", { itemID: id, customerUID: customerUID, matchedBookingID: matchedBookingID});
-      // } catch (error) {
-      //   console.error("Error updating document: ", error);
-      // }
     } else if (status === 'In Transit') {
-      navigation.navigate("PerformTheService", { itemID: id });
+      navigation.navigate("PerformTheService", { itemID: id, matchedBookingID: matchedBookingID, customerUID: customerUID});
     } else if (status === 'In Progress') {
-      navigation.navigate("ConfirmService", { itemID: id });
+      navigation.navigate("ConfirmService", { itemID: id, matchedBookingID: matchedBookingID, customerUID: customerUID });
     }
   };
-  // const handleButton = () => {
-  //   switch (status) {
-  //     case 'Upcoming':
-  //       navigation.navigate("ConfirmNavigation", { itemID: id });
-  //       break;
-  //     case 'In Transit':
-  //       navigation.navigate("PerformTheService", { itemID: id });
-  //       break;
-  //     case 'In Progress':
-  //       navigation.navigate("ConfirmService", { itemID: id });
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // };
+
+  // When the 'Cancel Booking' button is pressed
+  const onCancelPress = () => {
+    // This will call the openCancelModal function passed as a prop from the parent component
+    onOpenCancelModal();
+  };
 
   const messageProvider = ()=>{
     Linking.openURL(`sms:${phone}`);
@@ -111,7 +104,6 @@ const navigation = useNavigation();
 
   const viewBookingDetails = () => {
     navigation.navigate("ViewBookingDetails", { itemID: id });
-
   };
   
 
@@ -194,15 +186,25 @@ const navigation = useNavigation();
           </View>
         </View>
         <View style={[styles.buttonsFrame, styles.frameSpaceBlock]}>
+          {status === "Upcoming" && (
+            <Pressable
+            style={[styles.buttonContainer, styles.cancelBookingBtn2]}
+            onPress={onCancelPress}
+            >
+              <Text style={[styles.cancelBooking2, styles.viewDetailsTypo]}>
+                Cancel
+              </Text>
+            </Pressable>
+          )}
           <Pressable
-            style={styles.cancelBookingBtn}
+            style={[styles.buttonContainer, styles.cancelBookingBtn]}
             onPress={() => handleButton()}
           >
             <Text style={[styles.cancelBooking, styles.viewDetailsTypo]}>
                 {getButtonText(status)}
             </Text>
           </Pressable>
-          <Pressable style={styles.viewBorder} onPress={() => viewBookingDetails()}>
+          <Pressable style={[styles.buttonContainer, styles.viewBorder]} onPress={() => viewBookingDetails()}>
             <Text style={[styles.viewDetails, styles.viewDetailsTypo]}>
               View Details
             </Text>
@@ -293,7 +295,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.1,
   },
   viewBorder: {
-    marginLeft: 26,
+    marginHorizontal: 0,
     backgroundColor: Color.colorSteelblue,
     borderWidth: 1.6,
     borderColor: Color.colorSteelblue,
@@ -441,6 +443,9 @@ const styles = StyleSheet.create({
   cancelBooking: {
     color: Color.colorSteelblue,
   },
+  cancelBooking2: {
+    color: Color.colorFirebrick_300,
+  },
   cancelBookingBtn: {
     borderWidth: 1.6,
     borderColor: Color.colorSteelblue,
@@ -451,6 +456,19 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     backgroundColor: Color.m3White,
+    marginHorizontal: 5,
+  },
+  cancelBookingBtn2: {
+    borderWidth: 1.6,
+    borderColor: Color.colorFirebrick_300,
+    borderStyle: "solid",
+    borderRadius: Border.br_xs,
+    justifyContent: "center",
+    flexDirection: "row",
+    flex: 1,
+    alignItems: "center",
+    backgroundColor: Color.colorMistyrose,
+    marginHorizontal: 0,
   },
   viewDetails: {
     color: Color.m3White,

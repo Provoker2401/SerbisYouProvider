@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleProp, ViewStyle, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Image } from "expo-image";
 import { FontFamily, FontSize, Color, Border, Padding } from "../GlobalStyles";
 

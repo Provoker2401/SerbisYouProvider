@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useState, useEffect, useRef, createRef } from "react";
-import { Image } from "expo-image";
 import {
   StatusBar,
   StyleSheet,
@@ -8,9 +7,6 @@ import {
   View,
   TextInput,
   Pressable,
-  ActivityIndicator,
-  Alert,
-  Button,
   TouchableOpacity,
 } from "react-native";
 import { FontSize, FontFamily, Padding, Border, Color } from "../GlobalStyles";
@@ -21,15 +17,17 @@ import {
   doc,
   getDoc,
   getDocs,
-  setDoc,
   query,
+  setDoc,
   where,
   collection,
   addDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import Toast from "react-native-toast-message";
-// import * as FirebaseRecaptcha from "expo-firebase-recaptcha";
 import axios from "axios";
+import messaging from '@react-native-firebase/messaging';
+import Spinner from "react-native-loading-spinner-overlay";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDWQablgpC3ElsqOQuVhQU2YFsri1VmCss",
@@ -53,8 +51,9 @@ const Authentication = ({ route }) => {
   const navigation = useNavigation();
 
   const [confirmInProgress, setConfirmInProgress] = useState(false);
-
-  const [timer, setTimer] = useState(30);
+  const [loading, setLoading] = useState(false);
+  const [timer, setTimer] = useState(60);
+  const [requestID, setrequestID] = useState("");
 
   console.log("Name:", name);
   console.log("Email:", email);
@@ -62,6 +61,8 @@ const Authentication = ({ route }) => {
   console.log("Password:", password);
 
   const [timerIntervalId, setTimerIntervalId] = useState(null);
+
+  const [showWaitText, setShowWaitText] = useState(true);
 
   const startTimer = () => {
     const intervalId = setInterval(() => {
@@ -82,7 +83,7 @@ const Authentication = ({ route }) => {
     // Clear the previous interval before starting a new one
     clearInterval(timerIntervalId);
     // Reset the timer
-    setTimer(30);
+    setTimer(60);
     // Start the new timer
     startTimer();
 
@@ -120,10 +121,21 @@ const Authentication = ({ route }) => {
   const sendVerificationCode = async () => {
     console.log("Phone number is: ", phone);
     try {
+      // const response = await axios.post(
+      //   "https://us-central1-testingauth-9126f.cloudfunctions.net/sendOTP",
+      //   {
+      //     phoneNumber: phone,
+      //   },
+      //   {
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //   }
+      // );
       const response = await axios.post(
-        "https://us-central1-testingauth-9126f.cloudfunctions.net/sendOTP",
+        "https://us-central1-testingauth-9126f.cloudfunctions.net/sendVerificationSMS",
         {
-          phoneNumber: phone,
+          number: phone,
         },
         {
           headers: {
@@ -131,6 +143,7 @@ const Authentication = ({ route }) => {
           },
         }
       );
+      setrequestID(response.data);
       Toast.show({
         type: "success",
         position: "top",
@@ -155,12 +168,25 @@ const Authentication = ({ route }) => {
 
   const verifyCode = async () => {
     try {
-      const response = await axios.post(
-        "https://us-central1-testingauth-9126f.cloudfunctions.net/verifyOTP",
+      setLoading(true);
+      // const response = await axios.post(
+      //   "https://us-central1-testingauth-9126f.cloudfunctions.net/verifyOTP",
 
+      //   {
+      //     phoneNumber: phone,
+      //     otp: enteredOTP,
+      //   },
+      //   {
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //   }
+      // );
+      const response = await axios.post(
+        "https://us-central1-testingauth-9126f.cloudfunctions.net/checkVerificationCode",
         {
-          phoneNumber: phone,
-          otp: enteredOTP,
+          request_id: requestID,
+          code: enteredOTP,
         },
         {
           headers: {
@@ -175,9 +201,9 @@ const Authentication = ({ route }) => {
 
       try {
         // Check if a document with the same phone number already exists
+        
         const db = getFirestore();
         const querySnapshot = await getDocs(collection(db, "providerProfiles"));
-
         // Create the provider with email and password
         const providerCredential = await createUserWithEmailAndPassword(
           auth,
@@ -186,33 +212,69 @@ const Authentication = ({ route }) => {
         );
         const provider = providerCredential.user;
 
-        // Get the user's UID
+        registerAppWithFCM();
+        
+        const fcmToken = await messaging().getToken();
+
+        // Get the provider's UID
         const providerUid = provider.uid;
+        const providerAuth = auth.currentUser.uid;
 
         // Initialize Firestore and reference the 'providerProfiles' collection
         const providerDocRef = doc(db, "providerProfiles", providerUid);
+        const currentProviderDocRef = doc(db, "providerProfiles", providerAuth);
+
+        // Check if a document with the same UID already exists
+        const providerDoc = await getDoc(currentProviderDocRef);
+
+        if (providerDoc.exists()) {
+          // Provider signed up successfully, but a document with the same UID already exists
+          console.log("A provider with this UID already exists");
+          return;
+        }
 
         // Save provider data to Firestore using the UID as the document ID
         await setDoc(providerDocRef, {
           name: name,
           email: email,
-          phone: `+63${phone}`,
+          phone: phone,
+          fcmToken: fcmToken,
           availability: "available", // Set default availability to false
           blackListed: [], // Initialize blackListed array with no values yet
           bookingID: "",
           bookingMatched: false,
           bookingIndex: 0,
           coordinates: {
-            latitude: "",
-            longitude: "",
+            latitude: 10.374995463888457,
+            longitude: 123.91922703537087,
           },
         });
+
+        // Create subcollections with empty fields
+        const notifications = collection(currentProviderDocRef, "notifications");
+        const today = new Date();
+        const options = {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        };
+        const formattedDate = today.toLocaleDateString("en-US", options); // Adjust locale as needed
+
+        await setDoc(doc(notifications, formattedDate), {
+          accountCreation: {
+            subTitle: "Your account has been created",
+            title: "Account Setup Successful!",
+            createdAt: serverTimestamp(),
+          },
+          date: serverTimestamp(),
+        });
+
         // Create subcollections with empty fields
         const appForm1Ref = collection(providerDocRef, "appForm1"); // Replace 'subcollection_name' with your desired subcollection name
         await addDoc(appForm1Ref, {
           name: name,
           email: email,
-          phone: `+63${phone}`,
+          phone: phone,
           city: "",
         });
 
@@ -228,6 +290,8 @@ const Authentication = ({ route }) => {
           subcategories: "",
           services: "",
         });
+        // Second empty document
+        await addDoc(appForm3Ref, {});
 
         const userWalletRef = collection(providerDocRef, "userWallet"); // Replace 'subcollection_name' with your desired subcollection name
         await addDoc(userWalletRef, {
@@ -239,15 +303,10 @@ const Authentication = ({ route }) => {
 
         const historyBookings = collection(providerDocRef, "historyBookings"); // Replace 'subcollection_name' with your desired subcollection name
         await addDoc(historyBookings, {});
+        setLoading(false);
 
         // User signed up successfully
         console.log("Sign Up Successful!");
-
-        // Clear input fields and show success toast
-        setName("");
-        setEmail("");
-        setPassword("");
-        setPhone("");
 
         Toast.show({
           type: "success",
@@ -268,10 +327,10 @@ const Authentication = ({ route }) => {
         });
       }
 
-      navigation.navigate("BottomTabsRoot", { screen: "Homepage" });
+      navigation.navigate("ApplicationForm1");
     } catch (error) {
       console.error("Error verification:", error.message);
-
+      setLoading(false);
       Toast.show({
         type: "error",
         position: "top",
@@ -281,6 +340,15 @@ const Authentication = ({ route }) => {
       });
     }
   };
+
+  async function registerAppWithFCM() {
+    try {
+      await messaging().registerDeviceForRemoteMessages();
+      console.log('Device registered for FCM');
+    } catch (error) {
+      console.error('Error registering device for FCM', error);
+    }
+  }
 
   return (
     <View style={[styles.authentication, styles.frameFlexBox]}>
@@ -316,9 +384,13 @@ Enter the code in that message to continue.`}</Text>
                         />
                       ))}
                   </View>
-                  <Text style={styles.weveSentA}>
-                    Entered OTP: {enteredOTP}
-                  </Text>
+                  {loading ? (
+                    <Spinner visible={true} />
+                    ) : (
+                      <View style={styles.container}>
+                      </View>
+                    )
+                  }
                 </View>
               </View>
               <View style={[styles.verifyframe, styles.frameFlexBox]}>
@@ -329,7 +401,8 @@ Enter the code in that message to continue.`}</Text>
             </View>
             <View style={[styles.group34600reSendCodeIn0, styles.frameFlexBox]}>
               <Text style={[styles.didntReceiveCode, styles.codeTypo]}>
-                Didn’t receive code? Wait for {timer}s
+                Didn’t receive code?
+                {timer > 0 && <Text> Wait for {timer}s</Text>}
               </Text>
               {timer === 0 && (
                 <TouchableOpacity onPress={handleResendCode}>
@@ -339,11 +412,6 @@ Enter the code in that message to continue.`}</Text>
                 </TouchableOpacity>
               )}
             </View>
-            {/* <View style={[styles.group34600reSendCodeIn0, styles.frameFlexBox]}>
-              {timer > 0 && (
-                <Text>Resend code in: {timer} seconds</Text>
-              )}
-            </View> */}
           </View>
         </View>
       </View>
@@ -352,6 +420,12 @@ Enter the code in that message to continue.`}</Text>
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    display: 'none',
+  },
   frameFlexBox: {
     justifyContent: "center",
     alignItems: "center",

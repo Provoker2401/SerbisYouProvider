@@ -2,13 +2,10 @@ import * as React from "react";
 import {
   StatusBar,
   StyleSheet,
-  Pressable,
   View,
   Text,
   ScrollView,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Image } from "expo-image";
 import { Color, FontSize, FontFamily, Padding, Border } from "../GlobalStyles";
 
 const TermsAndConditions = () => {
@@ -262,61 +259,6 @@ Phone: 09457955547
 serbisyouapp@gmail.com`}</Text>
         </Text>
       </ScrollView>
-      {/* <View style={[styles.navigationBarHome, styles.frameParentSpaceBlock]}>
-        <View style={styles.segment1}>
-          <View style={styles.iconContainerFlexBox}>
-            <View style={styles.stateFlexBox}>
-              <Image
-                style={styles.iconLayout}
-                contentFit="cover"
-                source={require("../assets/icon1.png")}
-              />
-            </View>
-          </View>
-          <Text style={[styles.labelText, styles.labelTypo]}>Home</Text>
-        </View>
-        <View style={[styles.segment2, styles.segmentSpaceBlock]}>
-          <View style={styles.iconContainerFlexBox}>
-            <View style={styles.stateFlexBox}>
-              <Image
-                style={styles.icon2}
-                contentFit="cover"
-                source={require("../assets/icon11.png")}
-              />
-            </View>
-          </View>
-          <Text style={[styles.labelText1, styles.labelTypo]}>Bookings</Text>
-        </View>
-        <View style={styles.segmentSpaceBlock}>
-          <View style={styles.iconContainerFlexBox}>
-            <View style={styles.stateFlexBox}>
-              <Image
-                style={styles.iconLayout}
-                contentFit="cover"
-                source={require("../assets/icon3.png")}
-              />
-            </View>
-          </View>
-          <Text style={[styles.labelText1, styles.labelTypo]}>
-            Notifications
-          </Text>
-        </View>
-        <View style={styles.segment1}>
-          <View style={[styles.iconContainer3, styles.iconContainerFlexBox]}>
-            <View style={styles.stateFlexBox}>
-              <Image
-                style={[styles.icon4, styles.iconLayout]}
-                contentFit="cover"
-                source={require("../assets/icon4.png")}
-              />
-              <View style={styles.badge}>
-                <Text style={styles.badgeLabel}>3</Text>
-              </View>
-            </View>
-          </View>
-          <Text style={[styles.labelText3, styles.labelTypo]}>Account</Text>
-        </View>
-      </View> */}
     </View>
   );
 };

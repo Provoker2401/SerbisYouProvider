@@ -9,27 +9,19 @@ import {
   TouchableOpacity,
   Animated,
   LayoutAnimation,
-  ActivityIndicator,
   Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { FontFamily, Padding, FontSize, Color, Border } from "../GlobalStyles";
 import { useState, useCallback, useRef, useEffect } from "react";
-//import { useReviewSummaryContext } from "../ReviewSummaryContext";
 import { toggleAnimation } from "../animations/toggleAnimation";
 import {
   getFirestore,
-  collection,
   doc,
   getDoc,
-  getDocs,
-  setDoc,
-  where,
-  query,
-  onSnapshot,
 } from "firebase/firestore"; // Updated imports
-import { getAuth, onAuthStateChanged, updateEmail } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import * as Clipboard from "expo-clipboard";
 
 const EReceipt = ({ route }) => {
@@ -39,26 +31,6 @@ const EReceipt = ({ route }) => {
 
   const animationController = useRef(new Animated.Value(0)).current;
   const [showContent, setShowContent] = useState(false);
-
-  //   const [bookingID, setBookingID] = useState("");
-  //   const [bookingDate, setBookingDate] = useState("");
-  //   const [bookingTime, setBookingTime] = useState("");
-  //   const [bookingAddress, setBookingAddress] = useState("");
-  //   const [bookingDistanceRadius, setBookingDistanceRadius] = useState("");
-  //   const [bookingTitle, setBookingTitle] = useState("");
-  //   const [bookingCategory, setBookingCategory] = useState("");
-  //   const [bookingServices, setBookingServices] = useState([]);
-  //   const [bookingSubtotal, setBookingSubtotal] = useState("");
-  //   const [bookingDistanceFee, setBookingDistanceFee] = useState("");
-  //   const [bookingTotalPrice, setBookingTotalPrice] = useState("");
-  //   const [bookingPaymentMethod, setBookingPaymentMethod] = useState("");
-  //   const [bookingProviderName, setBookingProviderName] = useState("");
-  //   const [bookingStatus, setBookingStatus] = useState("");
-  //   const [bookingCoordinates, setBookingCoordinates] = useState({
-  //     latitude: null,
-  //     longitude: null,
-  //   });
-
   const [loading, setLoading] = useState(false); // Set to true initially, assuming you want to show the loading indicator on component mount
 
   const toggleListItem = () => {
@@ -82,9 +54,7 @@ const EReceipt = ({ route }) => {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [address, setAddress] = useState("");
-
   const [category, setCategory] = useState("");
-
   const [subtotal, setSubTotal] = useState("");
   const [distanceFee, setDistanceFee] = useState("");
   const [totalPrice, setTotalPrice] = useState("");
@@ -117,7 +87,6 @@ const EReceipt = ({ route }) => {
           setDate(booking.date);
           setTime(booking.time);
           setAddress(booking.address);
-
           setCustomerName(booking.name);
           setServiceTitle(booking.title);
           setSubTotal(booking.subTotal);
@@ -125,9 +94,7 @@ const EReceipt = ({ route }) => {
           setTotalPrice(booking.totalPrice);
           setPayment(booking.paymentMethod);
           setBookingID(booking.bookingID);
-
           setBookingServices(booking.service);
-
           setCategory(booking.category);
         } else {
           console.log("No such document");
@@ -147,6 +114,20 @@ const EReceipt = ({ route }) => {
       `Booking ID: ${bookingID} has been copied to clipboard.`
     );
   }, [bookingID]);
+
+  const getFormattedServiceName = () => {
+    if (!serviceTitle || !category) {
+      return 'Service'; // Default text or handle as needed
+    }
+
+    // Check if the title is "Pet Care" or "Gardening"
+    if (serviceTitle === "Pet Care" || serviceTitle === "Gardening" || serviceTitle === "Cleaning") {
+      return category;
+    } else {
+      // If not, concatenate the title and category
+      return `${serviceTitle} ${category}`;
+    }
+  };
 
   return (
     <View style={styles.eReceipt}>
@@ -267,7 +248,7 @@ const EReceipt = ({ route }) => {
                     { transform: [{ rotate: arrowTransform }] },
                   ]}
                   contentFit="cover"
-                  source={require("../assets/polygon-up2.png")}
+                  source={require("../assets/polygon-up.png")}
                 />
               </TouchableOpacity>
               {showContent && (
@@ -304,7 +285,7 @@ const EReceipt = ({ route }) => {
                           ]}
                         >
                           <Text style={styles.plumbingInstallation}>
-                            {serviceTitle} {category}
+                            {getFormattedServiceName()}
                           </Text>
                         </View>
                       </View>
@@ -344,7 +325,7 @@ const EReceipt = ({ route }) => {
                         >
                           <View style={styles.frame1}>
                             <Text style={[styles.text, styles.textTypo]}>
-                              ₱{item.totalPrice}
+                              ₱{item.totalPrice}.00
                             </Text>
                           </View>
                         </View>
@@ -370,7 +351,7 @@ const EReceipt = ({ route }) => {
                 </View>
                 <View style={[styles.frameServices1, styles.copyButtonFlexBox]}>
                   <Text style={[styles.text, styles.textTypo]}>
-                    ₱{subtotal}
+                    ₱{subtotal}.00
                   </Text>
                 </View>
               </View>
@@ -387,7 +368,7 @@ const EReceipt = ({ route }) => {
                 </View>
                 <View style={[styles.frameServices1, styles.copyButtonFlexBox]}>
                   <Text style={[styles.text, styles.textTypo]}>
-                    ₱{distanceFee}
+                    ₱{distanceFee}.00
                   </Text>
                 </View>
               </View>
@@ -411,7 +392,7 @@ const EReceipt = ({ route }) => {
                 </View>
                 <View style={[styles.frameServices1, styles.copyButtonFlexBox]}>
                   <Text style={[styles.text5, styles.textTypo]}>
-                    ₱{totalPrice}
+                    ₱{totalPrice}.00
                   </Text>
                 </View>
               </View>
@@ -617,7 +598,7 @@ const styles = StyleSheet.create({
   },
   titleLabel: {
     lineHeight: 24,
-    colorGray_1000: "#19191a",
+    color: "#19191a",
     fontFamily: "Inter-SemiBold",
     fontWeight: "600",
     textAlign: "left",
